@@ -1,7 +1,7 @@
 library(reticulate)
 library(oncoRegimens)
 
-source_python("./inst/Python/TemporalAlign.py")
+if(!exists("temporal_alignment", mode="function")) source_python("./inst/Python/TemporalAlign.py")
 
 #Gap penalty
 g <- 0.5
@@ -28,18 +28,11 @@ verbose = 2
 mem = as.integer(-1)
 
 #QCAA
-s1 <- tuple(c(0,"Q"),c(2,"C"),c(2,"A"),c(1,"A"))
-
+s1 <- encode("0Q.2C.2A.1A")
 #CA*QCAA*AQQ*QCAA*AQQ*QCAA*
-s2 <- tuple(c(0,"C"),c(0,"A"),
-            c(9,"Q"),c(2,"C"),c(2,"A"),c(1,"A"),
-            c(0,"A"),c(0,"Q"),c(0,"Q"),
-            c(0,"Q"),c(2,"C"),c(2,"A"),c(1,"A"),
-            c(0,"A"),c(0,"Q"),c(0,"Q"),
-            c(0,"Q"),c(3,"C"),c(2,"A"),c(1,"A"))
+s2 <- encode("0C.0A.9Q.2C.2A.1A.0A.0Q.0Q.0Q.2C.2A.1A.0A.0Q.0Q.0Q.3C.2A.1A")#
 
 s <- oncoRegimens::defaultSmatrix(s1,s2)
-
 dat <- temporal_alignment(s1,s2,g,Tfac,as.data.frame(s),local_align, verbose, mem)
 
 dat <- as.data.frame(dat)
@@ -49,7 +42,6 @@ dat$V1 <- gsub("([A-Z]|__)","\\1\\.",dat$V1)
 dat$V2 <- gsub("([A-Z]|__)","\\1\\.",dat$V2)
 
 colnames(dat) <- c("S1","S2","Score","Index","totAlign")
-
 
 
 

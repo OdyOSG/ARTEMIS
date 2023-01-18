@@ -455,8 +455,6 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 					print(mem_score[i])
 					print()
 
-
-
 		if secondary == 1:
 			returnDat = returnDat.reshape(len(mem_index)+1,5)
 		else:

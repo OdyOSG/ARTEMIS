@@ -8,12 +8,12 @@
 #' @export
 defaultSmatrix <- function(s1,s2){
   uniques <- c()
-  for(i in seq(0,length(s1)-1)){
-    uniques <- c(uniques,as.character(s1[i][1]))
+  for(i in seq(1,length(s1))){
+    uniques <- c(uniques,as.character(s1[[i]][2]))
   }
 
-  for(j in seq(0,length(s2)-1)){
-    uniques <- c(uniques,as.character(s2[j][1]))
+  for(j in seq(1,length(s2))){
+    uniques <- c(uniques,as.character(s2[[j]][2]))
   }
 
   uniques <- unique(uniques)
