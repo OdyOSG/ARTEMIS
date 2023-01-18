@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import math as math
 
-#Initialise H matrix that will be used for scoring according to sequence size
+#Initialise the H matrix, or score matrix, that will be used for scoring according to sequence size
 def init_Hmat(s1_len,s2_len,g,local_align):
 
+	#For a global alignment, we want to penalise gaps at the beginning and end of each sequence by an incrementing gap penalty
 	if local_align == 0:
 		H = np.zeros((s2_len+1,s1_len+1), float)
 
@@ -18,14 +19,15 @@ def init_Hmat(s1_len,s2_len,g,local_align):
 	
 		return H
 
+	#For a local alignment, we do not want to penalise gaps at the beginning and end of each sequence
 	elif local_align == 1:
 		H = np.zeros((s2_len+1,s1_len+1), float)
 
-		#Fill the first column with incrementing gap penalties
+		#Fill the first column with incrementing 0's
 		for row in range(s2_len+1):
 			H[row][0] = 0
 	
-		#Fill the first row with incrementing gap penalties
+		#Fill the first row with 0's
 		for col in range(s1_len+1):
 			H[0][col] = 0
 	
@@ -51,7 +53,11 @@ def init_TCmat(s1,s1_len,s2,s2_len,local_align):
 
 	return TC
 
+#Initialise the traceback matrix that will track the direction we took in H
 def init_traceMat(s1_len,s2_len,local_align):
+
+	#In the case of global alignment, we will need to progress to the top-left square of our trace matrix, and fill the top row
+	#and col with the according direction, 2 being left and 1 being up.
 	if local_align == 0:
 		traceMat = np.zeros((s2_len+1,s1_len+1), float)
 		#Fill top row with 2
@@ -60,7 +66,9 @@ def init_traceMat(s1_len,s2_len,local_align):
 		traceMat[:,0] = 1
 		#Fill in DONE square
 		traceMat[0][0] = -1
-		
+	
+	#For a local alignment, we simply wish to end our alignment traceback if we reach the end of a sequence, and thus we put
+	#a 0 in each relevant cell.
 	elif local_align == 1:
 		traceMat = np.zeros((s2_len+1,s1_len+1), float)
 		#Fill top row with 0
@@ -72,11 +80,14 @@ def init_traceMat(s1_len,s2_len,local_align):
 
 	return traceMat
 
+#Input the drugs x and y and returns their corresponding cell value in the subsitution matrix, s
 def score(s,x,y):
 	score = s[x][y]
 
 	return score
 
+#Temporal Needleman Wunsch score matrix calculation
+#Here we fill our H matrix with values, starting from the top left, according to those equations defined in 10.1109/dsaa.2015.7344785
 def TNW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s):
 	#initialise time penalty at 0
 	tp = 0
@@ -130,6 +141,8 @@ def TNW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s):
 
 	return finalScore
 
+#Here we utilise our traceback matrix to fill in all matches and gaps in each sequence to return the aligned sequences
+#which achieved the highest scoring path in H
 def align_TNW(traceMat, s1, s2, s1_len, s2_len):
 	s1_aligned = ""
 	s2_aligned = ""
@@ -174,6 +187,10 @@ def align_TNW(traceMat, s1, s2, s1_len, s2_len):
     	
 	return [s1_aligned, s2_aligned, totAligned]
 
+#Temporal Smith Waterman score matrix calculation
+#Here we fill our H matrix with values, starting from the top left, according to those equations defined in 10.1109/dsaa.2015.7344785
+#We also store secondary sequences which achieved a high score, depending on the user's mem input, which can be used both for comparison
+#and in the case that our shorter s1 sequence aligns with a high score at multiple, independent locations in s2
 def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 	#initialise time penalty at 0
 	tp = 0
@@ -249,21 +266,26 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 	mem_array = np.asarray(list(zip(mem_score,mem_index)), dtype=object)
 	mem_array = mem_array[mem_array[:, 0].argsort()]
 
+	#If mem == -1, we calculate the maximum number of possible matches when aligning s1 into s2
+	#and keep all sequences with the corresponding score or higher
 	if mem == -1:
 		mem = max(1,math.floor(s2_len/s1_len))
 		mem_min = mem_array[-mem][0]
 		mem_array = mem_array[ mem_min <= mem_array[:,0] ]#
 		mem_score, mem_index = mem_array[:, 0], mem_array[:, 1]
 
+	#If mem == 0, we discard all memory indices and scores and return only the first encountered, highest scoring alignment
 	elif mem == 0:
 		mem_index = []
 		mem_score = []
 
+	#If mem >= 1, we return mem number of sequences
 	else:
 		mem_min = mem_array[-mem][0]
 		mem_array = mem_array[ mem_min <= mem_array[:,0] ]
 		mem_score, mem_index = mem_array[:, 0], mem_array[:, 1]
 
+	#Reverse mem index such that the highest score/index is in position 0
 	mem_score = mem_score[::-1]
 	mem_index = mem_index[::-1]
 
@@ -271,6 +293,8 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 	finalIndex = max_index
 	return finalScore, finalIndex, mem_index, mem_score
 
+#Here we utilise our traceback matrix to fill in all matches and gaps in each sequence to return the aligned sequences
+#which achieved the highest scoring cell value in H
 def align_TSW(traceMat, s1, s2, s1_len, s2_len, max_index):
 	s1_aligned = ""
 	s2_aligned = ""   
@@ -335,6 +359,7 @@ def removeOverlaps():
 	#Not implemented
 	a = 0
 
+#Here we perform all initialisation and alignment steps and output the corresponding data
 def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 	#Initialise sequence lengths
 	s1_len = len(s1)

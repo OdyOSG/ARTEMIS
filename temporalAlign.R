@@ -5,6 +5,7 @@ source_python("./inst/Python/TemporalAlign.py")
 
 #Gap penalty
 g <- 0.5
+
 #Max temporal penalty
 Tfac <- 0.2
 
@@ -12,6 +13,7 @@ Tfac <- 0.2
 #local_align = 0 : Needleman-Wunsch
 #local_align = 1 : Smith-Waterman
 local_align = 1
+
 #Set verbose
 #Verbose = 0 : Don't print
 #Verbose = 1 : Print seqs and scores
@@ -28,7 +30,7 @@ mem = as.integer(-1)
 #QCAA
 s1 <- tuple(c(0,"Q"),c(2,"C"),c(2,"A"),c(1,"A"))
 
-#CAACAAAQQQ
+#CA*QCAA*AQQ*QCAA*AQQ*QCAA*
 s2 <- tuple(c(0,"C"),c(0,"A"),
             c(9,"Q"),c(2,"C"),c(2,"A"),c(1,"A"),
             c(0,"A"),c(0,"Q"),c(0,"Q"),
