@@ -386,9 +386,11 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 		#Initialise return vars
 		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"NA","NA"]
 
+		#Generate score matrix
 		finalScore = TNW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s)
-		s1_aligned, s2_aligned, totAligned = align_TNW(traceMat, s1, s2, s1_len, s2_len)
 
+		#Track alignments through the traceback matrix and append data to return DF
+		s1_aligned, s2_aligned, totAligned = align_TNW(traceMat, s1, s2, s1_len, s2_len)
 		returnDat.append([str(s1_aligned).strip('[]'),str(s2_aligned).strip('[]'),finalScore,totAligned])
 
 		if verbose == 2:
@@ -422,6 +424,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
 		returnDat = np.array(returnDat, dtype=object)
 
+		#Generate score matrix
 		finalScore, finalIndex, mem_index, mem_score = TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem)
 
 		if verbose == 2:
@@ -440,26 +443,32 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 			print(traceMatp)
 			print()
 
+		#Check to see if any other alignments were stored in memory.
+		#We need this extra if statement here to allow for the functionality of m = 0, which generates an empty mem_index
 		if len(mem_score) > 1:
+			#Track alignments through the traceback matrix
 			s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[0])
+			#Generate some summary data
 			s_a_len = len(re.findall(pat,s1_aligned))
 			s1_start = mem_index[0][1] - s_a_len
 			s1_end = mem_index[0][1]
 			s2_start = mem_index[0][0] - s_a_len
 			s2_end = mem_index[0][0]
 
-
+			#Append data to return DF
 			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
 				s2_start,s2_end,s_a_len,totAligned]), axis = 0)
 		else: 
+			#Track alignments through the traceback matrix
 			s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, finalIndex)
+			#Generate some summary data
 			s_f_len = len(re.findall(pat,s1_aligned))
 			s1_start = finalIndex[1] - s_f_len
 			s1_end = finalIndex[1]
 			s2_start = finalIndex[0] - s_f_len
 			s2_end = finalIndex[0]
 
-			
+			#Append data to return DF
 			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
 				s2_start,s2_end,s_f_len,totAligned]), axis = 0)
 
@@ -478,14 +487,15 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 		
 			for i in range(1,len(mem_index)):
 				secondary = 1
+				#Track alignments through the traceback matrix
 				s1_aligned_t, s2_aligned_t, totAligned_t = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[i])
-
+				#Generate some summary data
 				s_a_t_len = len(re.findall(pat,s1_aligned_t))
 				s1_start = mem_index[i][1] - s_a_t_len
 				s1_end = mem_index[i][1]
 				s2_start = mem_index[i][0] - s_a_t_len
 				s2_end = mem_index[i][0]
-
+				#Append data to return DF
 				returnDat = np.append(returnDat,[s1_aligned_t,s2_aligned_t,mem_score[i],s1_start,s1_end,
 					s2_start,s2_end,s_a_t_len,totAligned_t], axis = 0)	
 	
@@ -497,13 +507,16 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 					print(mem_score[i])
 					print()
 
+		#If we did have secondary alignments, reshape array accordingly
 		if secondary == 1:
 			returnDat = returnDat.reshape(len(mem_index)+1,9)
 			returnDat = pd.DataFrame(returnDat)
+		#If not, ensure return frame has the shape 2,9
 		else:
 			returnDat = returnDat.reshape(2,9)
 			returnDat = pd.DataFrame(returnDat)
 
+		#Remove overlaps
 		if removeOverlap == 1:
 			if verbose == 1 or verbose == 2:
 				print("Removing overlaps...")

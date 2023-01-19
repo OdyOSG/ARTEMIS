@@ -20,7 +20,7 @@ local_align = 1
 #Verbose = 0 : Don't print
 #Verbose = 1 : Print seqs and scores
 #Verbose = 2 : Report seqs, scores, H and traceMat
-verbose = 2
+verbose = 1
 
 #Set mem
 # Mem = -1 : DEFAULT, reports as many alignments as floor(s2_len/s1_len) plus all alignments with the same score as the lowest scorer
