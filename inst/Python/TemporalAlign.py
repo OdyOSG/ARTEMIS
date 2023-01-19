@@ -369,7 +369,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 	s2_len = len(s2)
 
 	if s1_len > s2_len:
-		print("Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient record.")
+		print("Warning: Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient record.")
 
 	#Initialise matrices
 	H = init_Hmat(s1_len,s2_len,g,local_align)

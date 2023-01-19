@@ -35,19 +35,19 @@ mem = as.integer(10)
 removeOverlap = 1
 
 #QCAA
-s1 <- encode("0Q.2C.2A.1A")
+regimen <- encode("0Q.2C.2A.1A")
 #CA*QCAA*AQQ*QCAA*AQQ*QCAA*
-s2 <- encode("0C.0A.9Q.2C.2A.1A.0A.0Q.0Q.0Q.2C.2A.1A.0A.0Q.0Q.0Q.3C.2A.1A")
+drugRecord <- encode("0C.0A.9Q.2C.2A.1A.0A.0Q.0Q.0Q.2C.2A.1A.0A.0Q.0Q.0Q.3C.2A.1A")
 
-s <- oncoRegimens::defaultSmatrix(s1,s2)
-dat <- temporal_alignment(s1,s2,g,Tfac,as.data.frame(s),local_align, verbose, mem, removeOverlap)
+s <- oncoRegimens::defaultSmatrix(regimen,drugRecord)
+dat <- temporal_alignment(regimen,drugRecord,g,Tfac,as.data.frame(s),local_align, verbose, mem, removeOverlap)
 dat <- as.data.frame(dat)
 
-colnames(dat) <- c("S1","S2","Score","s1_Start","s1_End","s2_Start","s2_End","Aligned_Seq_len","totAlign")
+colnames(dat) <- c("Regimen","DrugRecord","Score","s1_Start","s1_End","s2_Start","s2_End","Aligned_Seq_len","totAlign")
 
-dat[1,]$S1 <- gsub("[[:punct:] ]+","",dat[1,]$S1)
-dat[1,]$S2 <- gsub("[[:punct:] ]+","",dat[1,]$S2)
-dat$S1 <- gsub("([A-Z]|__)","\\1\\.",dat$S1)
-dat$S2 <- gsub("([A-Z]|__)","\\1\\.",dat$S2)
+dat[1,]$Regimen <- gsub("[[:punct:] ]+","",dat[1,]$Regimen)
+dat[1,]$DrugRecord <- gsub("[[:punct:] ]+","",dat[1,]$DrugRecord)
+dat$Regimen <- gsub("([A-Z]|__)","\\1\\.",dat$Regimen)
+dat$DrugRecord <- gsub("([A-Z]|__)","\\1\\.",dat$DrugRecord)
 
 
