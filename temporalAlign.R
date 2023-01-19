@@ -1,7 +1,9 @@
 library(reticulate)
 library(oncoRegimens)
 
-if(!exists("temporal_alignment", mode="function")) source_python("./inst/Python/TemporalAlign.py")
+source_python("./inst/Python/TemporalAlign.py")
+
+#if(!exists("temporal_alignment", mode="function")) source_python("./inst/Python/TemporalAlign.py")
 
 #Gap penalty
 g <- 0.5
@@ -25,25 +27,27 @@ verbose = 2
 # Mem = 0 : ONLY the earliest encountered and best local alignment
 # Mem = 1 : The best local alignment and all other alignments with the same score
 # Mem = X : Report X alignments plus all alignments with the same score as the lowest score in X
-mem = as.integer(-1)
+mem = as.integer(10)
+
+#Set remove overlap
+# removeOverlap = 0 : Report all local alignments
+# removeOverlap = 1 : Remove overlapping local alignments
+removeOverlap = 1
 
 #QCAA
 s1 <- encode("0Q.2C.2A.1A")
 #CA*QCAA*AQQ*QCAA*AQQ*QCAA*
-s2 <- encode("0C.0A.9Q.2C.2A.1A.0A.0Q.0Q.0Q.2C.2A.1A.0A.0Q.0Q.0Q.3C.2A.1A")#
+s2 <- encode("0C.0A.9Q.2C.2A.1A.0A.0Q.0Q.0Q.2C.2A.1A.0A.0Q.0Q.0Q.3C.2A.1A")
 
 s <- oncoRegimens::defaultSmatrix(s1,s2)
-dat <- temporal_alignment(s1,s2,g,Tfac,as.data.frame(s),local_align, verbose, mem)
-
+dat <- temporal_alignment(s1,s2,g,Tfac,as.data.frame(s),local_align, verbose, mem, removeOverlap)
 dat <- as.data.frame(dat)
-dat[1,]$V1 <- gsub("[[:punct:] ]+","",dat[1,]$V1)
-dat[1,]$V2 <- gsub("[[:punct:] ]+","",dat[1,]$V2)
-dat$V1 <- gsub("([A-Z]|__)","\\1\\.",dat$V1)
-dat$V2 <- gsub("([A-Z]|__)","\\1\\.",dat$V2)
 
-colnames(dat) <- c("S1","S2","Score","Index","totAlign")
+colnames(dat) <- c("S1","S2","Score","s1_Start","s1_End","s2_Start","s2_End","Aligned_Seq_len","totAlign")
 
-
-
+dat[1,]$S1 <- gsub("[[:punct:] ]+","",dat[1,]$S1)
+dat[1,]$S2 <- gsub("[[:punct:] ]+","",dat[1,]$S2)
+dat$S1 <- gsub("([A-Z]|__)","\\1\\.",dat$S1)
+dat$S2 <- gsub("([A-Z]|__)","\\1\\.",dat$S2)
 
 

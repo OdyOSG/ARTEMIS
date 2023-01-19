@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import math as math
+import re
+
+pd.options.display.max_columns = None
 
 #Initialise the H matrix, or score matrix, that will be used for scoring according to sequence size
 def init_Hmat(s1_len,s2_len,g,local_align):
@@ -360,10 +363,13 @@ def removeOverlaps():
 	a = 0
 
 #Here we perform all initialisation and alignment steps and output the corresponding data
-def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
+def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 	#Initialise sequence lengths
 	s1_len = len(s1)
 	s2_len = len(s2)
+
+	if s1_len > s2_len:
+		print("Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient.")
 
 	#Initialise matrices
 	H = init_Hmat(s1_len,s2_len,g,local_align)
@@ -398,12 +404,18 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 		print(s1_aligned)
 		print(s2_aligned)
 
+		if removeOverlap == 1:
+			print("Warning: You have attempted to remove overlapping alignments from a single global alignment, please check your settings.")
+
 		return returnDat
 
 	if local_align == 1:
 
+		#Initialise sequence length regex pattern
+		pat = "[0-9][A-Z]|__"
+
 		#Initialise return vars
-		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"NA","NA","NA"]
+		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
 		returnDat = np.array(returnDat, dtype=object)
 
 		finalScore, finalIndex, mem_index, mem_score = TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem)
@@ -418,15 +430,34 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 			print(Hp)
 			print()
 			print("Final traceback matrix: ")
-			print(traceMat)
+			traceMatp = pd.DataFrame(traceMat)
+			traceMatp = traceMatp.set_axis(s1p, axis = 1, copy=False)
+			traceMatp = traceMatp.set_axis(s2p, axis = 0, copy=False)
+			print(traceMatp)
 			print()
 
 		if len(mem_score) > 1:
 			s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[0])
-			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,str(mem_index[0]),totAligned]), axis = 0)
+			s_a_len = len(re.findall(pat,s1_aligned))
+			s1_start = mem_index[0][1] - s_a_len
+			s1_end = mem_index[0][1]
+			s2_start = mem_index[0][0] - s_a_len
+			s2_end = mem_index[0][0]
+
+
+			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
+				s2_start,s2_end,s_a_len,totAligned]), axis = 0)
 		else: 
 			s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, finalIndex)
-			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,str(finalIndex),totAligned]), axis = 0)
+			s_f_len = len(re.findall(pat,s1_aligned))
+			s1_start = finalIndex[1] - s_f_len
+			s1_end = finalIndex[1]
+			s2_start = finalIndex[0] - s_f_len
+			s2_end = finalIndex[0]
+
+			
+			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
+				s2_start,s2_end,s_f_len,totAligned]), axis = 0)
 
 		if verbose == 1 or verbose == 2:
 			print("Best local alignment of S1, S2")
@@ -444,8 +475,15 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 			for i in range(1,len(mem_index)):
 				secondary = 1
 				s1_aligned_t, s2_aligned_t, totAligned_t = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[i])
-	
-				returnDat = np.append(returnDat,[s1_aligned_t,s2_aligned_t,mem_score[i],str(mem_index[i]),totAligned_t], axis = 0)	
+
+				s_a_t_len = len(re.findall(pat,s1_aligned_t))
+				s1_start = mem_index[i][1] - s_a_t_len
+				s1_end = mem_index[i][1]
+				s2_start = mem_index[i][0] - s_a_t_len
+				s2_end = mem_index[i][0]
+
+				returnDat = np.append(returnDat,[s1_aligned_t,s2_aligned_t,mem_score[i],s1_start,s1_end,
+					s2_start,s2_end,s_a_t_len,totAligned_t], axis = 0)	
 	
 				if verbose == 1 or verbose == 2:
 					print(mem_index[i])
@@ -456,13 +494,37 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1):
 					print()
 
 		if secondary == 1:
-			returnDat = returnDat.reshape(len(mem_index)+1,5)
+			returnDat = returnDat.reshape(len(mem_index)+1,9)
+			returnDat = pd.DataFrame(returnDat)
 		else:
-			returnDat = returnDat.reshape(2,5)
+			returnDat = returnDat.reshape(2,9)
+			returnDat = pd.DataFrame(returnDat)
 
+		if removeOverlap == 1:
+			print("Removing overlaps...")
 
-		
+			rows, cols = np.shape(returnDat)
+			#Get a list of starts and stops, ignoring row 1 (Containing the input)
+			interval_List = returnDat[[5,6]].values.tolist()[1:]
 
+			#Initialise two sets, one to keep track of rows to include and one to keep track of bases already covered by an interval
+			keep_rows = [0]
+			covered_bases = set([])
+			#Initialise a row tracker
+			i = 1
+
+			#For each interval, check if the union of sets between the interval and the covered bases exists, if it does, we ignore 
+			#that row, do not add it to our keep vector and do not add the bases it covers to the covered bases vector.
+			for start, end in interval_List:
+				interval = set(range(int(start),int(end)+1))
+
+				if len(interval & covered_bases) == 0:
+					keep_rows.append(i)
+					covered_bases.update(interval)
+
+				i += 1
+
+			returnDat = returnDat.loc[keep_rows]
 
 		return returnDat
 
