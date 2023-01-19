@@ -544,6 +544,8 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 
 			returnDat = returnDat.loc[keep_rows]
 
+		if verbose == 1 or verbose == 2:
+			print("Done")
 		return returnDat
 
 
