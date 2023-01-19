@@ -369,7 +369,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 	s2_len = len(s2)
 
 	if s1_len > s2_len:
-		print("Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient.")
+		print("Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient record.")
 
 	#Initialise matrices
 	H = init_Hmat(s1_len,s2_len,g,local_align)
@@ -380,6 +380,8 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 
 	#Perform global alignment
 	if local_align == 0:
+		if verbose == 1 or verbose == 2:
+			print("Performing global alignment...")
 
 		#Initialise return vars
 		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"NA","NA"]
@@ -410,6 +412,8 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 		return returnDat
 
 	if local_align == 1:
+		if verbose == 1 or verbose == 2:
+			print("Performing local alignment...")
 
 		#Initialise sequence length regex pattern
 		pat = "[0-9][A-Z]|__"
@@ -501,7 +505,8 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 			returnDat = pd.DataFrame(returnDat)
 
 		if removeOverlap == 1:
-			print("Removing overlaps...")
+			if verbose == 1 or verbose == 2:
+				print("Removing overlaps...")
 
 			rows, cols = np.shape(returnDat)
 			#Get a list of starts and stops, ignoring row 1 (Containing the input)
