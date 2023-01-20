@@ -55,9 +55,9 @@ plotRegimen <- function(regimen,regimenName,returnPlot=F){
   eb <- element_blank()
 
   p1 <- ggplot(regDF, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax,fill=V2)) +
-              geom_rect(linetype = 1, linewidth = 0.05, color = "black") +
+              ggchicklet::geom_rrect(radius = unit(0.33, 'npc')) +
               ylim(min(regDF$ymin)-0.1,max(regDF$ymax)+2) +
-              geom_text(aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = 5) +
+              geom_text(aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = 4) +
               theme_bw() + scale_fill_bright() +
               theme(panel.grid.major = eb, panel.grid.minor = eb,
                 panel.background = eb, panel.border = eb,
