@@ -5,7 +5,7 @@ import re
 
 pd.options.display.max_columns = None
 
-def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
+def temporal_alignment(s1,regName,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 	s1_len = len(s1)
 	s2_len = len(s2)
 	if s1_len > s2_len:
@@ -21,10 +21,10 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 		if verbose == 1 or verbose == 2:
 			print("Performing global alignment...")
 
-		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"NA","NA"]
+		returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"NA","NA"]
 		finalScore = TNW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s)
 		s1_aligned, s2_aligned, totAligned = align_TNW(traceMat, s1, s2, s1_len, s2_len)
-		returnDat.append([str(s1_aligned).strip('[]'),str(s2_aligned).strip('[]'),finalScore,totAligned])
+		returnDat.append(regName,[str(s1_aligned).strip('[]'),str(s2_aligned).strip('[]'),finalScore,totAligned])
 		
 		if verbose == 2:
 			print("Final score matrix: ")
@@ -48,7 +48,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 			print("Performing local alignment...")
 
 		pat = "[0-9][A-Z]|__"
-		returnDat = [str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
+		returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
 		returnDat = np.array(returnDat, dtype=object)
 		finalScore, finalIndex, mem_index, mem_score = TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem)
 
@@ -74,7 +74,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 			s2_start = mem_index[0][0] - s_a_len
 			s2_end = mem_index[0][0]
 
-			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
+			returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
 				s2_start,s2_end,s_a_len,totAligned]), axis = 0)
 		else: 
 			s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, finalIndex)
@@ -84,7 +84,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 			s2_start = finalIndex[0] - s_f_len
 			s2_end = finalIndex[0]
 
-			returnDat = np.append(returnDat,([s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
+			returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start,s1_end,
 				s2_start,s2_end,s_f_len,totAligned]), axis = 0)
 
 		if verbose == 1 or verbose == 2:
@@ -107,7 +107,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 				s1_end = mem_index[i][1]
 				s2_start = mem_index[i][0] - s_a_t_len
 				s2_end = mem_index[i][0]
-				returnDat = np.append(returnDat,[s1_aligned_t,s2_aligned_t,mem_score[i],s1_start,s1_end,
+				returnDat = np.append(returnDat,[regName,s1_aligned_t,s2_aligned_t,mem_score[i],s1_start,s1_end,
 					s2_start,s2_end,s_a_t_len,totAligned_t], axis = 0)	
 	
 				if verbose == 1 or verbose == 2:
@@ -119,10 +119,10 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 					print()
 
 		if secondary == 1:
-			returnDat = returnDat.reshape(len(mem_index)+1,9)
+			returnDat = returnDat.reshape(len(mem_index)+1,10)
 			returnDat = pd.DataFrame(returnDat)
 		else:
-			returnDat = returnDat.reshape(2,9)
+			returnDat = returnDat.reshape(2,10)
 			returnDat = pd.DataFrame(returnDat)
 
 		if removeOverlap == 1:
@@ -130,7 +130,7 @@ def temporal_alignment(s1,s2,g,T,s,local_align,verbose,mem=-1,removeOverlap=0):
 				print("Removing overlaps...")
 
 			rows, cols = np.shape(returnDat)
-			interval_List = returnDat[[5,6]].values.tolist()[1:]
+			interval_List = returnDat[[6,7]].values.tolist()[1:]
 
 			keep_rows = [0]
 			covered_bases = set([])

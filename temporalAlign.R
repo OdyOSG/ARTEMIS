@@ -19,9 +19,9 @@ regimen <- encode(s1)
 #CA*QCAA*AQQ*QCAA*AQQ*QCAA*
 drugRecord <- encode(s2)
 
-regimenName <- "ChemoRegimenA"
+regName <- "ChemoRegimenA"
 plotRegimen(s1,regimenName)
 
-output <- align(regimen,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
+output <- align(regimen,regName,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
 
 output

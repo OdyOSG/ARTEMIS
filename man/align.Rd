@@ -5,12 +5,23 @@
 \title{Aligns two sequences together, returning either a global alignment or a set of local alignments, either overlapping
 or otherwise}
 \usage{
-align(s1, s2, g, Tfac, s = NA, local_align, verbose, mem, removeOverlap)
+align(
+  regimen,
+  regName,
+  drugRec,
+  g,
+  Tfac,
+  s = NA,
+  local_align,
+  verbose,
+  mem,
+  removeOverlap
+)
 }
 \arguments{
-\item{s1}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen}
+\item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen}
 
-\item{s2}{A longer sequence to be aligned, usually a patient's converted drug occurrence table}
+\item{drugRec}{A longer sequence to be aligned, usually a patient's converted drug occurrence table}
 
 \item{g}{A gap penalty supplied to the temporal needleman wunsch/smith waterman algorithms}
 
@@ -26,7 +37,7 @@ Verbose = 1 : Print seqs and scores
 Verbose = 2 : Report seqs, scores, H and traceMat}
 
 \item{mem}{A number defining how many sequences to hold in memory during local alignment.
-Mem = -1 : Script will define memory length according to len(s1)/len(s2)
+Mem = -1 : Script will define memory length according to len(regimen)/len(drugRec)
 Mem = 0 : Script will return exactly 1 alignment
 Mem = 1 : Script will return 1 alignment and all alignments with the same score
 Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment}
@@ -41,5 +52,5 @@ Aligns two sequences together, returning either a global alignment or a set of l
 or otherwise
 }
 \examples{
-dat <- decode(s1,s2)
+output <- align(regimen,drugRec)
 }
