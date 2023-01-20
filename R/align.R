@@ -24,11 +24,7 @@
 #' @export
 align <- function(s1,s2,g,Tfac,s=NA,local_align,verbose,mem,removeOverlap) {
 
-  source_python("./inst/Python/TemporalAlign.py")
-
-  #if(!exists("temporal_alignment", mode="function")) source_python("./inst/Python/TemporalAlign.py")
-
-  if (is.na(s)) {
+  if(is.na(s)){
     s <- defaultSmatrix(s1,s2)
   }
 
