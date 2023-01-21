@@ -4,7 +4,7 @@
 \alias{plotRegimen}
 \title{Plots, or returns a plot, displaying a single regimen sequence}
 \usage{
-plotRegimen(regimen, regimenName, returnPlot = F)
+plotRegimen(regimen, regimenName, returnPlot = F, individual_Tracks = 0)
 }
 \arguments{
 \item{regimen}{Either an encoded or unencoded regimen sequence}
@@ -12,6 +12,8 @@ plotRegimen(regimen, regimenName, returnPlot = F)
 \item{regimenName}{The name of the regimen, as specified by the user}
 
 \item{returnPlot}{A boolean indicating whether or not to return a ggplot object}
+
+\item{individual_Tracks}{A boolean indicating whether drugs will each have a single track}
 }
 \value{
 regPlot - A ggplot object

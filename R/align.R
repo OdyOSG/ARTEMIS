@@ -24,6 +24,13 @@
 #' @export
 align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,removeOverlap) {
 
+  if(!exists("temporal_alignment", mode="function")) {
+    reticulate::source_python(system.file("python/init.py",package="oncoRegimens"),envir=globalenv())
+    reticulate::source_python(system.file("python/score.py",package="oncoRegimens"),envir=globalenv())
+    reticulate::source_python(system.file("python/align.py",package="oncoRegimens"),envir=globalenv())
+    reticulate::source_python(system.file("python/main.py",package="oncoRegimens"),envir=globalenv())
+  }
+
   if(is.na(s)){
     s <- defaultSmatrix(regimen,drugRec)
   }

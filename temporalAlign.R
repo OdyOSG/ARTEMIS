@@ -2,12 +2,13 @@ library(reticulate)
 library(oncoRegimens)
 library(ggplot2)
 library(khroma)
+library(dplyr)
 library(ggchicklet)
 
 g <- 0.5
 Tfac <- 0.2
 local_align = 1
-verbose = 1
+verbose = 0
 mem = as.integer(10)
 removeOverlap = 1
 
@@ -20,8 +21,9 @@ regimen <- encode(s1)
 drugRecord <- encode(s2)
 
 regName <- "ChemoRegimenA"
-plotRegimen(s1,regimenName)
+plotRegimen(s1,regName,F,0)
+plotRegimen(s1,regName,F,1)
 
 output <- align(regimen,regName,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
 
-output
+
