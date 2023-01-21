@@ -9,7 +9,7 @@
 #' plotRegimen(regimen,regimenName)
 #' regPlot <- plotRegimen
 #' @export
-plotRegimen <- function(regimen,regimenName,returnPlot=F,individual_Tracks=0){
+plotRegimen <- function(regimen,regimenName,returnPlot=F,individual_Tracks=1){
 
   #Ensure that input sequence looks like a regimen
   if(typeof(regimen) == "character"){
