@@ -21,8 +21,8 @@ regimen <- encode(s1)
 drugRecord <- encode(s2)
 
 regName <- "ChemoRegimenA"
-plotRegimen(s1,regName,F,0)
 plotRegimen(s1,regName,F,1)
+plotRecord(s2,F,1)
 
 output <- align(regimen,regName,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
 

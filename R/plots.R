@@ -6,8 +6,8 @@
 #' @param individual_Tracks A boolean indicating whether drugs will each have a single track
 #' @return regPlot - A ggplot object
 #' @examples
-#' plotRegimen(regimen,regimenName)
-#' regPlot <- plotRegimen
+#' plotRegimen(regimen,regimenName,F,1)
+#' regPlot <- plotRegimen(regimen,regimenName,T,1)
 #' @export
 plotRegimen <- function(regimen,regimenName,returnPlot=F,individual_Tracks=1){
 
@@ -90,3 +90,89 @@ plotRegimen <- function(regimen,regimenName,returnPlot=F,individual_Tracks=1){
     p1
   }
 }
+
+#' Plots, or returns a plot, displaying a single drug record
+#'
+#' @param drugRec Either an encoded or unencoded regimen sequence
+#' @param returnPlot A boolean indicating whether or not to return a ggplot object
+#' @param individual_Tracks A boolean indicating whether drugs will each have a single track
+#' @return regPlot - A ggplot object
+#' @examples
+#' plotRecord(drugRec,F,1)
+#' drugPlot <- plotRecord(drugRec,F,1)
+#' @export
+plotRecord <- function(drugRec,returnPlot=F,individual_Tracks=1){
+
+  #Ensure that input sequence looks like a drugRec
+  if(typeof(drugRec) == "character"){
+    regSeq <- encode(drugRec)
+  } else if(typeof(drugRec) == "list") {
+    regSeq <- drugRec
+  } else{
+    print("Inappropriate format")
+  }
+
+  #Initiate dataframe, ensuring that the first time delay is ignored
+  drugDF <- as.data.frame(t(as.data.frame(regSeq, col.names = c(seq(1:length(regSeq))))))
+  drugDF[1,]$V1 <- 0
+
+  #Assign each individual drug an occurrence period of roughly one day
+  drugDF$t_start <- cumsum(drugDF$V1)
+  drugDF$t_end <- drugDF$t_start+0.95
+
+  drugDF$full <- "No"
+
+  #Assign each block a y-height
+  drugDF$ymin <- -0.5
+  drugDF$ymax <- 0.5
+
+  #Prevent overlapping drugs, either by splitting drugs into tracks or by
+  #separating only at overlaps
+  if(individual_Tracks == 1) {
+    j <- 0
+    for(i in unique(drugDF$V2)){
+      drugDF[drugDF$V2 == i,]$ymin <- drugDF[drugDF$V2 == i,]$ymin + (j*1.25)
+      drugDF[drugDF$V2 == i,]$ymax <- drugDF[drugDF$V2 == i,]$ymax + (j*1.25)
+      j = j + 1
+    }
+  } else if(individual_Tracks == 0) {
+
+    drugDF <- drugDF %>% arrange(t_start,desc(V2))
+
+    i <- length(unique(drugDF$V2))
+    while (i > 0) {
+      drugDF[duplicated(paste(drugDF$t_start,drugDF$ymin)),]$ymin <-
+        drugDF[duplicated(paste(drugDF$t_start,drugDF$ymin)),]$ymin + 1.25
+      drugDF[duplicated(paste(drugDF$t_start,drugDF$ymax)),]$ymax <-
+        drugDF[duplicated(paste(drugDF$t_start,drugDF$ymax)),]$ymax + 1.25
+      i = i - 1
+    }
+  }
+
+  eb <- element_blank()
+
+  drugDF$t_start <- as.numeric(drugDF$t_start)
+  drugDF$t_end <- as.numeric(drugDF$t_end)
+  drugDF$ymin <- as.numeric(drugDF$ymin)
+  drugDF$ymax <- as.numeric(drugDF$ymax)
+
+  p1 <- ggplot(drugDF, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax,fill=V2)) +
+    ggchicklet::geom_rrect(radius = unit(0.33, 'npc')) +
+    ylim(min(drugDF$ymin)-0.1,max(drugDF$ymax)+0.1) +
+    geom_text(aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = 4) +
+    theme_bw() + scale_fill_bright() +
+    theme(panel.grid.major = eb, panel.grid.minor = eb,
+          panel.background = eb, panel.border = eb,
+          axis.ticks.y = eb, axis.text.y = eb, axis.title.y = eb,
+          legend.position = "None") +
+    theme(axis.line.x = element_line(color = 'black')) + xlab("Time (Days)")
+
+  if(returnPlot == TRUE){
+    return(p1)
+  } else {
+    p1
+  }
+}
+
+
+

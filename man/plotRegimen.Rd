@@ -4,7 +4,7 @@
 \alias{plotRegimen}
 \title{Plots, or returns a plot, displaying a single regimen sequence}
 \usage{
-plotRegimen(regimen, regimenName, returnPlot = F, individual_Tracks = 0)
+plotRegimen(regimen, regimenName, returnPlot = F, individual_Tracks = 1)
 }
 \arguments{
 \item{regimen}{Either an encoded or unencoded regimen sequence}
@@ -22,6 +22,6 @@ regPlot - A ggplot object
 Plots, or returns a plot, displaying a single regimen sequence
 }
 \examples{
-plotRegimen(regimen,regimenName)
-regPlot <- plotRegimen
+plotRegimen(regimen,regimenName,F,1)
+regPlot <- plotRegimen(regimen,regimenName,T,1)
 }
