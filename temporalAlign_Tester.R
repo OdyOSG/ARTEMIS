@@ -70,5 +70,5 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output <- align(regimens,regNames,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
 
-p_rec <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 4)
+p_rec <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5)
 p_rec
