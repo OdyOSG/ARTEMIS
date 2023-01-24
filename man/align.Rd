@@ -2,7 +2,8 @@
 % Please edit documentation in R/align.R
 \name{align}
 \alias{align}
-\title{Aligns two sequences together, returning either a global alignment or a set of local alignments, either overlapping
+\title{Aligns together either a single drug regimen/record, or a list of regimens against a drug record,
+returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise}
 \usage{
 align(
@@ -19,7 +20,10 @@ align(
 )
 }
 \arguments{
-\item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen}
+\item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen,
+may contain multiple regimens if supplied as a list}
+
+\item{regName}{The name of the supplied regimen/s, may be a character or a list}
 
 \item{drugRec}{A longer sequence to be aligned, usually a patient's converted drug occurrence table}
 
@@ -37,7 +41,7 @@ Verbose = 1 : Print seqs and scores
 Verbose = 2 : Report seqs, scores, H and traceMat}
 
 \item{mem}{A number defining how many sequences to hold in memory during local alignment.
-Mem = -1 : Script will define memory length according to len(regimen)/len(drugRec)
+Mem = -1 : Script will define memory length according to floor(len(regimen)/len(drugRec))
 Mem = 0 : Script will return exactly 1 alignment
 Mem = 1 : Script will return 1 alignment and all alignments with the same score
 Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment}
@@ -48,7 +52,8 @@ Mem = X : Script will return X alignments and all alignments with equivalent sco
 dat A dataframe containing information on the resulting alignments
 }
 \description{
-Aligns two sequences together, returning either a global alignment or a set of local alignments, either overlapping
+Aligns together either a single drug regimen/record, or a list of regimens against a drug record,
+returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise
 }
 \examples{

@@ -38,6 +38,7 @@ def init_TCmat(s1,s1_len,s2,s2_len,local_align):
 	for col in range(1,s1_len+1):
 		TC[0][col] = TC[0][col-1] + float(s1[col-1][0])
 
+
 	return TC
 
 def init_traceMat(s1_len,s2_len,local_align):

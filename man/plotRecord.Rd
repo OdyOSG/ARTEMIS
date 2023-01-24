@@ -4,7 +4,7 @@
 \alias{plotRecord}
 \title{Plots, or returns a plot, displaying a single drug record}
 \usage{
-plotRecord(drugRec, returnPlot = F, individual_Tracks = 1)
+plotRecord(drugRec, returnPlot = F, individual_Tracks = T)
 }
 \arguments{
 \item{drugRec}{Either an encoded or unencoded regimen sequence}

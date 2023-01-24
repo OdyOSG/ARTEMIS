@@ -17,6 +17,11 @@ def TNW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s):
 
 			if i == 1 and j == 1:
 				tp = 0
+			elif j == 1:
+				print("J reset")
+				tp = 0
+			elif i == 1:
+				print("I reset")
 			else:
 				tpx = float(s2[i-1][0]) + float(TR[i-1][j-1])
 				tpy = float(s1[j-1][0]) + float(TC[i-1][j-1])
@@ -62,6 +67,7 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 
 	for i in range(1,s2_len+1):
 		for j in range(1,s1_len+1):
+
 			if i == 1 and j == 1:
 				tp = 0
 			else:
@@ -74,6 +80,9 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 					tpmax = 1e-24
 				
 				tp = T*(abs(tpx-tpy)/tpmax)
+
+				if j == 1:
+					tp = 1e-24
 
 			score_match = score(s,s1[j-1][1],s2[i-1][1])
 			Hup = H[i-1][j-1] + score_match - tp
@@ -130,4 +139,5 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem = 0):
 
 	finalScore = max_score
 	finalIndex = max_index
+
 	return finalScore, finalIndex, mem_index, mem_score

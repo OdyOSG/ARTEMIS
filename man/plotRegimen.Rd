@@ -4,7 +4,7 @@
 \alias{plotRegimen}
 \title{Plots, or returns a plot, displaying a single regimen sequence}
 \usage{
-plotRegimen(regimen, regimenName, returnPlot = F, individual_Tracks = 1)
+plotRegimen(regimen, regimenName, returnPlot = F, individual_Tracks = T)
 }
 \arguments{
 \item{regimen}{Either an encoded or unencoded regimen sequence}

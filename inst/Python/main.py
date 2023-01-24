@@ -137,7 +137,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,local_align,verbose,mem=-1,removeOver
 			i = 1
 
 			for start, end in interval_List:
-				interval = set(range(int(start),int(end)+1))
+				interval = set(range(int(start),int(end)))
 
 				if len(interval & covered_bases) == 0:
 					keep_rows.append(i)
