@@ -11,7 +11,7 @@
 #' plotOutput(output,F,1)
 #' outputPlot <- plotOutput(output,F,1)
 #' @export
-plotOutput <- function(output, returnPlot=F, individual_Tracks=F,normScore=F,allowOverlaps=F){
+plotOutput <- function(output, returnPlot=F, individual_Tracks=F,normScore=F,allowOverlaps=F, fontSize = 3){
 
   eb <- element_blank()
 
@@ -149,11 +149,11 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=F,normScore=F,all
     ggchicklet::geom_rrect(radius = unit(0.33, 'npc')) +
     ylim(min(drugDF$ymin)-0.1,max(drugDF$ymax)+0.76) +
     geom_shadowtext(data = drugDF[drugDF$regimen=="No",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = 3) +
+                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = fontSize) +
     geom_shadowtext(data = drugDF[drugDF$regimen=="Yes",],
                     aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste(V2,"\nScore: ",round(as.numeric(V1),2),
                                                                               "\n",round(t_end-t_start,0)," days")),
-                    size = 3) +
+                    size = fontSize) +
     geom_hline(yintercept = regLine) +
     geom_hline(yintercept = max(drugDF$ymax) + 0.5) +
     scale_fill_viridis_d() +
