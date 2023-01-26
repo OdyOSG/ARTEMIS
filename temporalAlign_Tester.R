@@ -71,13 +71,13 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output <- align(regimens,regNames,drugRecord,g,Tfac,NA,local_align,verbose,mem,removeOverlap)
 
-p_rec0 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 2, regimenCombine = 0)
+p_rec0 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 0)
 p_rec0 <- p_rec0 + ggtitle("Regimen Combine = 0")
 
-p_rec2 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 2, regimenCombine = 2)
+p_rec2 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 2)
 p_rec2 <- p_rec2 + ggtitle("Regimen Combine = 2")
 
-p_rec4 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 2, regimenCombine = 4)
+p_rec4 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 4)
 p_rec4 <- p_rec4 + ggtitle("Regimen Combine = 4")
 
 grid.arrange(p_rec0,p_rec2,p_rec4)
