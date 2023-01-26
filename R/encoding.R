@@ -8,14 +8,13 @@
 encode <- function(str_seq){
   s_temp <- strsplit(str_seq, "\\.")
   s_temp <- as.vector(unlist(s_temp))
-  s_encoded <- list("",length(s_temp))
+  s_encoded <- list("")
   for(i in c(1:length(s_temp))){
-    t_vec <- c(strsplit(s_temp[i],"")[[1]][1],strsplit(s_temp[i],"")[[1]][2])
+    t_vec <- c(gsub("[a-zA-Z]+","",s_temp[i]),gsub("[0-9]+","",s_temp[i]))
     s_encoded[[i]] <- t_vec
   }
   return(s_encoded)
 }
-
 
 #' Decodes a tuple of tuples into a TxDrugA.TyDrugB text format
 #'

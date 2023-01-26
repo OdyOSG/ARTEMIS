@@ -7,9 +7,11 @@
 plotOutput(
   output,
   returnPlot = F,
-  individual_Tracks = F,
+  individual_Tracks = T,
   normScore = F,
-  allowOverlaps = F
+  allowOverlaps = F,
+  fontSize = 3,
+  regimenCombine = 1
 )
 }
 \arguments{
@@ -23,6 +25,11 @@ plotOutput(
 number of aligned drugs}
 
 \item{allowOverlaps}{A boolean indicating whether to leave or remove overlapping regimens}
+
+\item{fontSize}{The desired font size of the text}
+
+\item{regimenCombine}{Allowed number of days between two instances of the same regimen before
+those two instances are combined}
 }
 \value{
 regPlot - A ggplot object

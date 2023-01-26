@@ -6,14 +6,21 @@
 #' @param normScore A boolean indicating whether to use actual scores or scores normalised to
 #' number of aligned drugs
 #' @param allowOverlaps A boolean indicating whether to leave or remove overlapping regimens
+#' @param fontSize The desired font size of the text
+#' @param regimenCombine Allowed number of days between two instances of the same regimen before
+#' those two instances are combined
 #' @return regPlot - A ggplot object
 #' @examples
 #' plotOutput(output,F,1)
 #' outputPlot <- plotOutput(output,F,1)
 #' @export
-plotOutput <- function(output, returnPlot=F, individual_Tracks=F,normScore=F,allowOverlaps=F, fontSize = 3){
+plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,allowOverlaps=F, fontSize = 3, regimenCombine = 1){
 
   eb <- element_blank()
+
+  if(regimenCombine < 0){
+    print("Warning: Your regimen combine value is negative. This may produce peculiar results.")
+  }
 
   drugRec <- encode(output[1,3])
 
@@ -93,23 +100,21 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=F,normScore=F,all
 
   outputDF$Score <- as.numeric(outputDF$Score)
 
-  outputDF_temp <- outputDF %>% group_by(regName) %>%
-    mutate(start_label = paste0(drugRec_Start),
-           end_label = paste0(drugRec_End),
-           start_to_end = match(t_end, t_start+0.95),
-           end_to_start = match(t_start+0.95, t_end))
+  outputDF <- outputDF %>% arrange(regName,t_start)
 
-  outputDF_temp_noF <- outputDF_temp %>% filter(is.na(start_to_end) & is.na(end_to_start))
+  outputDF <- outputDF %>% mutate(prev_end = ifelse(regName == lag(regName), lag(t_end), -999),
+                                  prev_reg = lag(regName))
 
-  suppressWarnings({
+  outputDF_temp <- outputDF[is.na(outputDF$prev_reg) | outputDF$t_start <= outputDF$prev_end+regimenCombine,]
+  outputDF_temp_noF <- outputDF[!(is.na(outputDF$prev_reg) | outputDF$t_start <= outputDF$prev_end+regimenCombine),]
 
-    outputDF_temp <- outputDF_temp %>% filter(!is.na(start_to_end) | !is.na(end_to_start)) %>%
-      summarise(Score = mean(Score), drugRec_Start = min(drugRec_Start), drugRec_End = max(drugRec_End),
-                adjustedS = mean(adjustedS),t_start = min(t_start), t_end = max(t_end))
+  outputDF_temp <- outputDF_temp %>% group_by(regName) %>%
+    summarise(Score = mean(Score), drugRec_Start = min(drugRec_Start),
+              drugRec_End = max(drugRec_End), adjustedS = mean(adjustedS),
+              t_start = min(t_start), t_end = max(t_end))
 
-  })
-
-  outputDF <- rbind(outputDF_temp_noF,outputDF_temp)[,-c(8:11)]
+  outputDF <- rbind(outputDF_temp_noF[,c(1:7)],outputDF_temp)
+  outputDF <- outputDF %>% arrange(regName,t_start)
 
   drugDF$t_start <- as.numeric(drugDF$t_start)
   drugDF$t_end <- as.numeric(drugDF$t_end)
