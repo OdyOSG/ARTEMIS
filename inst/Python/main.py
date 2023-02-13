@@ -47,7 +47,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,local_align,verbose,mem=-1,removeOver
 		if verbose == 1 or verbose == 2:
 			print("Performing local alignment...")
 
-		pat = "[0-9][A-Z]|__"
+		pat = "\.|__"
 		returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
 		returnDat = np.array(returnDat, dtype=object)
 		finalScore, finalIndex, mem_index, mem_score = TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem)

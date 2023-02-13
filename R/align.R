@@ -53,10 +53,10 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,re
 
       colnames(temp_dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
-      temp_dat[1,]$Regimen <- gsub("[[:punct:] ]+","",temp_dat[1,]$Regimen)
-      temp_dat[1,]$DrugRecord <- gsub("[[:punct:] ]+","",temp_dat[1,]$DrugRecord)
-      temp_dat$Regimen <- gsub("([A-Z]|__)","\\1\\.",temp_dat$Regimen)
-      temp_dat$DrugRecord <- gsub("([A-Z]|__)","\\1\\.",temp_dat$DrugRecord)
+      temp_dat[1,]$Regimen <- decode(regimen[[i]])
+      temp_dat[1,]$DrugRecord <- decode(drugRec)
+      temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
+      temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
 
       dat <- rbind(dat,temp_dat)
 
@@ -76,10 +76,10 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,re
 
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
-    dat[1,]$Regimen <- gsub("[[:punct:] ]+","",dat[1,]$Regimen)
-    dat[1,]$DrugRecord <- gsub("[[:punct:] ]+","",dat[1,]$DrugRecord)
-    dat$Regimen <- gsub("([A-Z]|__)","\\1\\.",dat$Regimen)
-    dat$DrugRecord <- gsub("([A-Z]|__)","\\1\\.",dat$DrugRecord)
+    dat[1,]$Regimen <- decode(regimen)
+    dat[1,]$DrugRecord <- decode(drugRec)
+    dat$Regimen <- gsub("^;","",dat$Regimen)
+    dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
 
     dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
     return(dat)

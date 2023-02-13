@@ -6,12 +6,13 @@
 #' s_decoded <- decode(str_seq)
 #' @export
 encode <- function(str_seq){
-  s_temp <- strsplit(str_seq, "\\.")
+  s_temp <- strsplit(str_seq, ";")
   s_temp <- as.vector(unlist(s_temp))
   s_encoded <- list("")
+
   for(i in c(1:length(s_temp))){
-    t_vec <- c(gsub("[a-zA-Z]+","",s_temp[i]),gsub("[0-9]+","",s_temp[i]))
-    s_encoded[[i]] <- t_vec
+    t_vec <- strsplit(s_temp[[i]], "\\.")
+    s_encoded[i] <- t_vec
   }
   return(s_encoded)
 }
@@ -24,5 +25,5 @@ encode <- function(str_seq){
 #' s_encoded <- encode(s1)
 #' @export
 decode <- function(s1){
-  return(paste(gsub("([A-Z])","\\1.",gsub("[\"c\\(\"|, |\\)]","",as.character(s1))),collapse = ""))
+  return(paste(gsub(", ",".",gsub("[\"c\\(\"|\\)]","",as.character(s1))),collapse=";"))
 }
