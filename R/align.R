@@ -9,7 +9,6 @@
 #' @param g A gap penalty supplied to the temporal needleman wunsch/smith waterman algorithms
 #' @param Tfac The time penalty factor. All time penalties are calculated as a percentage of Tfac
 #' @param s A substituion matrix, either user-defined or derived from defaultSmatrix. Will be auto-generated if left blank.
-#' @param local_align A variable defining whether or not alignment should be global (0) or local (1)
 #' @param verbose A variable indicating how verbose the python script should be in reporting results
 #'            Verbose = 0 : Print nothing
 #'            Verbose = 1 : Print seqs and scores
@@ -25,7 +24,7 @@
 #' @examples
 #' output <- align(regimen,drugRec)
 #' @export
-align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,removeOverlap) {
+align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap) {
 
   if(!exists("temporal_alignment", mode="function")) {
     reticulate::source_python(system.file("python/init.py",package="oncoRegimens"),envir=globalenv())
@@ -48,7 +47,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,re
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
     for(i in c(1:length(regimen))) {
-      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s),local_align, verbose, mem, removeOverlap)
+      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap)
       temp_dat <- as.data.frame(temp_dat)
 
       colnames(temp_dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
@@ -71,7 +70,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,local_align,verbose,mem,re
       s <- defaultSmatrix(regimen,drugRec)
     }
 
-    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s),local_align, verbose, mem, removeOverlap)
+    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap)
     dat <- as.data.frame(dat)
 
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
