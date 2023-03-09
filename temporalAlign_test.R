@@ -33,7 +33,7 @@ plotOutput(output_test0, allowOverlaps = F, fontSize = 2, regimenCombine = 7)
 g <- 0.4
 Tfac <- 0.25
 verbose = 0
-mem = as.integer(10)
+mem = -1
 removeOverlap = 1
 
 regimen <- encode("0.Q;1.C;1.A")
@@ -55,8 +55,8 @@ plotOutput(output_test1, allowOverlaps = F, fontSize = 2, regimenCombine = 1)
 
 g <- 0.4
 Tfac <- 0.25
-verbose = 0
-mem = as.integer(10)
+verbose = 2
+mem = -1
 removeOverlap = 1
 regimenCombine = 1
 

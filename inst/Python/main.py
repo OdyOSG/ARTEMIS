@@ -28,7 +28,10 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	returnDat = np.array(returnDat, dtype=object)
 
 	#Impute score matrix, retrieve relevant vars
-	finalScore, finalIndex, mem_index, mem_score = TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,mem)
+	TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s)
+
+	#Find best scoring cell
+	finalScore, finalIndex, mem_index, mem_score = find_best_score(H, s1_len, s2_len, mem, verbose)
 
 	#Printing various details of alignment
 	if verbose == 2:
@@ -116,8 +119,6 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		rows, cols = np.shape(returnDat)
 		interval_List = returnDat[[6,7]].values.tolist()[1:]
 
-		print(interval_List)
-
 		keep_rows = [0]
 		covered_bases = set([])
 		
@@ -133,6 +134,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		#			print(overlap)
 
 		k = 1
+		runTot = 0
 
 		#Super intensive way to check for overlaps, probably O(N^10000000)
 		#TODO: Improve performance
@@ -140,16 +142,17 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 			interval = set(range(int(start),int(end)))
 
 			if len(interval & covered_bases) == 0:
+				if verbose == 2:
+					runTot += 1
 				keep_rows.append(k)
 				covered_bases.update(interval)
 
 			k += 1
 
-			print(keep_rows)
-
 		returnDat = returnDat.loc[keep_rows]
 
 	if verbose == 1 or verbose == 2:
+		print("Removed %s overlaps" % runTot)
 		print("Done")
 		
 	return returnDat
