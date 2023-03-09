@@ -1,10 +1,6 @@
 #' Plots, or returns a plot, displaying a full alignment output
 #'
 #' @param output An output dataframe created by align()
-#' @param returnPlot A boolean indicating whether or not to return a ggplot object
-#' @param individual_Tracks A boolean indicating whether drugs will each have a single track
-#' @param normScore A boolean indicating whether to use actual scores or scores normalised to
-#' number of aligned drugs
 #' @param allowOverlaps A boolean indicating whether to leave or remove overlapping regimens
 #' @param fontSize The desired font size of the text
 #' @param regimenCombine Allowed number of days between two instances of the same regimen before
@@ -14,7 +10,10 @@
 #' plotOutput(output,F,1)
 #' outputPlot <- plotOutput(output,F,1)
 #' @export
-plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,allowOverlaps=F, fontSize = 3, regimenCombine = 1){
+plotOutput <- function(output,
+                       allowOverlaps=F,
+                       fontSize = 2,
+                       regimenCombine = 1){
 
   eb <- element_blank()
 
@@ -29,78 +28,77 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,all
 
   #Assign each individual drug an occurrence period of roughly one day
   drugDF$t_start <- cumsum(drugDF$V1)
-  drugDF$t_end <- drugDF$t_start+0.95
-
   drugDF$regimen <- "No"
+  drugDF$index <- c(1:length(drugDF$V1))
 
   #Assign each block a y-height
   drugDF$ymin <- -0.5
   drugDF$ymax <- 0.5
+  j <- 0
 
-  if(individual_Tracks == T) {
-    j <- 0
-    for(i in unique(drugDF$V2)){
-      drugDF[drugDF$V2 == i,]$ymin <- drugDF[drugDF$V2 == i,]$ymin + (j*1.25)
-      drugDF[drugDF$V2 == i,]$ymax <- drugDF[drugDF$V2 == i,]$ymax + (j*1.25)
-      j = j + 1
-    }
-  } else if(individual_Tracks == F) {
-
-    drugDF <- drugDF %>% arrange(t_start,desc(V2))
-
-    i <- length(unique(drugDF$V2))
-    while (i > 0) {
-      drugDF[duplicated(paste(drugDF$t_start,drugDF$ymin)),]$ymin <-
-        drugDF[duplicated(paste(drugDF$t_start,drugDF$ymin)),]$ymin + 1.25
-      drugDF[duplicated(paste(drugDF$t_start,drugDF$ymax)),]$ymax <-
-        drugDF[duplicated(paste(drugDF$t_start,drugDF$ymax)),]$ymax + 1.25
-      i = i - 1
-    }
+  for(i in unique(drugDF$V2)){
+    drugDF[drugDF$V2 == i,]$ymin <- drugDF[drugDF$V2 == i,]$ymin + (j*1.25)
+    drugDF[drugDF$V2 == i,]$ymax <- drugDF[drugDF$V2 == i,]$ymax + (j*1.25)
+    j = j + 1
   }
 
-  outputDF <- output[output$Score != "",c(1,4,7,8,11)]
+  colnames(drugDF) <- c("t_gap","component","t_start","regimen","index","ymin","ymax")
+
+  outputDF <- output %>%
+    filter(Score != "") %>%
+    select(regName,Score,drugRec_Start,drugRec_End,adjustedS,totAlign)
+
   outputDF$drugRec_Start <- as.numeric(outputDF$drugRec_Start)
   outputDF$drugRec_End <- as.numeric(outputDF$drugRec_End)
-  outputDF$t_start <- -999
-  outputDF$t_end <- -990
+  outputDF$totAlign <- as.numeric(outputDF$totAlign)
+
+  outputDF <- outputDF %>% arrange(drugRec_Start)
 
   if(min(outputDF$drugRec_Start) < 0){
-    outputDF[outputDF$drugRec_Start < 0,]$drugRec_End <- outputDF[outputDF$drugRec_Start < 0,]$drugRec_End - outputDF[outputDF$drugRec_Start < 0,]$drugRec_Start
-    outputDF[outputDF$drugRec_Start < 0,]$drugRec_Start <- 0
+    outputDF[outputDF$drugRec_Start < 0,]$drugRec_Start <- 1
   }
 
-  for(i in c(1:length(outputDF$drugRec_Start))) {
-
-    outputDF[i,]$t_start <- drugDF[outputDF[i,]$drugRec_Start+1,]$t_start
-    outputDF[i,]$t_end <- drugDF[outputDF[i,]$drugRec_End,]$t_end
-
-  }
+  outputDF$t_start <- drugDF[outputDF$drugRec_Start,]$t_start
+  outputDF$t_end <- drugDF[outputDF$drugRec_End,]$t_start
 
   if(allowOverlaps == FALSE){
 
-    outputDF <- outputDF[order(outputDF$Score),]
-    outputDF_out <- outputDF
+    outputDF <- outputDF[order(outputDF$t_start, decreasing = T),]
+    outputDF$index <- c(1:length(outputDF$drugRec_Start))
+    toRemove <- c()
 
-    for(i in c(1:length(outputDF$regName))) {
+    #All overlap issues need to be fixed here
+    #Potential problem here when ordering outputDF
+    #Can catch overlaps in one direction, but can it catch them in both?
+    #Needs a test
+    for(i in c(1:length(outputDF$regName))){
       for(j in c(i:length(outputDF$regName))){
         if(i != j){
           if(outputDF[i,]$regName != outputDF[j,]$regName) {
-            if(outputDF[i,]$t_start < outputDF[j,]$t_end+1 &
-               outputDF[i,]$t_end > outputDF[j,]$t_start+1){
-              outputDF_out <- outputDF_out[paste(outputDF_out$regName,outputDF_out$t_start) != paste(outputDF[i,]$regName,outputDF[i,]$t_start),]
+            if(outputDF[i,]$drugRec_Start <= outputDF[j,]$drugRec_End &
+               outputDF[i,]$drugRec_End >= outputDF[j,]$drugRec_Start){
+
+              sel <-outputDF[c(i,j),]
+              sel <- sel %>% arrange(desc(adjustedS),desc(totAlign),desc(drugRec_Start))
+
+              toRemove <- c(toRemove,sel[2,]$index)
+
+
             }
           }
         }
       }
     }
 
-    outputDF <- outputDF_out
+    if(length(toRemove) > 0){
+      outputDF <- outputDF[-toRemove,] %>% arrange(drugRec_Start)
+    } else {
+      outputDF <- outputDF %>% arrange(drugRec_Start)
+    }
 
   }
 
   outputDF$Score <- as.numeric(outputDF$Score)
-
-  outputDF <- outputDF %>% arrange(regName,t_start)
 
   outputDF <- outputDF %>% mutate(prev_end = ifelse(regName == lag(regName), lag(t_end), -999),
                                   prev_reg = lag(regName))
@@ -111,13 +109,13 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,all
   outputDF_temp <- outputDF_temp %>% group_by(regName) %>%
     summarise(Score = mean(Score), drugRec_Start = min(drugRec_Start),
               drugRec_End = max(drugRec_End), adjustedS = mean(adjustedS),
-              t_start = min(t_start), t_end = max(t_end))
+              t_start = min(t_start), t_end = max(t_end), totAlign = sum(totAlign))
 
-  outputDF <- rbind(outputDF_temp_noF[,c(1:7)],outputDF_temp)
-  outputDF <- outputDF %>% arrange(regName,t_start)
+  outputDF <- rbind(outputDF_temp_noF[,c(1:8)],outputDF_temp)
+  outputDF <- outputDF %>% arrange(drugRec_Start)
 
   drugDF$t_start <- as.numeric(drugDF$t_start)
-  drugDF$t_end <- as.numeric(drugDF$t_end)
+  drugDF$t_end <- as.numeric(drugDF$t_start+0.95)
   drugDF$ymin <- as.numeric(drugDF$ymin)
   drugDF$ymax <- as.numeric(drugDF$ymax)
 
@@ -134,35 +132,34 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,all
   }
 
   outputDF$regimen <- "Yes"
-  if(normScore == F) {
-    outputDF <- outputDF[,c(2,1,6,7,10,8,9)]
-  } else if(normScore == T){
-    outputDF <- outputDF[,c(5,1,6,7,10,8,9)]
-  } else{
-    print("Normscore must be either 1 or 0.")
-    return(NA)
-  }
 
-  colnames(outputDF) <- colnames(drugDF)
-  drugDF <- rbind(drugDF,outputDF)
+  plotOutput <- outputDF %>% select(t_start, t_end, ymin, ymax, regName, regimen, adjustedS)
+  plotDrug <- drugDF %>% select(t_start, t_end, ymin, ymax, component, regimen)
+  plotDrug$adjustedS <- "-1"
+  colnames(plotOutput)[5] <- "component"
 
-  breaks <- seq(0, max(drugDF$t_end)+5, 1)
+  plotOutput$t_end <- plotOutput$t_end+0.5
+  plotOutput$t_start <- plotOutput$t_start+0.5
+
+  plot <- rbind(plotDrug,plotOutput)
+
+  breaks <- seq(0, max(plot$t_end)+5, 1)
   tickLabels <- as.character(breaks)
   tickLabels[!(breaks %% 5 == 0)] <- ''
 
-  p1 <- ggplot(drugDF, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax,fill=V2)) +
+  p1 <- ggplot(plot, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax,fill=component)) +
     ggchicklet::geom_rrect(radius = unit(0.33, 'npc')) +
-    ylim(min(drugDF$ymin)-0.1,max(drugDF$ymax)+0.76) +
-    geom_shadowtext(data = drugDF[drugDF$regimen=="No",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=V2), size = fontSize) +
-    geom_shadowtext(data = drugDF[drugDF$regimen=="Yes",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste(V2,"\nScore: ",round(as.numeric(V1),2),
-                                                                              "\n",round(t_end-t_start,0)," days")),
+    ylim(min(plot$ymin)-0.1,max(plot$ymax)+0.76) +
+    geom_shadowtext(data = plot[plot$regimen=="No",],
+                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=component), size = fontSize) +
+    geom_shadowtext(data = plot[plot$regimen=="Yes",],
+                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste(component,"\nScore: ",round(as.numeric(adjustedS),2),
+                                                                              "\n",round(t_end-t_start,0)+1," days")),
                     size = fontSize) +
     geom_hline(yintercept = regLine) +
-    geom_hline(yintercept = max(drugDF$ymax) + 0.5) +
+    geom_hline(yintercept = max(plot$ymax) + 0.5) +
     scale_fill_viridis_d() +
-    scale_x_continuous(breaks = breaks, labels = tickLabels, limits = c(0,max(drugDF$t_end)+1)) +
+    scale_x_continuous(breaks = breaks, labels = tickLabels, limits = c(0,max(plot$t_end)+1)) +
     theme(panel.grid.major = eb, panel.grid.minor = eb,
           panel.background = eb, panel.border = eb,
           axis.ticks.y = eb, axis.text.y = eb, axis.title.y = eb,
@@ -170,6 +167,8 @@ plotOutput <- function(output, returnPlot=F, individual_Tracks=T,normScore=F,all
     theme(axis.line.x = element_line(color = 'black')) + xlab("Time (Days)")
 
   p1
+
+  return(p1)
 
 }
 

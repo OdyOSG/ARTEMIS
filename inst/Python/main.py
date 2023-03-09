@@ -54,7 +54,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		s2_start = mem_index[0][0] - s_a_len
 		s2_end = mem_index[0][0]
 
-		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start,s1_end,s2_start,s2_end,s_a_len,totAligned]), axis = 0)
+		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_a_len,totAligned]), axis = 0)
 
 	#Handling a single alignment
 	else: 
@@ -65,7 +65,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		s2_start = finalIndex[0] - s_f_len
 		s2_end = finalIndex[0]
 
-		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start,s1_end,s2_start,s2_end,s_f_len,totAligned]), axis = 0)
+		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_f_len,totAligned]), axis = 0)
 
 	#Printing various details of alignment
 	if verbose == 1 or verbose == 2:
@@ -80,7 +80,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		if verbose == 1 or verbose == 2:
 			print("Secondary alignments:")
 		
-		#Printing various details of alignment for extra alignments as per mem specification
+		
 		for i in range(1,len(mem_index)):
 			secondary = 1
 			s1_aligned_t, s2_aligned_t, totAligned_t = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[i])
@@ -89,8 +89,9 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 			s1_end = mem_index[i][1]
 			s2_start = mem_index[i][0] - s_a_t_len
 			s2_end = mem_index[i][0]
-			returnDat = np.append(returnDat,[regName,s1_aligned_t,s2_aligned_t,mem_score[i],s1_start,s1_end,s2_start,s2_end,s_a_t_len,totAligned_t], axis = 0)	
-	
+			returnDat = np.append(returnDat,[regName,s1_aligned_t,s2_aligned_t,mem_score[i],s1_start+1,s1_end,s2_start+1,s2_end,s_a_t_len,totAligned_t], axis = 0)	
+			
+			#Printing various details of alignment for extra alignments as per mem specification
 			if verbose == 1 or verbose == 2:
 				print(mem_index[i])
 				print(s1_aligned_t)
@@ -115,9 +116,23 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		rows, cols = np.shape(returnDat)
 		interval_List = returnDat[[6,7]].values.tolist()[1:]
 
+		print(interval_List)
+
 		keep_rows = [0]
 		covered_bases = set([])
-		i = 1
+		
+
+		#POTENTIAL OVERLAP METHOD HERE
+		#for i in range(1,rows):
+		#	for j in range(i,rows):
+		#		if i != j:
+		#			x = interval_List[i-1]
+		#			y = interval_List[j-1]
+		#			overlap = [*range(max(int(x[0]), int(y[0])), min(int(x[-1]), int(y[-1]))+1)]
+
+		#			print(overlap)
+
+		k = 1
 
 		#Super intensive way to check for overlaps, probably O(N^10000000)
 		#TODO: Improve performance
@@ -125,10 +140,12 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 			interval = set(range(int(start),int(end)))
 
 			if len(interval & covered_bases) == 0:
-				keep_rows.append(i)
+				keep_rows.append(k)
 				covered_bases.update(interval)
 
-			i += 1
+			k += 1
+
+			print(keep_rows)
 
 		returnDat = returnDat.loc[keep_rows]
 

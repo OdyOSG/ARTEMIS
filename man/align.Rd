@@ -6,18 +6,7 @@
 returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise}
 \usage{
-align(
-  regimen,
-  regName,
-  drugRec,
-  g,
-  Tfac,
-  s = NA,
-  local_align,
-  verbose,
-  mem,
-  removeOverlap
-)
+align(regimen, regName, drugRec, g, Tfac, s = NA, verbose, mem, removeOverlap)
 }
 \arguments{
 \item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen,
@@ -32,8 +21,6 @@ may contain multiple regimens if supplied as a list}
 \item{Tfac}{The time penalty factor. All time penalties are calculated as a percentage of Tfac}
 
 \item{s}{A substituion matrix, either user-defined or derived from defaultSmatrix. Will be auto-generated if left blank.}
-
-\item{local_align}{A variable defining whether or not alignment should be global (0) or local (1)}
 
 \item{verbose}{A variable indicating how verbose the python script should be in reporting results
 Verbose = 0 : Print nothing

@@ -13,8 +13,8 @@ library(shadowtext)
 
 g <- 0.4
 Tfac <- 0.25
-verbose = 2
-mem = -1
+verbose = 1
+mem = as.integer(-1)
 removeOverlap = 1
 
 regimen <- encode("0.A;4.D")
@@ -22,7 +22,9 @@ drugRecord <- encode("0.A;1.B;2.C;1.D")
 
 regName <- "Test0"
 
-output <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test0 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+
+plotOutput(output_test0, allowOverlaps = F, fontSize = 2, regimenCombine = 7)
 
 ######  - Test 1 - ######
 ##### Single Regimen #####
@@ -43,9 +45,9 @@ regName <- "ChemoRegimenA"
 plotRegimen(regimen,regName,F,1)
 plotRecord(drugRecord,F,1)
 
-output <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output,returnPlot = F, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 4, regimenCombine = 2)
+plotOutput(output_test1, allowOverlaps = F, fontSize = 2, regimenCombine = 1)
 
 ######  - Test 2 - ######
 ##### Multi Regimen #####
@@ -56,6 +58,7 @@ Tfac <- 0.25
 verbose = 0
 mem = as.integer(10)
 removeOverlap = 1
+regimenCombine = 1
 
 s1 <- "0.Q;2.C;1.A;1.A"
 s2 <- "0.C;0.A;7.A;7.A"
@@ -80,22 +83,9 @@ p2 <- plotRegimen(s2,regNames[2],T,1)
 p3 <- plotRegimen(s3,regNames[3],T,1)
 p_reg <- grid.arrange(p1,p2,p3)
 
-output <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-output_small <- output[!is.na(output$adjustedS),c(1,4:11)]
-
-p_rec0 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 0)
-p_rec0 <- p_rec0 + ggtitle("Regimen Combine = 0")
-
-p_rec2 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 2)
-p_rec2 <- p_rec2 + ggtitle("Regimen Combine = 2")
-
-p_rec4 <- plotOutput(output,returnPlot = T, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 5, regimenCombine = 4)
-p_rec4 <- p_rec4 + ggtitle("Regimen Combine = 4")
-
-grid.arrange(p_rec0,p_rec2,p_rec4)
-
-plotOutput(output,returnPlot = F, individual_Tracks = T, normScore = T, allowOverlaps = F, fontSize = 2, regimenCombine = 4)
+plotOutput(output_test2, allowOverlaps = F, fontSize = 2, regimenCombine = 7)
 
 #######  - Test 3 - ##########
 ##### Continuous regimen #####
@@ -106,19 +96,19 @@ Tfac <- 0.25
 verbose = 0
 mem = -1
 removeOverlap = 1
+regimenCombine = 14
 
 #Continuous A
 regimen1 <- encode("0.A;8.A")
 #Interrupt
-regimen2 <- encode("0.B;1C;0.A")
+regimen2 <- encode("0.B;1C;1.A")
 
 #Continuous A record
-drugRecord <- encode("0.A;8.A;8.A;8.A;8.B;1.C;0.A;8.A;8.A")
+drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 
 regNames <- list("ContinuousA","Interrupt")
 regimens <- list(regimen1,regimen2)
 
-output <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap = F)
+output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output,returnPlot = F, individual_Tracks = T, normScore = T, allowOverlaps = T, fontSize = 2, regimenCombine = 1)
-
+plotOutput(output_test3, allowOverlaps = F, fontSize = 2, regimenCombine = 0)

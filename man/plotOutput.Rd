@@ -4,25 +4,10 @@
 \alias{plotOutput}
 \title{Plots, or returns a plot, displaying a full alignment output}
 \usage{
-plotOutput(
-  output,
-  returnPlot = F,
-  individual_Tracks = T,
-  normScore = F,
-  allowOverlaps = F,
-  fontSize = 3,
-  regimenCombine = 1
-)
+plotOutput(output, allowOverlaps = F, fontSize = 2, regimenCombine = 1)
 }
 \arguments{
 \item{output}{An output dataframe created by align()}
-
-\item{returnPlot}{A boolean indicating whether or not to return a ggplot object}
-
-\item{individual_Tracks}{A boolean indicating whether drugs will each have a single track}
-
-\item{normScore}{A boolean indicating whether to use actual scores or scores normalised to
-number of aligned drugs}
 
 \item{allowOverlaps}{A boolean indicating whether to leave or remove overlapping regimens}
 
