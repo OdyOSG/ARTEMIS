@@ -112,3 +112,15 @@ regimens <- list(regimen1,regimen2)
 output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
 plotOutput(output_test3, allowOverlaps = F, fontSize = 2, regimenCombine = 0)
+
+
+
+###### Test 4 ######
+# Correct gap test #
+
+regimen1 <- encode("8.A;8.A")
+regimen2 <- encode("0.A;8.A")
+drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
+
+output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
