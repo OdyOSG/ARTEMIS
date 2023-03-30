@@ -47,3 +47,35 @@ getPatientData <- function(cancerID, cdmSchema, dbiconn) {
   return(con_df_out)
 
 }
+
+#' Print a list of valid conditions for use by getRegimens
+#' @return condList
+#' @export
+getConditions <- function(){
+  condList <- c("Deduped (ALL)",unique(read.csv("data/regimens - HemOnc/AllRegimens_ByCondition.csv")[,4]))
+
+  return(condList)
+}
+
+#' Create a dataframe containing regimen data
+#' @param Condition A toggle for selecting which condition to retrieve regimens for
+#'                    Selecting "Deduped" returns all regimens regardless of condition, with duplicates removed
+#' @return regDF
+#' @examples
+#' regDF <- getRegimens("Deduped")
+#' @export
+getRegimens <- function(condition){
+
+  if(condition %in% getConditions()){
+    if(condition == "Deduped (ALL)" | condition == "Deduped"){
+      regDF <- read.csv("data/regimens - HemOnc/AllRegimens_Deduplicated.csv")
+      return(regDF)
+    } else {
+      regDF <- read.csv("data/regimens - HemOnc/AllRegimens_ByCondition.csv")
+      regDF <- regDF[regDF$metaCondition == condition,]
+      return(regDF)
+    }
+  } else {
+    print("Condition not found. Please run getConditions() to see valid condition terms.")
+  }
+}
