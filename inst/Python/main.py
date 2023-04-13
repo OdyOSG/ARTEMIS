@@ -8,8 +8,6 @@ pd.options.display.max_columns = None
 def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	s1_len = len(s1)
 	s2_len = len(s2)
-	if s1_len > s2_len:
-		print("Warning: Your regimen sequence appears to be longer than your patient's drug sequence. Consider checking patient record.")
 
 	#Initialise the 3 score matrices and the traceback matrix
 	H = init_Hmat(s1_len,s2_len,g)
