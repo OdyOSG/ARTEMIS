@@ -182,8 +182,9 @@ plotOutput <- function(output,
                                                                                           "\n",round(t_end-t_start,0)+1," days")),
                     size = fontSize) +
     ggnewscale::new_scale_fill() +
-    geom_rect(data = plotDrug, aes(fill=Component)) +
-    scale_fill_discrete(type = brewer.pal(n=length(unique(plotDrug$Component)),name = "Pastel1")) +
+    geom_rect(data = plotDrug, aes(fill=Component,color=Component)) +
+    scale_fill_discrete(type = brewer.pal(n=length(unique(plotDrug$Component)),name = "Dark2")) +
+    scale_fill_discrete(type = brewer.pal(n=length(unique(plotDrug$Component)),name = "Dark2")) +
     scale_color_identity() +
     scale_x_continuous(breaks = breaks, labels = tickLabels, limits = c(0,max(plot$t_end)+1)) +
     theme(panel.grid.major = eb, panel.grid.minor = eb,
