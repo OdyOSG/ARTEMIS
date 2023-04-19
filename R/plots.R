@@ -52,7 +52,7 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
   outputDF <- outputDF %>% arrange(drugRec_Start)
 
   if(min(outputDF$drugRec_Start) <= 0){
-    outputDF[outputDF$drugRec_Start <= 0,]$drugRec_Start <- 1
+    outputDF[outputDF$drugRec_Start <= 0,]$drugRec_Start <- 0
   }
 
   outputDF$t_start <- drugDF[outputDF$drugRec_Start,]$t_start
@@ -189,7 +189,8 @@ plotOutput <- function(output,
     theme(panel.grid.major = eb, panel.grid.minor = eb,
           panel.background = eb, panel.border = eb,
           axis.ticks.y = eb, axis.text.y = eb, axis.title.y = eb,
-          axis.line.x = element_line(color = 'black'), legend.key.size = unit(2, 'cm')) +
+          axis.line.x = element_line(color = 'black'), legend.key.size = unit(2, 'cm'),
+          legend.text=element_text(size=fontSize)) +
   ggplot2::xlab(label = "Time (Days)")
 
   return(p1)
