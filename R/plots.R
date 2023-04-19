@@ -58,7 +58,7 @@ plotOutput <- function(output,
     outputDF[outputDF$drugRec_Start < 0,]$drugRec_Start <- 1
   }
 
-  outputDF$t_start <- drugDF[outputDF$drugRec_Start,]$t_start
+  outputDF$t_start <- drugDF[outputDF$drugRec_Start+1,]$t_start
   outputDF$t_end <- drugDF[outputDF$drugRec_End,]$t_start
 
   if(allowOverlaps == FALSE){
@@ -100,7 +100,7 @@ plotOutput <- function(output,
 
   outputDF$Score <- as.numeric(outputDF$Score)
 
-  outputDF <- outputDF %>% mutate(prev_end = ifelse(regName == lag(regName), lag(t_end), -999),
+  outputDF <- outputDF %>% mutate(prev_end = ifelse(regName == lag(regName), lag(t_end), 0),
                                   prev_reg = lag(regName))
 
   outputDF_temp <- outputDF[is.na(outputDF$prev_reg) | outputDF$t_start <= outputDF$prev_end+regimenCombine,]
@@ -145,13 +145,13 @@ plotOutput <- function(output,
 
   breaks <- seq(0, max(plot$t_end)+5, 1)
   tickLabels <- as.character(breaks)
-  tickLabels[!(breaks %% 5 == 0)] <- ''
+  tickLabels[!(breaks %% 28 == 0)] <- ''
 
   p1 <- ggplot(plot, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax,fill=component)) +
     ggchicklet::geom_rrect(radius = unit(0.33, 'npc')) +
     ylim(min(plot$ymin)-0.1,max(plot$ymax)+0.76) +
     geom_shadowtext(data = plot[plot$regimen=="No",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=component), size = fontSize) +
+                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=component), size = 1) +
     geom_shadowtext(data = plot[plot$regimen=="Yes",],
                     aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste(component,"\nScore: ",round(as.numeric(adjustedS),2),
                                                                               "\n",round(t_end-t_start,0)+1," days")),

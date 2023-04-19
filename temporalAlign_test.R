@@ -1,9 +1,12 @@
 library(reticulate)
-library(oncoRegimens)
 library(ggplot2)
 library(dplyr)
 library(ggchicklet)
 library(gridExtra)
+library(oncoRegimens)
+library(ggplot2)
+library(tidyr)
+library(magrittr)
 library(ggfittext)
 library(shadowtext)
 
@@ -21,6 +24,9 @@ regimen <- encode("0.A;4.D")
 drugRecord <- encode("0.A;1.B;2.C;1.D")
 
 regName <- "Test0"
+
+regimen
+drugRecord
 
 output_test0 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
