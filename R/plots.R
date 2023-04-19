@@ -68,10 +68,10 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
       if(outputDF[i,]$regName != outputDF[j,]$regName) {
         if(outputDF[i,]$drugRec_Start <= outputDF[j,]$drugRec_End &
            outputDF[i,]$drugRec_End >= outputDF[j,]$drugRec_Start){
-
-          sel <-outputDF[c(i,j),]
-          toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
-
+          if(!(i %in% toRemove) & !(j %in% toRemove)){
+            sel <-outputDF[c(i,j),]
+            toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+          }
         }
       }
     }
