@@ -7,6 +7,8 @@ library(oncoRegimens)
 library(ggplot2)
 library(tidyr)
 library(magrittr)
+library(RColorBrewer)
+library(ggnewscale)
 library(ggfittext)
 library(shadowtext)
 
@@ -25,12 +27,9 @@ drugRecord <- encode("0.A;1.B;2.C;1.D")
 
 regName <- "Test0"
 
-regimen
-drugRecord
-
 output_test0 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test0, allowOverlaps = F, fontSize = 2, regimenCombine = 7)
+plotOutput(output_test0, regimenCombine = 7)
 
 ######  - Test 1 - ######
 ##### Single Regimen #####
@@ -69,7 +68,7 @@ regimenCombine = 1
 s1 <- "0.Q;2.C;1.A;1.A"
 s2 <- "0.C;0.A;7.A;7.A"
 s3 <- "0.Q;0.C;7.C;0.Q;7.C;0.Q"
-s4 <- "0.C;0.A;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.Q;0.C;7.C;0.Q;7.C;0.Q"
+s4 <- "0.C;0.A;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.Q;0.C;7.C;0.Q;7.C;0.Q;0.C;0.A;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.Q;0.C;7.C;0.Q;7.C;0.Q"
 
 #QCAA
 regimen1 <- encode(s1)
@@ -91,7 +90,8 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test2, allowOverlaps = F, fontSize = 2, regimenCombine = 7)
+plotOutput(output_test2)
+
 
 #######  - Test 3 - ##########
 ##### Continuous regimen #####

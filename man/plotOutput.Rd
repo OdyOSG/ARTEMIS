@@ -4,17 +4,17 @@
 \alias{plotOutput}
 \title{Plots, or returns a plot, displaying a full alignment output}
 \usage{
-plotOutput(output, allowOverlaps = F, fontSize = 2, regimenCombine = 1)
+plotOutput(output, fontSize = 2.5, regimenCombine = 28)
 }
 \arguments{
 \item{output}{An output dataframe created by align()}
-
-\item{allowOverlaps}{A boolean indicating whether to leave or remove overlapping regimens}
 
 \item{fontSize}{The desired font size of the text}
 
 \item{regimenCombine}{Allowed number of days between two instances of the same regimen before
 those two instances are combined}
+
+\item{allowOverlaps}{A boolean indicating whether to leave or remove overlapping regimens}
 }
 \value{
 regPlot - A ggplot object
