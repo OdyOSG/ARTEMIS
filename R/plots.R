@@ -190,7 +190,7 @@ plotOutput <- function(output,
           panel.background = eb, panel.border = eb,
           axis.ticks.y = eb, axis.text.y = eb, axis.title.y = eb,
           axis.line.x = element_line(color = 'black'), legend.key.size = unit(2, 'cm'))
-  + xlab("Time (Days)")
+  + ggplot2::xlab(label = "Time (Days)")
 
   return(p1)
 
