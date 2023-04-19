@@ -51,8 +51,8 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 
   outputDF <- outputDF %>% arrange(drugRec_Start)
 
-  if(min(outputDF$drugRec_Start) < 0){
-    outputDF[outputDF$drugRec_Start < 0,]$drugRec_Start <- 1
+  if(min(outputDF$drugRec_Start) <= 0){
+    outputDF[outputDF$drugRec_Start <= 0,]$drugRec_Start <- 1
   }
 
   outputDF$t_start <- drugDF[outputDF$drugRec_Start,]$t_start
