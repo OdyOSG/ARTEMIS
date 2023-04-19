@@ -98,6 +98,9 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     output_summ_all <- outputTemp[0,]
 
     for(index in unique(outputTemp$combiIndex)) {
+
+      outputTemp$adjustedS <- as.numeric(outputTemp$adjustedS)
+
       outputTemp_toSummarise <- outputTemp[outputTemp$combiIndex == index,] %>%
         summarise(regName = unique(regName), Score = mean(Score), drugRec_Start = min(drugRec_Start),
                   drugRec_End = max(drugRec_End), adjustedS = mean(adjustedS),
