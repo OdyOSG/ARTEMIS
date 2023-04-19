@@ -134,7 +134,8 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @export
 plotOutput <- function(output,
                        fontSize = 2.5,
-                       regimenCombine = 28){
+                       regimenCombine = 28,
+                       offset = 0){
 
   eb <- element_blank()
 
@@ -177,7 +178,7 @@ plotOutput <- function(output,
     ggchicklet::geom_rrect(data = plotOutput, aes(fill=`Regimen Name`), radius = unit(0.33, 'npc')) +
     scale_fill_viridis_d(option = "cividis") +
     geom_shadowtext(data = plot[plot$regimen=="Yes",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
+                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2+offset, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
                                                                                           "\n",round(t_end-t_start,0)+1," days")),
                     size = fontSize) +
     ggnewscale::new_scale_fill() +
