@@ -69,8 +69,16 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
         if(outputDF[i,]$drugRec_Start <= outputDF[j,]$drugRec_End &
            outputDF[i,]$drugRec_End >= outputDF[j,]$drugRec_Start){
           if(!(i %in% toRemove) & !(j %in% toRemove)){
-            sel <-outputDF[c(i,j),]
-            toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+            sel <- outputDF[c(i,j),]
+
+            i_score <- sel[sel$index==i,]$adjustedS
+            j_score <- sel[sel$index==i,]$adjustedS
+
+            if(i_score == j_score){
+              toRemove <- toRemove
+            } else{
+              toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+            }
           }
         }
       }
@@ -179,7 +187,7 @@ plotOutput <- function(output,
     geom_segment(aes(y=(ymin+ymax)/2, x = t_start, xend = t_end, yend = (ymin+ymax)/2)) +
     scale_fill_viridis_d(option = "cividis") +
     geom_shadowtext(data = plot[plot$regimen=="Yes",],
-                    aes(x = t_start-17, y = (ymin+ymax)/2+offset, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
+                    aes(x = t_start-max(ymax)/3, y = (ymin+ymax)/2+offset, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
                                                                                           "\n",round(t_end-t_start,0)+1," days")),
                     size = fontSize) +
     ggnewscale::new_scale_fill() +
