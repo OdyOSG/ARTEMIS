@@ -72,11 +72,11 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
             sel <- outputDF[c(i,j),]
 
             i_score <- sel[sel$index==i,]$adjustedS
-            j_score <- sel[sel$index==i,]$adjustedS
+            j_score <- sel[sel$index==j,]$adjustedS
 
             if(i_score == j_score){
               toRemove <- toRemove
-            } else{
+            } else {
               toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
             }
           }
