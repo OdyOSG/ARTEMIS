@@ -68,10 +68,18 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
       if(outputDF[i,]$regName != outputDF[j,]$regName) {
         if(outputDF[i,]$drugRec_Start <= outputDF[j,]$drugRec_End &
            outputDF[i,]$drugRec_End >= outputDF[j,]$drugRec_Start){
+          if(!(i %in% toRemove) & !(j %in% toRemove)){
+            sel <- outputDF[c(i,j),]
 
-          sel <-outputDF[c(i,j),]
-          toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+            i_score <- sel[sel$index==i,]$adjustedS
+            j_score <- sel[sel$index==j,]$adjustedS
 
+            if(i_score == j_score){
+              toRemove <- toRemove
+            } else {
+              toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+            }
+          }
         }
       }
     }
@@ -98,6 +106,9 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     output_summ_all <- outputTemp[0,]
 
     for(index in unique(outputTemp$combiIndex)) {
+
+      outputTemp$adjustedS <- as.numeric(outputTemp$adjustedS)
+
       outputTemp_toSummarise <- outputTemp[outputTemp$combiIndex == index,] %>%
         summarise(regName = unique(regName), Score = mean(Score), drugRec_Start = min(drugRec_Start),
                   drugRec_End = max(drugRec_End), adjustedS = mean(adjustedS),
@@ -131,7 +142,8 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @export
 plotOutput <- function(output,
                        fontSize = 2.5,
-                       regimenCombine = 28){
+                       regimenCombine = 28,
+                       offset = 0){
 
   eb <- element_blank()
 
@@ -163,7 +175,7 @@ plotOutput <- function(output,
 
   plot <- rbind(plotDrug,plotOutput)
 
-  breaks <- seq(0, max(plot$t_end)+5, 1)
+  breaks <- seq(-14, max(plot$t_end)+5, 1)
   tickLabels <- as.character(breaks)
   tickLabels[!(breaks %% 28 == 0)] <- ''
 
@@ -171,21 +183,24 @@ plotOutput <- function(output,
   colnames(plotDrug)[5] <- "Component"
 
   p1 <- ggplot(plotOutput, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax)) +
-    ggchicklet::geom_rrect(data = plotOutput, aes(fill=`Regimen Name`), radius = unit(0.33, 'npc')) +
+    ggchicklet::geom_rrect(data = plotOutput, aes(xmin=t_start, xmax= t_start+7,fill=`Regimen Name`), radius = unit(0.33, 'npc')) +
+    geom_segment(aes(y=(ymin+ymax)/2, x = t_start, xend = t_end, yend = (ymin+ymax)/2)) +
     scale_fill_viridis_d(option = "cividis") +
     geom_shadowtext(data = plot[plot$regimen=="Yes",],
-                    aes(x = (t_start+t_end)/2, y = (ymin+ymax)/2, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
+                    aes(x = t_start-max(ymax)/3, y = (ymin+ymax)/2+offset, label=paste("\nScore: ",round(as.numeric(adjustedS),2),
                                                                                           "\n",round(t_end-t_start,0)+1," days")),
                     size = fontSize) +
     ggnewscale::new_scale_fill() +
-    geom_rect(data = plotDrug, aes(fill=Component)) +
-    scale_fill_discrete(type = brewer.pal(n=length(unique(plotDrug$Component)),name = "Pastel1")) +
-    scale_color_identity() +
-    scale_x_continuous(breaks = breaks, labels = tickLabels, limits = c(0,max(plot$t_end)+1)) +
+    geom_rect(data = plotDrug, aes(fill=Component,color=Component)) +
+    scale_fill_discrete(type = brewer.pal(n=max(3,length(unique(plotDrug$Component))),name = "Dark2")) +
+    scale_color_discrete(type = brewer.pal(n=max(3,length(unique(plotDrug$Component))),name = "Dark2")) +
+    scale_x_continuous(breaks = breaks, labels = tickLabels, limits = c(-14,max(plot$t_end)+1)) +
     theme(panel.grid.major = eb, panel.grid.minor = eb,
           panel.background = eb, panel.border = eb,
           axis.ticks.y = eb, axis.text.y = eb, axis.title.y = eb,
-          axis.line.x = element_line(color = 'black')) + xlab("Time (Days)")
+          axis.line.x = element_line(color = 'black'), legend.key.size = unit(0.9, 'cm'),
+          legend.text=element_text(size=12)) +
+  ggplot2::xlab(label = "Time (Days)")
 
   return(p1)
 
