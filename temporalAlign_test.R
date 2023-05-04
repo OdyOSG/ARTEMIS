@@ -132,4 +132,20 @@ output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOv
 output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
 
-regDF <- getRegime
+
+###### Test 5 ######
+# Intentional overlap test #
+
+regimen1 <- encode("0.A;1.C;2.B;1.A")
+regimen2 <- encode("0.C;2.B")
+
+drugRecord <- encode("0.A;8.A;0.A;1.C;2.B;1.A;8.A;8.A")
+
+regNames <- list("longReg","shortReg")
+regimens <- list(regimen1,regimen2)
+
+output_test5 <- align(regimens, regName = regNames, drugRec = drugRecord,
+                      g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
+                      removeOverlap = 1)
+
+plotOutput(output_test5)
