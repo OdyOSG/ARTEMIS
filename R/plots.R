@@ -183,7 +183,7 @@ plotOutput <- function(output,
   colnames(plotDrug)[5] <- "Component"
 
   p1 <- ggplot(plotOutput, aes(xmin=t_start, xmax=t_end,ymin=ymin,ymax=ymax)) +
-    ggchicklet::geom_rrect(data = plotOutput, aes(xmin=t_start, xmax= t_start+7,fill=`Regimen Name`), radius = unit(0.33, 'npc')) +
+    ggchicklet::geom_rrect(data = plotOutput, aes(xmin=t_start, xmax= t_start+min(7,dim(drugDF)[1]/4),fill=`Regimen Name`), radius = unit(0.33, 'npc')) +
     geom_segment(aes(y=(ymin+ymax)/2, x = t_start, xend = t_end, yend = (ymin+ymax)/2)) +
     scale_fill_viridis_d(option = "cividis") +
     geom_shadowtext(data = plot[plot$regimen=="Yes",],

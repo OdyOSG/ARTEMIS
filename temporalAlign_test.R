@@ -52,7 +52,7 @@ plotRecord(drugRecord,F,1)
 
 output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test1, allowOverlaps = F, fontSize = 2, regimenCombine = 1)
+plotOutput(output_test1, fontSize = 2, regimenCombine = 1)
 
 ######  - Test 2 - ######
 ##### Multi Regimen #####
@@ -90,7 +90,7 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test2)
+plotOutput(output_test2, regimenCombine = 100)
 
 
 #######  - Test 3 - ##########
@@ -117,9 +117,7 @@ regimens <- list(regimen1,regimen2)
 
 output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test3, allowOverlaps = F, fontSize = 2, regimenCombine = 0)
-
-
+plotOutput(output_test3)
 
 ###### Test 4 ######
 # Correct gap test #
@@ -136,10 +134,10 @@ output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOv
 ###### Test 5 ######
 # Intentional overlap test #
 
-regimen1 <- encode("0.A;1.C;2.B;1.A")
+regimen1 <- encode("0.A;1.C;2.B;1.A;7.A")
 regimen2 <- encode("0.C;2.B")
 
-drugRecord <- encode("0.A;8.A;0.A;1.C;2.B;1.A;8.A;8.A")
+drugRecord <- encode("1.A;7.A;1.C;2.B;1.A;7.A;7.A;")
 
 regNames <- list("longReg","shortReg")
 regimens <- list(regimen1,regimen2)
@@ -149,3 +147,20 @@ output_test5 <- align(regimens, regName = regNames, drugRec = drugRecord,
                       removeOverlap = 1)
 
 plotOutput(output_test5)
+
+
+
+###### Test 6 ######
+# Intentional overlap test 2#
+
+regimen1 <- encode("0.A;1.C;2.B;1.A;7.A")
+regimen2 <- encode("0.C;2.B")
+
+drugRecord <- encode("1.A;7.A;1.C;2.B;1.A;7.A;7.A;")
+
+regNames <- list("longReg","shortReg")
+regimens <- list(regimen1,regimen2)
+
+output_test6 <- align(regimens, regName = regNames, drugRec = drugRecord,
+                      g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
+                      removeOverlap = 1)
