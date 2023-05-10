@@ -90,7 +90,7 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test2)
+plotOutput(output_test2, regimenCombine = 100)
 
 
 #######  - Test 3 - ##########
