@@ -13,16 +13,10 @@ plotOutput(output, fontSize = 2.5, regimenCombine = 28)
 
 \item{regimenCombine}{Allowed number of days between two instances of the same regimen before
 those two instances are combined}
-
-\item{allowOverlaps}{A boolean indicating whether to leave or remove overlapping regimens}
 }
 \value{
 regPlot - A ggplot object
 }
 \description{
 Plots, or returns a plot, displaying a full alignment output
-}
-\examples{
-plotOutput(output,F,1)
-outputPlot <- plotOutput(output,F,1)
 }

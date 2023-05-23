@@ -11,10 +11,8 @@ encode(str_seq)
 }
 \value{
 s1 - A list of tuples, each tuple containing a time and drug specification
+s_decoded <- decode(str_seq)
 }
 \description{
 Encodes a sequence from txDRUG.tyDRUG format into a tuple of tuples
-}
-\examples{
-s_decoded <- decode(str_seq)
 }

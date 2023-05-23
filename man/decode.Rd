@@ -11,10 +11,8 @@ decode(s1)
 }
 \value{
 str_seq - Encoded string sequence
+s_encoded <- encode(s1)
 }
 \description{
 Decodes a tuple of tuples into a TxDrugA.TyDrugB text format
-}
-\examples{
-s_encoded <- encode(s1)
 }

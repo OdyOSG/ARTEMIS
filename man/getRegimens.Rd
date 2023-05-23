@@ -7,15 +7,13 @@
 getRegimens(condition)
 }
 \arguments{
-\item{Condition}{A toggle for selecting which condition to retrieve regimens for
+\item{condition}{A toggle for selecting which condition to retrieve regimens for
 Selecting "Deduped" returns all regimens regardless of condition, with duplicates removed}
 }
 \value{
 regDF
+regDF <- getRegimens("Deduped")
 }
 \description{
 Create a dataframe containing regimen data
-}
-\examples{
-regDF <- getRegimens("Deduped")
 }

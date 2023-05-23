@@ -17,10 +17,8 @@ see: https://www.rdocumentation.org/packages/DBI/versions/0.5-1/topics/dbConnect
 }
 \value{
 seqDF - A dataframe object filled with all relevant patient IDs and a regimen sequence for each patient in a valid format
+seqDF <- getPatientData(dbiconn, cdmSchema, cancerID)
 }
 \description{
 Create a dataframe containing patient IDs and regimen sequences from a valid CDM connection
-}
-\examples{
-seqDF <- getPatientData(dbiconn, cdmSchema, cancerID)
 }

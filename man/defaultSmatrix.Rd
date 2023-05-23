@@ -13,10 +13,8 @@ defaultSmatrix(s1, s2)
 }
 \value{
 s - A dataframe object filled with a score of -1.1 in all non-diagonal cells and a score of 1 on the diagonal.
+s <- defaultSmatrix(s1, s2)
 }
 \description{
 Create a default substitution matrix from all unique elements of s1 and s2
-}
-\examples{
-s <- defaultSmatrix(s1, s2)
 }
