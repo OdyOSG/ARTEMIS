@@ -11,6 +11,7 @@ library(RColorBrewer)
 library(ggnewscale)
 library(ggfittext)
 library(shadowtext)
+library(stringi)
 
 #######  - Test 0 - #########
 #### Published Regimen ######
@@ -18,16 +19,19 @@ library(shadowtext)
 
 g <- 0.4
 Tfac <- 0.25
-verbose = 1
+verbose = 0
 mem = as.integer(-1)
 removeOverlap = 1
 
-regimen <- encode("0.A;4.D")
-drugRecord <- encode("0.A;1.B;2.C;1.D")
+regimen1 <- encode("0.carboplatin;14.cisplatin;4.Doxorubicin")
+regimen2 <- encode("0.Carboplatin;1.Cisplatin;0.Carboplatin")
+drugRecord <- encode("0.Carboplatin;10.Leuprolide;4.Cisplatin;4.Doxorubicin")
 
-regName <- "Test0"
+regimens <- list(regimen1,regimen2)
 
-output_test0 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+regNames <- list("Test0","Test1")
+
+output_test0 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
 plotOutput(output_test0, regimenCombine = 7)
 
@@ -60,7 +64,7 @@ plotOutput(output_test1, fontSize = 2, regimenCombine = 1)
 
 g <- 0.4
 Tfac <- 0.25
-verbose = 2
+verbose = 0
 mem = -1
 removeOverlap = 1
 regimenCombine = 1
@@ -90,7 +94,7 @@ p_reg <- grid.arrange(p1,p2,p3)
 
 output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
-plotOutput(output_test2, regimenCombine = 100)
+plotOutput(output_test2, regimenCombine = 28)
 
 
 #######  - Test 3 - ##########
@@ -107,7 +111,7 @@ regimenCombine = 14
 #Continuous A
 regimen1 <- encode("0.A;8.A")
 #Interrupt
-regimen2 <- encode("0.B;1C;1.A")
+regimen2 <- encode("0.B;1.C;1.A")
 
 #Continuous A record
 drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")

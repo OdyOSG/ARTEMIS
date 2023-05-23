@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^data$
+^Json$
+^CDM_test.R
+^LICENSE\.md$
+example2.png
+temporalAlign_test.R

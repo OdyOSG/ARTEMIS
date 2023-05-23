@@ -21,7 +21,6 @@
 #'            Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment
 #' @param removeOverlap A variable indicating whether to remove overlaps (1) or leave them in the output data (0)
 #' @return dat A dataframe containing information on the resulting alignments
-#' @examples
 #' output <- align(regimen,drugRec)
 #' @export
 align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap) {
@@ -57,11 +56,12 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
       temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
       temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
 
+      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(length(regimen[[i]]))
+
       dat <- rbind(dat,temp_dat)
 
     }
 
-    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
     return(dat)
 
   } else if(typeof(regimen[[1]]) == "character") {
@@ -80,7 +80,10 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
     dat$Regimen <- gsub("^;","",dat$Regimen)
     dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
 
-    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
+    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(length(regimen))
+
+    dat <- dat[!dat$totAlign == 0,]
+
     return(dat)
   }
 }

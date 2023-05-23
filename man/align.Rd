@@ -37,12 +37,10 @@ Mem = X : Script will return X alignments and all alignments with equivalent sco
 }
 \value{
 dat A dataframe containing information on the resulting alignments
+output <- align(regimen,drugRec)
 }
 \description{
 Aligns together either a single drug regimen/record, or a list of regimens against a drug record,
 returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise
-}
-\examples{
-output <- align(regimen,drugRec)
 }

@@ -50,6 +50,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	if len(mem_score) > 1:
 		s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[0])
 		s_a_len = len(re.findall(pat,s1_aligned))
+
 		s1_start = mem_index[0][1] - s_a_len
 		s1_end = mem_index[0][1]
 		s2_start = mem_index[0][0] - s_a_len

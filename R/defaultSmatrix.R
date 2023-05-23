@@ -3,7 +3,6 @@
 #' @param s1 Sequence 1, typically a HemOnc regimen
 #' @param s2 Sequence 2, typically an encoded set of drug occurrences for a patient
 #' @return s - A dataframe object filled with a score of -1.1 in all non-diagonal cells and a score of 1 on the diagonal.
-#' @examples
 #' s <- defaultSmatrix(s1, s2)
 #' @export
 defaultSmatrix <- function(s1,s2){
