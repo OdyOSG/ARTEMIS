@@ -46,13 +46,13 @@ mem = -1
 removeOverlap = 1
 
 regimen <- encode("0.Q;1.C;1.A")
-regimen
 
 drugRecord <- encode("0.Q;1.C;1.A;0.Q;1.C;1.A;0.Q;1.C;1.A;7.Q;1.C;1.A")
 
 regName <- "ChemoRegimenA"
-plotRegimen(regimen,regName,F,1)
-plotRecord(drugRecord,F,1)
+
+regimen
+drugRecord
 
 output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
@@ -70,9 +70,9 @@ removeOverlap = 1
 regimenCombine = 1
 
 s1 <- "0.Q;2.C;1.A;1.A"
-s2 <- "0.C;0.A;7.A;7.A"
-s3 <- "0.Q;0.C;7.C;0.Q;7.C;0.Q"
-s4 <- "0.C;0.A;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.Q;0.C;7.C;0.Q;7.C;0.Q;0.C;0.A;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.Q;0.C;7.C;0.Q;7.C;0.Q"
+s2 <- "0.A;0.C;7.A;7.A"
+s3 <- "0.C;0.Q;7.C;0.Q;7.C;0.Q"
+s4 <- "0.A;0.C;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.C;0.Q;7.C;0.Q;7.A;0.C;0.Q;9.Q;2.C;2.A;1.A;1.A;0.Q;1.A;0.Q;2.C;1.A;1.A;1.A;0.Q;1.Q;1.Q;3.C;2.A;1.A;0.C;0.Q;7.C;0.Q;7.C;0.Q"
 
 #QCAA
 regimen1 <- encode(s1)
@@ -86,11 +86,6 @@ drugRecord <- encode(s4)
 
 regNames <- list("regA","regB","regC")
 regimens <- list(regimen1,regimen2,regimen3)
-
-p1 <- plotRegimen(s1,regNames[1],T,1)
-p2 <- plotRegimen(s2,regNames[2],T,1)
-p3 <- plotRegimen(s3,regNames[3],T,1)
-p_reg <- grid.arrange(p1,p2,p3)
 
 output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 
@@ -132,8 +127,6 @@ drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 
 output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
 output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
-
-
 
 ###### Test 5 ######
 # Intentional overlap test #

@@ -39,7 +39,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
     }
 
     if(is.na(s)){
-      s <- defaultSmatrix(unlist(regimen, recursive = F),drugRec)
+      s <- defaultSmatrix(unlist(regimen, recursive = F),drugRec,g)
     }
 
     dat <-as.data.frame(matrix(nrow=0,ncol=10))
@@ -56,7 +56,10 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
       temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
       temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
 
-      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(length(regimen[[i]]))
+      x <- decode(regimen[[i]])
+      regx <- "~|\\."
+
+      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(lengths(regmatches(x, gregexpr(regx, x))))
 
       dat <- rbind(dat,temp_dat)
 
@@ -67,7 +70,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
   } else if(typeof(regimen[[1]]) == "character") {
 
     if(is.na(s)){
-      s <- defaultSmatrix(regimen,drugRec)
+      s <- defaultSmatrix(regimen,drugRec,g)
     }
 
     dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap)
@@ -80,7 +83,10 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
     dat$Regimen <- gsub("^;","",dat$Regimen)
     dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
 
-    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(length(regimen))
+    x <- decode(regimen)
+    regx <- "~|\\."
+
+    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(lengths(regmatches(x, gregexpr(regx, x))))
 
     dat <- dat[!dat$totAlign == 0,]
 

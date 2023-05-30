@@ -19,7 +19,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	secondary = 0
 
 	#Setup pattern for detecting sequence lengths, by number of "."s (Aligned drugs) or "--s" (Gaps)
-	pat = "\.|__"
+	pat = "\.|~|__"
 
 	#Init return Dat
 	returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
