@@ -19,13 +19,15 @@ encode <- function(str_seq){
   rem <- c()
   zCount <- 0
 
-  for(i in c(2:length(s_encoded))){
-    if(s_encoded[[i]][1] == 0){
-      zCount <- zCount+1
-      s_encoded[[i-zCount]][2] <- paste(s_encoded[[i-zCount]][2],s_encoded[[i]][2],sep="~")
-      rem <- c(rem,i)
-    } else {
-      zCount <- 0
+  if(length(s_encoded) > 1){
+    for(i in c(2:length(s_encoded))){
+      if(s_encoded[[i]][1] == 0){
+        zCount <- zCount+1
+        s_encoded[[i-zCount]][2] <- paste(s_encoded[[i-zCount]][2],s_encoded[[i]][2],sep="~")
+        rem <- c(rem,i)
+      } else {
+        zCount <- 0
+      }
     }
   }
 
@@ -43,5 +45,6 @@ encode <- function(str_seq){
 #' s_encoded <- encode(s1)
 #' @export
 decode <- function(s1){
-  return(paste(gsub(", ",".",gsub("[\"|\\)]","",gsub("c\\(\\\"","",as.character(s1)))),collapse=";"))
+  decodedStr <-paste(gsub(", ",".",gsub("[\"|\\)]","",gsub("c\\(\\\"","",as.character(s1)))),collapse=";")
+  return(decodedStr)
 }

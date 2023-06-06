@@ -3,12 +3,45 @@ import pandas as pd
 import math as math
 import re
 
+def lossFunction(T,t1,t2,method,i,j):
+	absDiff = abs(t1-t2)
+	maxT = max(t1,t2)
+
+	#Avoid division by zero
+	if maxT == 0:
+		maxT = 1e-24
+
+	#Ensure that trailing time penalty is set to an unrealistic minimum
+	if j == 1:
+		tp = 1e-24
+
+	elif method == "PropDiff":
+		tp = T * ((absDiff)/(maxT))
+
+	elif method == "AbsDiff":
+		tp = T * absDiff
+
+	elif method == "Quadratic":
+		tp = T * pow(absDiff,2)
+
+	elif method == "PropQuadratic":
+		tp = (T * pow(absDiff,2))/maxT
+
+	elif method == "LogCosh":
+		tp = math.cosh(math.log(absDiff))
+
+	else:
+		print("Bad method. Please choose one of `PropDiff`, `AbsDiff`, `Quadratic`, `PropQuadratic` or `LogCosh`")
+
+	return tp
+
+
 def score(s,x,y):
 	score = s[x][y]
 
 	return score
 
-def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s):
+def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 	#initialise time penalty at 0
 	tp = 0
 
@@ -22,16 +55,7 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s):
 				tpx = float(s2[i-1][0]) + float(TR[i-1][j-1])
 				tpy = float(s1[j-1][0]) + float(TC[i-1][j-1])
 
-				tpmax = max(tpx,tpy)
-
-				#Avoid division by zero
-				if tpmax == 0:
-					tpmax = 1e-24
-				
-				tp = T*(abs(tpx-tpy)/tpmax)
-
-				if j == 1:
-					tp = 1e-24
+				tp = lossFunction(T,tpx,tpy,method,i,j)				
 
 			#Calculate score
 			score_match = score(s,s1[j-1][1],s2[i-1][1])

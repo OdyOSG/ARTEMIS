@@ -5,7 +5,7 @@ import re
 
 pd.options.display.max_columns = None
 
-def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
+def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method="PropDiff"):
 	s1_len = len(s1)
 	s2_len = len(s2)
 
@@ -26,7 +26,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	returnDat = np.array(returnDat, dtype=object)
 
 	#Impute score matrix, retrieve relevant vars
-	TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s)
+	TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method)
 
 	#Find best scoring cell
 	finalScore, finalIndex, mem_index, mem_score = find_best_score(H, s1_len, s2_len, mem, verbose)

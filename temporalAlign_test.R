@@ -31,7 +31,7 @@ regimens <- list(regimen1,regimen2)
 
 regNames <- list("Test0","Test1")
 
-output_test0 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test0 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 plotOutput(output_test0, regimenCombine = 7)
 
@@ -54,7 +54,7 @@ regName <- "ChemoRegimenA"
 regimen
 drugRecord
 
-output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 plotOutput(output_test1, fontSize = 2, regimenCombine = 1)
 
@@ -87,7 +87,7 @@ drugRecord <- encode(s4)
 regNames <- list("regA","regB","regC")
 regimens <- list(regimen1,regimen2,regimen3)
 
-output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 plotOutput(output_test2, regimenCombine = 28)
 
@@ -114,7 +114,7 @@ drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 regNames <- list("ContinuousA","Interrupt")
 regimens <- list(regimen1,regimen2)
 
-output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 plotOutput(output_test3)
 
@@ -125,8 +125,8 @@ regimen1 <- encode("8.A;8.A")
 regimen2 <- encode("0.A;8.A")
 drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 
-output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
-output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap)
+output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 ###### Test 5 ######
 # Intentional overlap test #
@@ -141,7 +141,7 @@ regimens <- list(regimen1,regimen2)
 
 output_test5 <- align(regimens, regName = regNames, drugRec = drugRecord,
                       g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
-                      removeOverlap = 1)
+                      removeOverlap = 1, method = "PropDiff")
 
 plotOutput(output_test5)
 
@@ -160,4 +160,75 @@ regimens <- list(regimen1,regimen2)
 
 output_test6 <- align(regimens, regName = regNames, drugRec = drugRecord,
                       g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
-                      removeOverlap = 1)
+                      removeOverlap = 1, method = "PropDiff")
+
+
+##### Test 7 #####
+### Multi Test ###
+
+regimen1 <- "21.docetaxel;0.ramucirumab"
+
+s1 <- encode(regimen1)
+
+drugRec <- "0.Pembrolizumab;18.Pembrolizumab;21.Cisplatin~Pembrolizumab~Pemetrexed;21.Cisplatin~Pembrolizumab~Pemetrexed;28.Cisplatin~Pembrolizumab~Pemetrexed;21.Pembrolizumab~Pemetrexed;28.Pembrolizumab~Pemetrexed;21.Pembrolizumab~Pemetrexed;35.Pemetrexed;21.Pembrolizumab~Pemetrexed;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;21.Pembrolizumab;54.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;22.Docetaxel~Ramucirumab;20.Docetaxel~Ramucirumab;22.Docetaxel~Ramucirumab;20.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;21.Docetaxel;21.Docetaxel;21.Docetaxel~Ramucirumab;21.Docetaxel;21.Docetaxel~Ramucirumab;21.Docetaxel~Ramucirumab;58.Gemcitabine;7.Gemcitabine;7.Gemcitabine;14.Gemcitabine;7.Gemcitabine;7.Gemcitabine;14.Vinorelbine;7.Vinorelbine;14.Vinorelbine;7.Vinorelbine;14.Vinorelbine;11.Paclitaxel;"
+
+s2 <- encode(drugRec)
+
+s1
+drugRec
+s2
+
+output_test7 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.5, Tfac = 0.5, verbose = 1, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+plotOutput(output_test7)
+
+
+
+##### Test 8 #####
+###  8 Test   ###
+
+setwd("C:/Users/ldyer/Documents/oncoRegimens2.0/oncoRegimens/")
+
+devtools::load_all()
+
+regimen1 <- "0.Carboplatin;0.Paclitaxel"
+
+s1 <- encode(regimen1)
+
+drugRec <- "0.Carboplatin;0.Docetaxel;0.Paclitaxel"
+
+s2 <- encode(drugRec)
+
+s1
+s2
+
+output_test8 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+plotOutput(output_test8)
+
+
+
+##### Test 9 #####
+###  8 Test   ###
+
+setwd("C:/Users/ldyer/Documents/oncoRegimens2.0/oncoRegimens/")
+
+devtools::load_all()
+
+regimen1 <- "21.Atezolizumab;0.Bevacizumab;0.Carboplatin;0.Paclitaxel"
+regimen2 <- "0.Carboplatin;0.Paclitaxel"
+
+s1 <- encode(regimen1)
+s2 <- encode(regimen2)
+
+drugRec <- "21.Atezolizumab;0.Carboplatin;0.Paclitaxel"
+
+s3 <- encode(drugRec)
+
+regNames <- list("longReg","shortReg")
+regimens <- list(s1,s2)
+
+output_test9 <- align(regimens, regNames, drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+plotOutput(output_test9)
+

@@ -6,7 +6,18 @@
 returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise}
 \usage{
-align(regimen, regName, drugRec, g, Tfac, s = NA, verbose, mem, removeOverlap)
+align(
+  regimen,
+  regName,
+  drugRec,
+  g,
+  Tfac,
+  s = NA,
+  verbose,
+  mem,
+  removeOverlap,
+  method
+)
 }
 \arguments{
 \item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen,
@@ -34,6 +45,13 @@ Mem = 1 : Script will return 1 alignment and all alignments with the same score
 Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment}
 
 \item{removeOverlap}{A variable indicating whether to remove overlaps (1) or leave them in the output data (0)}
+
+\item{method}{A character string indicating which loss function method to utilise. Please pick one of
+PropDiff        - Proportional difference of Tx and Ty
+AbsDiff         - Absolute difference of Tx and Ty
+Quadratic       - Absolute difference of Tx and Ty to the power 2
+PropQuadratic   - Absolute difference of Tx and Ty to the power 2, divided by the max of Tx and Ty
+LogCosh         - The natural logarithm of the Cosh of the absolute difference of Tx and Ty}
 }
 \value{
 dat A dataframe containing information on the resulting alignments

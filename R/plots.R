@@ -52,7 +52,7 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 
   regCount <- regCount %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(compNo = length(unique(gsub("[0-9]*\\.","",unlist(strsplit(.data$Regimen,";")))))) %>%
+    dplyr::mutate(compNo = length(unique(gsub("[0-9]*\\.","",unlist(strsplit(.data$Regimen,";|~")))))) %>%
     dplyr::select(.data$regName, .data$compNo)
 
   regCount <- regCount[!duplicated(paste(regCount$regName, regCount$compNo)),]
@@ -126,9 +126,9 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
           mostComps <- max(outputDF[c(i,j),]$compNo)
           toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$compNo < mostComps])
 
-          if(outputDF[i,]$compNo == outputDF[j,]$compNo){
-            toRemove <- c(toRemove,c(i,j)[grep(" RT",outputDF[c(i,j),]$regName)])
-          }
+          #if(outputDF[i,]$compNo == outputDF[j,]$compNo){
+          #  toRemove <- c(toRemove,c(i,j)[grep(" RT",outputDF[c(i,j),]$regName)])
+          #}
         }
       }
     }
@@ -207,7 +207,9 @@ plotOutput <- function(output,
 
   eb <- ggplot2::element_blank()
 
-  drugRec <- encode(output[1,3])
+  drugRec <- encode(output[1,]$DrugRecord)
+
+  drugRec
 
   output <- output %>%
     dplyr::distinct()
@@ -232,6 +234,10 @@ plotOutput <- function(output,
 
   plotDrug$adjustedS <- "-1"
   colnames(plotOutput)[3] <- "component"
+
+  plotDrug <- plotDrug %>%
+    dplyr::mutate(component = strsplit(.data$component,"~")) %>%
+    tidyr::unnest(component)
 
   plot <- rbind(plotDrug,plotOutput)
 
