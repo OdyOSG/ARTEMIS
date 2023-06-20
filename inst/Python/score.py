@@ -16,7 +16,11 @@ def lossFunction(T,t1,t2,method,i,j):
 		tp = 1e-24
 
 	elif method == "PropDiff":
-		tp = T * ((absDiff)/(maxT))
+		if t1 == 0 or t2 == 0:
+			tp = T * ((absDiff)/(maxT+1))
+
+		else:
+			tp = T * ((absDiff)/(maxT))
 
 	elif method == "AbsDiff":
 		tp = T * absDiff
@@ -41,12 +45,60 @@ def score(s,x,y):
 
 	return score
 
+def swapPos(s2,i,k):
+
+	temp = s2[i-1][1]
+
+	s2[i-1][1] = s2[k-1][1]
+	s2[k-1][1] = temp
+
+	return s2
+
 def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 	#initialise time penalty at 0
 	tp = 0
 
-	for i in range(1,s2_len+1):
-		for j in range(1,s1_len+1):
+	i = 1
+	#Traverse drug record (drugRec=s2=i)
+	while i < s2_len+1:
+		j = 1
+		#Traverse regimen (regimen=s1=j)
+		while j < s1_len+1:
+		
+			#Dynamic re-ordering
+
+			#Check that i does not refer to the start or end of the drug record
+			if (i > 1 and i < s2_len):
+
+				#Check that either record contains a 0 in the first slot
+				if float(min(s1[j-1][0],s2[i-1][0])) == 0:
+
+					#Check for a match between drug record and regimen
+					if s1[j-1][1] == s2[i-1][1]:
+
+						#Start of regimen case - no need to check for leading matches
+						if j == 1 and float(s2[i-1][0]) == 0:
+
+							k = i - 1
+							s2 = swapPos(s2,i,k)
+
+							i = i-1
+							continue
+
+						#End of regimen case - no need to check for trailing matches
+						elif j == s1_len and float(s2[i-1][0]) == 0:
+
+							k =  i + 1
+
+							#Ensure that next entry into drug record is not a new day
+							if float(s2[k-1][0]) == 0:
+
+								s2 = swapPos(s2,i,k)
+
+								i = i-1
+								continue
+
+						#Mid-regimen case - Not possible?
 
 			#Calculate time penalty
 			if i == 1 and j == 1:
@@ -93,6 +145,10 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 			elif traceVal == 3:
 				TR[i][j] = TC[i][j-1]
 				TC[i][j] = TC[i][j-1] + float(s1[j-1][0])
+
+			j += 1
+
+		i += 1
 
 
 def find_best_score(H,s2_len,s1_len,mem,verbose):

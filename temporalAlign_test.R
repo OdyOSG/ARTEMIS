@@ -232,3 +232,203 @@ output_test9 <- align(regimens, regNames, drugRec = s3, g = 0.4, Tfac = 0.5, ver
 
 plotOutput(output_test9)
 
+
+##### Test 10 #####
+## Alphabet Test ##
+
+regimen1 <- "7.Bevacizumab;0.Paclitaxel"
+
+s1 <- encode(regimen1)
+
+drugRec1 <- "21.Atezolizumab;0.Bevacizumab;0.Paclitaxel"
+drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
+
+s2 <- encode(drugRec1)
+s3 <- encode(drugRec2)
+
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+p1 <- plotOutput(output_test10_luck)
+p2 <- plotOutput(output_test10_unluck)
+
+grid.arrange(p1,p2,ncol=1)
+
+
+##### Test 10 #####
+## Alphabet Test 2 ##
+
+regimen1 <- "7.Bevacizumab;0.Paclitaxel"
+
+s1 <- encode(regimen1)
+
+drugRec1 <- "21.Bevacizumab;0.Paclitaxel;0.Zopiclone"
+drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
+
+s2 <- encode(drugRec1)
+s3 <- encode(drugRec2)
+
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+p1 <- plotOutput(output_test10_luck)
+p2 <- plotOutput(output_test10_unluck)
+
+grid.arrange(p1,p2,ncol=1)
+
+
+
+##### Test 10 #####
+## Alphabet Test 3 ##
+
+regimen1 <- "0.Bevacizumab;0.Paclitaxel"
+
+s1 <- encode(regimen1)
+
+drugRec1 <- "21.Atezolizumab;0.Bevacizumab;0.Paclitaxel"
+drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
+
+s2 <- encode(drugRec1)
+s3 <- encode(drugRec2)
+
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+p1 <- plotOutput(output_test10_luck)
+p2 <- plotOutput(output_test10_unluck)
+
+grid.arrange(p1,p2,ncol=1)
+
+
+#Test 11 - gap problems
+
+reg1 <- "21.Carboplatin;0.Paclitaxel;0.Zopiclone"
+
+drugRecord <- "7.Trastuzumab;21.Carboplatin;0.Paclitaxel;0.Trastuzumab"
+
+s1 <- encode(reg1)
+s2 <- encode(drugRecord)
+
+output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 0, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+output_test11 <- output_test11[(output_test11$totAlign > 1 | output_test11$totAlign == "") & (output_test11$adjustedS > 0.6 | is.na(output_test11$adjustedS)),]
+
+plotOutput(output_test11)
+
+
+output <- output_test11
+fontSize = 2.5
+regimenCombine = 28
+returnDat = F
+
+eb <- ggplot2::element_blank()
+
+output[is.na(output$Score),]
+
+drugRec <- encode(output[1,]$DrugRecord)
+drugRec <- encode(output[is.na(output$Score)|output$Score=="",][1,]$DrugRecord)
+
+drugRec
+
+output <- output %>%
+  dplyr::distinct()
+
+drugDF <- createDrugDF(drugRec)
+outputDF <- combineAndRemoveOverlaps(output, drugRec, drugDF, regimenCombine)
+
+outputDF$regimen <- "Yes"
+
+plotOutput <- outputDF %>%
+  dplyr::select(.data$t_start,
+                .data$t_end,
+                .data$regName,
+                .data$regimen,
+                .data$adjustedS)
+
+plotDrug <- drugDF %>%
+  dplyr::select(.data$t_start,
+                .data$t_end,
+                .data$component,
+                .data$regimen)
+
+plotDrug$adjustedS <- "-1"
+colnames(plotOutput)[3] <- "component"
+
+plotDrug <- plotDrug %>%
+  dplyr::mutate(component = strsplit(.data$component,"~")) %>%
+  tidyr::unnest(.data$component)
+
+plot <- rbind(plotDrug,plotOutput)
+
+ord <- unique(plot[order(plot$regimen,plot$t_start),]$component)
+
+plot$component <- factor(plot$component, levels = ord)
+
+breaks <- seq(-14, max(plot$t_end)+5, 1)
+tickLabels <- as.character(breaks)
+tickLabels[!(breaks %% 28 == 0)] <- ''
+
+overlapLines <- as.data.frame(matrix(ncol = 5))
+overlapT <- plot[plot$regimen == "Yes",]
+j <- 1
+
+if(dim(overlapT)[1] > 1){
+  for(i in c(1:(dim(overlapT)[1]-1))){
+    if(overlapT[i,]$component==overlapT[i+1,]$component){
+      overlapLines[j,] <- c(as.numeric(overlapT[i,]$t_end),
+                            as.numeric(overlapT[i+1,]$t_start),
+                            as.character(overlapT[i,]$component),
+                            "Line","0")
+      j <- j + 1
+    }
+  }
+}
+
+colnames(overlapLines) <- colnames(plot)
+overlapLines$t_start <- as.numeric(overlapLines$t_start)
+overlapLines$t_end <- as.numeric(overlapLines$t_end)
+overlapLines$component <- factor(overlapLines$component, levels = ord)
+
+plot[plot$regimen=="Yes",]$t_start <- plot[plot$regimen=="Yes",]$t_start - 2
+plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + 2
+
+p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
+  ggchicklet::geom_rrect(data = plot[plot$regimen=="Yes",],
+                         ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
+                                      ymax = as.numeric(.data$component)+0.3,
+                                      xmin = .data$t_start,
+                                      xmax = .data$t_end, fill = .data$component)) +
+  ggplot2::geom_text(size = 3.5,
+                     data = plot[plot$regimen=="Yes",],
+                     ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
+                                  y = as.numeric(.data$component)+0.5,
+                                  label=paste("Score: ",round(as.numeric(.data$adjustedS),3)))) +
+  ggplot2::geom_point(data = plot[plot$regimen=="No",], size = 3,
+                      ggplot2::aes(x= .data$t_start,y= as.numeric(.data$component),
+                                   fill = .data$component), shape = 21) +
+  ggplot2::scale_y_continuous(labels = stringi::stri_trans_totitle(ord), breaks = seq(1,length(ord))) +
+  ggplot2::scale_x_continuous(breaks = seq(0,max(plot$t_end),28)) +
+  ggplot2::theme(panel.background = ggplot2::element_blank(),
+                 panel.grid.major = ggplot2::element_line(colour = "grey95"),
+                 legend.position = "none") +
+  ggplot2::xlab("") + ggplot2::ylab("") +
+  ggplot2::geom_segment(data = overlapLines, ggplot2::aes(y = as.numeric(.data$component),
+                                                          yend = as.numeric(.data$component),
+                                                          x = .data$t_start,
+                                                          xend = .data$t_end,
+                                                          colour = .data$component),
+                        linetype = 2, lwd = 1) +
+  ggplot2::scale_fill_viridis_d(drop=F) +
+  ggplot2::scale_color_viridis_d(drop=F) +
+  ggplot2::geom_hline(linetype = 3,
+                      yintercept = table(plot[!duplicated(plot$component),]$regimen == "No")[2]+0.5)
+
+p1
+
+
+
+
+

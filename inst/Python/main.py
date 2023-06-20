@@ -18,8 +18,11 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 	#Track if secondary alignments have been collected
 	secondary = 0
 
-	#Setup pattern for detecting sequence lengths, by number of "."s (Aligned drugs) or "--s" (Gaps)
-	pat = "\.|~|__"
+	#Setup pattern for detecting sequence lengths, by number of "."s (Aligned drugs)
+	pat = "\."
+
+	#Setup pattern for detecting sequence gaps, by number of "__"s (Aligned gaps)
+	pat_gap = "__"
 
 	#Init return Dat
 	returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
@@ -51,10 +54,12 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 		s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[0])
 		s_a_len = len(re.findall(pat,s1_aligned))
 
+		s2_a_gaps = len(re.findall(pat_gap,s2_aligned))
+
 		s1_start = mem_index[0][1] - s_a_len
 		s1_end = mem_index[0][1]
-		s2_start = mem_index[0][0] - s_a_len
-		s2_end = mem_index[0][0]
+		s2_start = mem_index[0][0] - s_a_len + s2_a_gaps
+		s2_end = mem_index[0][0] + s2_a_gaps
 
 		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_a_len,totAligned]), axis = 0)
 

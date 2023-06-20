@@ -142,6 +142,33 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     outputDF <- outputDF %>% dplyr::arrange(.data$t_start)
   }
 
+  #Final overlap removal - sub-regimens
+  toRemove <- c()
+
+  for(i in c(1:dim(outputDF)[1])){
+    for(j in c(i:dim(outputDF)[1])) {
+      if(i != j){
+        if(outputDF[i,]$regName == outputDF[j,]$regName){
+          if(outputDF[i,]$t_start <= outputDF[j,]$t_end & outputDF[j,]$t_start <= outputDF[i,]$t_end){
+
+            highScore <- max(outputDF[c(i,j),]$adjustedS)
+
+            toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$adjustedS < highScore])
+
+          }
+        }
+      }
+    }
+  }
+
+  toRemove <- unique(toRemove)
+
+  if(length(toRemove) > 0){
+    outputDF <- outputDF[-toRemove,] %>% dplyr::arrange(.data$t_start)
+  } else {
+    outputDF <- outputDF %>% dplyr::arrange(.data$t_start)
+  }
+
   # Regimen Combine - step 1 - overall combine
 
   outputDF$Score <- as.numeric(outputDF$Score)
@@ -198,18 +225,18 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @param output An output dataframe created by align()
 #' @param fontSize The desired font size of the text
 #' @param regimenCombine Allowed number of days between two instances of the same regimen before
+#' @param returnDat A toggle to also return a processed data object
 #' those two instances are combined
 #' @return regPlot - A ggplot object
 #' @export
 plotOutput <- function(output,
                        fontSize = 2.5,
-                       regimenCombine = 28){
+                       regimenCombine = 28,
+                       returnDat = F){
 
   eb <- ggplot2::element_blank()
 
-  drugRec <- encode(output[1,]$DrugRecord)
-
-  drugRec
+  drugRec <- encode(output[is.na(output$Score)|output$Score=="",][1,]$DrugRecord)
 
   output <- output %>%
     dplyr::distinct()
@@ -237,7 +264,7 @@ plotOutput <- function(output,
 
   plotDrug <- plotDrug %>%
     dplyr::mutate(component = strsplit(.data$component,"~")) %>%
-    tidyr::unnest(component)
+    tidyr::unnest(.data$component)
 
   plot <- rbind(plotDrug,plotOutput)
 
@@ -304,8 +331,12 @@ plotOutput <- function(output,
     ggplot2::geom_hline(linetype = 3,
                         yintercept = table(plot[!duplicated(plot$component),]$regimen == "No")[2]+0.5)
 
-  return(p1)
-
+  if(returnDat == TRUE){
+    plotOutput$personID <- unique(output$personID)
+    return(plotOutput)
+  } else {
+    return(p1)
+  }
 }
 
 

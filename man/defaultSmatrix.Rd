@@ -4,7 +4,7 @@
 \alias{defaultSmatrix}
 \title{Create a default substitution matrix from all unique elements of s1 and s2}
 \usage{
-defaultSmatrix(s1, s2, g)
+defaultSmatrix(s1, s2)
 }
 \arguments{
 \item{s1}{Sequence 1, typically a HemOnc regimen}

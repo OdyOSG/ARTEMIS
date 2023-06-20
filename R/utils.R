@@ -21,3 +21,7 @@ NULL
 #' @export
 #' @importFrom lubridate "%m+%"
 NULL
+
+#' .data Object
+#' @name .data pronoun
+.data <- NULL

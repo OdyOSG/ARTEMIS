@@ -46,16 +46,14 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
     }
 
     if(is.na(s)){
-      s <- defaultSmatrix(unlist(regimen, recursive = F),drugRec,g)
+      s <- defaultSmatrix(unlist(regimen, recursive = F),drugRec)
     }
 
     dat <-as.data.frame(matrix(nrow=0,ncol=10))
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
     for(i in c(1:length(regimen))) {
-
       temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
-
       temp_dat <- as.data.frame(temp_dat)
 
       colnames(temp_dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
@@ -64,22 +62,6 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
       temp_dat[1,]$DrugRecord <- decode(drugRec)
       temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
       temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
-
-      x <- temp_dat$DrugRecord
-      y <- temp_dat$Regimen
-
-      regx <- "~|\\."
-
-      lenx <- as.numeric(lengths(regmatches(x, gregexpr(regx, x))))
-      leny <- as.numeric(lengths(regmatches(y, gregexpr(regx, y))))
-
-      for(i in c(1:dim(temp_dat)[1])){
-        if(leny[i] > lenx[i]){
-          temp_dat[i,]$totAlign <- lenx[i]
-        } else {
-          temp_dat[i,]$totAlign <- leny[i]
-        }
-      }
 
       temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(temp_dat$totAlign)
 
@@ -92,7 +74,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
   } else if(typeof(regimen[[1]]) == "character") {
 
     if(is.na(s)){
-      s <- defaultSmatrix(regimen,drugRec,g)
+      s <- defaultSmatrix(regimen,drugRec)
     }
 
     dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
@@ -104,22 +86,6 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
     dat[1,]$DrugRecord <- decode(drugRec)
     dat$Regimen <- gsub("^;","",dat$Regimen)
     dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
-
-    x <- dat$DrugRecord
-    y <- dat$Regimen
-
-    regx <- "~|\\."
-
-    lenx <- as.numeric(lengths(regmatches(x, gregexpr(regx, x))))
-    leny <- as.numeric(lengths(regmatches(y, gregexpr(regx, y))))
-
-    for(i in c(1:dim(dat)[1])){
-      if(leny[i] > lenx[i]){
-        dat[i,]$totAlign <- lenx[i]
-      } else {
-        dat[i,]$totAlign <- leny[i]
-      }
-    }
 
     dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
 

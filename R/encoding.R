@@ -5,7 +5,6 @@
 #' s_decoded <- decode(str_seq)
 #' @export
 encode <- function(str_seq){
-
   s_temp <- strsplit(str_seq, ";")
   s_temp <- as.vector(unlist(s_temp))
   s_encoded <- list("")
@@ -14,25 +13,6 @@ encode <- function(str_seq){
     t_vec <- strsplit(s_temp[[i]], "\\.")
     t_vec[[1]][2] <- stringi::stri_trans_totitle(t_vec[[1]][2])
     s_encoded[i] <- t_vec
-  }
-
-  rem <- c()
-  zCount <- 0
-
-  if(length(s_encoded) > 1){
-    for(i in c(2:length(s_encoded))){
-      if(s_encoded[[i]][1] == 0){
-        zCount <- zCount+1
-        s_encoded[[i-zCount]][2] <- paste(s_encoded[[i-zCount]][2],s_encoded[[i]][2],sep="~")
-        rem <- c(rem,i)
-      } else {
-        zCount <- 0
-      }
-    }
-  }
-
-  if(length(rem) > 0){
-    s_encoded <- s_encoded[-rem]
   }
 
   return(s_encoded)
@@ -45,6 +25,5 @@ encode <- function(str_seq){
 #' s_encoded <- encode(s1)
 #' @export
 decode <- function(s1){
-  decodedStr <-paste(gsub(", ",".",gsub("[\"|\\)]","",gsub("c\\(\\\"","",as.character(s1)))),collapse=";")
-  return(decodedStr)
+  return(paste(gsub(", ",".",gsub("[\"|\\)]","",gsub("c\\(\\\"","",as.character(s1)))),collapse=";"))
 }
