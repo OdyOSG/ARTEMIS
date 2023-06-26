@@ -53,6 +53,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
     for(i in c(1:length(regimen))) {
+
       temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
       temp_dat <- as.data.frame(temp_dat)
 

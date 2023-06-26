@@ -312,11 +312,29 @@ drugRecord <- "7.Trastuzumab;21.Carboplatin;0.Paclitaxel;0.Trastuzumab"
 s1 <- encode(reg1)
 s2 <- encode(drugRecord)
 
-output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 0, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
 
-output_test11 <- output_test11[(output_test11$totAlign > 1 | output_test11$totAlign == "") & (output_test11$adjustedS > 0.6 | is.na(output_test11$adjustedS)),]
+#output_test11 <- output_test11[(output_test11$totAlign > 1 | output_test11$totAlign == "") & (output_test11$adjustedS > 0.6 | is.na(output_test11$adjustedS)),]
 
 plotOutput(output_test11)
+
+
+
+
+
+#Test 12 - matrix sim
+
+reg1 <- "7.A;0.B;0.C;7.A;7.D"
+
+drugRecord <- "0.C;7.D;15.C;7.A;0.B;0.C;7.A;7.D;7.E;7.E"
+
+s1 <- encode(reg1)
+s2 <- encode(drugRecord)
+
+output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 1, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+
+
+
 
 
 output <- output_test11
@@ -326,12 +344,8 @@ returnDat = F
 
 eb <- ggplot2::element_blank()
 
-output[is.na(output$Score),]
-
 drugRec <- encode(output[1,]$DrugRecord)
 drugRec <- encode(output[is.na(output$Score)|output$Score=="",][1,]$DrugRecord)
-
-drugRec
 
 output <- output %>%
   dplyr::distinct()

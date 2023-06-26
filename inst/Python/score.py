@@ -98,8 +98,6 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 								i = i-1
 								continue
 
-						#Mid-regimen case - Not possible?
-
 			#Calculate time penalty
 			if i == 1 and j == 1:
 				tp = 0
@@ -146,6 +144,20 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 				TR[i][j] = TC[i][j-1]
 				TC[i][j] = TC[i][j-1] + float(s1[j-1][0])
 
+
+
+			if j == s1_len and i < s2_len:
+				if(float(s2[i][0]) < float(s1[0][0])):
+					H[i][j] = max(H[i][j]-lossFunction(T,float(s2[i][0]),float(s1[0][0]),method,i,j),0)
+
+			print(i)
+			print(j)
+			if j == 1 and i == 10:
+				print("Trace")
+				print(traceVal)
+				print("Score")
+				print(matVal)
+			
 			j += 1
 
 		i += 1
