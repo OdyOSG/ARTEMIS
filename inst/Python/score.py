@@ -150,14 +150,6 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 				if(float(s2[i][0]) < float(s1[0][0])):
 					H[i][j] = max(H[i][j]-lossFunction(T,float(s2[i][0]),float(s1[0][0]),method,i,j),0)
 
-			print(i)
-			print(j)
-			if j == 1 and i == 10:
-				print("Trace")
-				print(traceVal)
-				print("Score")
-				print(matVal)
-			
 			j += 1
 
 		i += 1
