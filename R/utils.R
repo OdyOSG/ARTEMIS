@@ -21,3 +21,16 @@ NULL
 #' @export
 #' @importFrom lubridate "%m+%"
 NULL
+
+#' .data Object
+#' @name .data pronoun
+.data <- NULL
+
+#' Python Utility Installs
+#' Ensures relevant python libraries are installed
+py_lib_install <- function(){
+
+  py_install("numpy")
+  py_install("pandas")
+
+}

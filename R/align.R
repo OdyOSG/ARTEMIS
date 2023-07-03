@@ -20,10 +20,17 @@
 #'            Mem = 1 : Script will return 1 alignment and all alignments with the same score
 #'            Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment
 #' @param removeOverlap A variable indicating whether to remove overlaps (1) or leave them in the output data (0)
+#' @param method A character string indicating which loss function method to utilise. Please pick one of
+#'            PropDiff        - Proportional difference of Tx and Ty
+#'            AbsDiff         - Absolute difference of Tx and Ty
+#'            Quadratic       - Absolute difference of Tx and Ty to the power 2
+#'            PropQuadratic   - Absolute difference of Tx and Ty to the power 2, divided by the max of Tx and Ty
+#'            LogCosh         - The natural logarithm of the Cosh of the absolute difference of Tx and Ty
+#'
 #' @return dat A dataframe containing information on the resulting alignments
 #' output <- align(regimen,drugRec)
 #' @export
-align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap) {
+align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,method) {
 
   if(!exists("temporal_alignment", mode="function")) {
     reticulate::source_python(system.file("python/init.py",package="oncoRegimens"),envir=globalenv())
@@ -46,7 +53,8 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
 
     for(i in c(1:length(regimen))) {
-      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap)
+
+      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
       temp_dat <- as.data.frame(temp_dat)
 
       colnames(temp_dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
@@ -56,7 +64,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
       temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
       temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
 
-      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(length(regimen[[i]]))
+      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(temp_dat$totAlign)
 
       dat <- rbind(dat,temp_dat)
 
@@ -70,7 +78,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
       s <- defaultSmatrix(regimen,drugRec)
     }
 
-    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap)
+    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
     dat <- as.data.frame(dat)
 
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
@@ -80,7 +88,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap)
     dat$Regimen <- gsub("^;","",dat$Regimen)
     dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
 
-    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(length(regimen))
+    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
 
     dat <- dat[!dat$totAlign == 0,]
 

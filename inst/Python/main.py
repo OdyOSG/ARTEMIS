@@ -5,7 +5,7 @@ import re
 
 pd.options.display.max_columns = None
 
-def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
+def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method="PropDiff"):
 	s1_len = len(s1)
 	s2_len = len(s2)
 
@@ -18,15 +18,18 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	#Track if secondary alignments have been collected
 	secondary = 0
 
-	#Setup pattern for detecting sequence lengths, by number of "."s (Aligned drugs) or "--s" (Gaps)
-	pat = "\.|__"
+	#Setup pattern for detecting sequence lengths, by number of "."s (Aligned drugs)
+	pat = "\."
+
+	#Setup pattern for detecting sequence gaps, by number of "__"s (Aligned gaps)
+	pat_gap = "__"
 
 	#Init return Dat
 	returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
 	returnDat = np.array(returnDat, dtype=object)
 
 	#Impute score matrix, retrieve relevant vars
-	TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s)
+	TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method)
 
 	#Find best scoring cell
 	finalScore, finalIndex, mem_index, mem_score = find_best_score(H, s1_len, s2_len, mem, verbose)
@@ -45,15 +48,21 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 		traceMatp = traceMatp.set_axis(s1p, axis = 1, copy=False)
 		traceMatp = traceMatp.set_axis(s2p, axis = 0, copy=False)
 		print(traceMatp)
+		print("Final TC matrix: ")
+		print(TC)
+		print("Final TR matrix: ")
+		print(TR)
 
 	#Handling alignments as per mem specification
 	if len(mem_score) > 1:
 		s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[0])
 		s_a_len = len(re.findall(pat,s1_aligned))
 
+		s2_a_gaps = len(re.findall(pat_gap,s2_aligned))
+
 		s1_start = mem_index[0][1] - s_a_len
 		s1_end = mem_index[0][1]
-		s2_start = mem_index[0][0] - s_a_len
+		s2_start = mem_index[0][0] - s_a_len + s2_a_gaps
 		s2_end = mem_index[0][0]
 
 		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_a_len,totAligned]), axis = 0)
@@ -62,9 +71,12 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0):
 	else: 
 		s1_aligned, s2_aligned, totAligned = align_TSW(traceMat, s1, s2, s1_len, s2_len, finalIndex)
 		s_f_len = len(re.findall(pat,s1_aligned))
+
+		s2_a_gaps = len(re.findall(pat_gap,s2_aligned))
+
 		s1_start = finalIndex[1] - s_f_len
 		s1_end = finalIndex[1]
-		s2_start = finalIndex[0] - s_f_len
+		s2_start = finalIndex[0] - s_f_len + s2_a_gaps
 		s2_end = finalIndex[0]
 
 		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_f_len,totAligned]), axis = 0)

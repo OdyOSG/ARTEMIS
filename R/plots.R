@@ -52,7 +52,7 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 
   regCount <- regCount %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(compNo = length(unique(gsub("[0-9]*\\.","",unlist(strsplit(.data$Regimen,";")))))) %>%
+    dplyr::mutate(compNo = length(unique(gsub("[0-9]*\\.","",unlist(strsplit(.data$Regimen,";|~")))))) %>%
     dplyr::select(.data$regName, .data$compNo)
 
   regCount <- regCount[!duplicated(paste(regCount$regName, regCount$compNo)),]
@@ -126,8 +126,35 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
           mostComps <- max(outputDF[c(i,j),]$compNo)
           toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$compNo < mostComps])
 
-          if(outputDF[i,]$compNo == outputDF[j,]$compNo){
-            toRemove <- c(toRemove,c(i,j)[grep(" RT",outputDF[c(i,j),]$regName)])
+          #if(outputDF[i,]$compNo == outputDF[j,]$compNo){
+          #  toRemove <- c(toRemove,c(i,j)[grep(" RT",outputDF[c(i,j),]$regName)])
+          #}
+        }
+      }
+    }
+  }
+
+  toRemove <- unique(toRemove)
+
+  if(length(toRemove) > 0){
+    outputDF <- outputDF[-toRemove,] %>% dplyr::arrange(.data$t_start)
+  } else {
+    outputDF <- outputDF %>% dplyr::arrange(.data$t_start)
+  }
+
+  #Final overlap removal - sub-regimens
+  toRemove <- c()
+
+  for(i in c(1:dim(outputDF)[1])){
+    for(j in c(i:dim(outputDF)[1])) {
+      if(i != j){
+        if(outputDF[i,]$regName == outputDF[j,]$regName){
+          if(outputDF[i,]$t_start < outputDF[j,]$t_end & outputDF[j,]$t_start < outputDF[i,]$t_end){
+
+            highScore <- max(outputDF[c(i,j),]$adjustedS)
+
+            toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$adjustedS < highScore])
+
           }
         }
       }
@@ -198,16 +225,18 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @param output An output dataframe created by align()
 #' @param fontSize The desired font size of the text
 #' @param regimenCombine Allowed number of days between two instances of the same regimen before
+#' @param returnDat A toggle to also return a processed data object
 #' those two instances are combined
 #' @return regPlot - A ggplot object
 #' @export
 plotOutput <- function(output,
                        fontSize = 2.5,
-                       regimenCombine = 28){
+                       regimenCombine = 28,
+                       returnDat = F){
 
   eb <- ggplot2::element_blank()
 
-  drugRec <- encode(output[1,3])
+  drugRec <- encode(output[is.na(output$Score)|output$Score=="",][1,]$DrugRecord)
 
   output <- output %>%
     dplyr::distinct()
@@ -232,6 +261,10 @@ plotOutput <- function(output,
 
   plotDrug$adjustedS <- "-1"
   colnames(plotOutput)[3] <- "component"
+
+  plotDrug <- plotDrug %>%
+    dplyr::mutate(component = strsplit(.data$component,"~")) %>%
+    tidyr::unnest(.data$component)
 
   plot <- rbind(plotDrug,plotOutput)
 
@@ -298,8 +331,12 @@ plotOutput <- function(output,
     ggplot2::geom_hline(linetype = 3,
                         yintercept = table(plot[!duplicated(plot$component),]$regimen == "No")[2]+0.5)
 
-  return(p1)
-
+  if(returnDat == TRUE){
+    plotOutput$personID <- unique(output$personID)
+    return(plotOutput)
+  } else {
+    return(p1)
+  }
 }
 
 
