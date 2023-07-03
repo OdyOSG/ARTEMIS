@@ -334,6 +334,12 @@ s2 <- encode(drugRecord)
 output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 1, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
 
 
+#Test 12 - Presentation test
+
+
+
+
+
 
 
 

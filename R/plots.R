@@ -149,7 +149,7 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     for(j in c(i:dim(outputDF)[1])) {
       if(i != j){
         if(outputDF[i,]$regName == outputDF[j,]$regName){
-          if(outputDF[i,]$t_start <= outputDF[j,]$t_end & outputDF[j,]$t_start <= outputDF[i,]$t_end){
+          if(outputDF[i,]$t_start < outputDF[j,]$t_end & outputDF[j,]$t_start < outputDF[i,]$t_end){
 
             highScore <- max(outputDF[c(i,j),]$adjustedS)
 
