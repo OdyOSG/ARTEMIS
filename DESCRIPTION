@@ -12,6 +12,7 @@ Imports:
     ggplot2,
     lubridate,
     CDMConnector,
+    cli,
     ggchicklet,
     magrittr,
     stringi,
