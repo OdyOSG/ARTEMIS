@@ -30,7 +30,20 @@ NULL
 #' Ensures relevant python libraries are installed
 py_lib_install <- function(){
 
-  py_install("numpy")
-  py_install("pandas")
+  reticulate::py_install("numpy")
+  reticulate::py_install("pandas")
 
+}
+
+#' Progress report#'
+#' @param x Current progress
+#' @param max Final progress value
+progress <- function (x, max = 100) {
+  percent <- x / max * 100
+  cat(sprintf('\r[%-50s] %d / %d',
+              paste(rep('=', percent / 2), collapse = ''),
+              x,
+              max))
+  if (x == max)
+    cat('\n')
 }
