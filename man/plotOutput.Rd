@@ -4,14 +4,16 @@
 \alias{plotOutput}
 \title{Plots, or returns a plot, displaying a full alignment output}
 \usage{
-plotOutput(output, fontSize = 2.5, regimenCombine = 28)
+plotOutput(output, fontSize = 2.5, regimenCombine = 28, returnDat = F)
 }
 \arguments{
 \item{output}{An output dataframe created by align()}
 
 \item{fontSize}{The desired font size of the text}
 
-\item{regimenCombine}{Allowed number of days between two instances of the same regimen before
+\item{regimenCombine}{Allowed number of days between two instances of the same regimen before}
+
+\item{returnDat}{A toggle to also return a processed data object
 those two instances are combined}
 }
 \value{

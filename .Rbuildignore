@@ -6,3 +6,5 @@
 ^LICENSE\.md$
 example2.png
 temporalAlign_test.R
+exampleCohort/
+User_Test.R
