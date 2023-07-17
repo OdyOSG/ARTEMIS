@@ -5,14 +5,10 @@
 \title{Generate a set of patient drug record strings from a valid CDM connection and
 a valid cohort JSON.}
 \usage{
-stringDF_from_cdm(cdm, json, name, writeOut = TRUE, outputName = "Output")
+stringDF_from_cdm(con_df, writeOut = TRUE, outputName = "Output")
 }
 \arguments{
-\item{cdm}{A valid CDM connection object}
-
-\item{json}{A valid Cohort specification JSON}
-
-\item{name}{A name for the given cohort}
+\item{con_df}{A con_df dataframe returned by getCohortSet()}
 
 \item{writeOut}{A variable indicating whether to save the set of drug records}
 

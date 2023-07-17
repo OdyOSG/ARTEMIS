@@ -85,7 +85,7 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
     cli::cat_bullet("Writing output...",
                bullet_col = "yellow", bullet = "info")
 
-    outputFile <- here::here("data/")
+    outputFile <- here::here("output/")
     write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = output_all)
   }
 
@@ -93,5 +93,52 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
              bullet_col = "green", bullet = "tick")
 
   return(output_all)
+
+}
+
+
+
+
+#' Perform post-processing on a data frame of raw alignment results
+#' @param rawOutput An output dataframe produced by generateRawAlignments()
+#' @param regimenCombine The numeric value of days allowed between regimens of the same
+#' name before they are collapsed/summarised into a single regimen
+#' @param writeOut A variable indicating whether to save the set of drug records
+#' @param outputName The name for a given written output
+#' @return A dataframe containing the relevant patients and their drug exposure strings
+#' @export
+processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, outputName = "Output_Processed") {
+
+  IDs_All <- unique(rawOutput$personID)
+
+  processedAll <- matrix(ncol = 6)
+  colnames(processedAll) <- c("t_start","t_end","component","regimen","adjustedS","personID")
+
+  cli::cat_bullet(paste("Performing post-processing of ",
+                        length(IDs_All), " patients.\n Total alignments: ",
+                        dim(rawOutput)[1],sep = ""),
+                  bullet_col = "yellow", bullet = "info")
+
+  #Collect all tests here
+  for(i in c(1:length(IDs_All))){
+
+    newOutput <- rawOutput[rawOutput$personID == IDs_All[i],]
+
+    processed <- plotOutput(newOutput, returnDat = T)
+
+    progress(x = i, max = length(IDs_All))
+
+    processedAll <- rbind(processedAll,processed)
+
+  }
+
+  processedAll <- processedAll[-1,]
+
+  if(writeOut == TRUE){
+    outputFile <- here::here("output/")
+    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll)
+  }
+
+  return(processedAll)
 
 }

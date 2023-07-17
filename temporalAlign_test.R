@@ -31,9 +31,11 @@ regimens <- list(regimen1,regimen2)
 
 regNames <- list("Test0","Test1")
 
-output_test0 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test0 <- align(regimen1,"Test",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
 
 plotOutput(output_test0, regimenCombine = 7)
+
+output_test0_data <- plotOutput(output_test0, regimenCombine = 7, returnDat = T)
 
 ######  - Test 1 - ######
 ##### Single Regimen #####

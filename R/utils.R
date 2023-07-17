@@ -26,8 +26,26 @@ NULL
 #' @name .data pronoun
 .data <- NULL
 
+#' Global Variable Warnings
+#' These warnings serve no purpose and since tidyr 1.2.0 the .data pronoun
+#' is not used in select() and unnest(), thus leading to these warnings
+#' being erroneously generated
+regName <- NULL
+Score <- NULL
+drugRec_Start <- NULL
+drugRec_End <- NULL
+adjustedS <- NULL
+totAlign <- NULL
+compNo <- NULL
+t_start <- NULL
+t_end <- NULL
+regimen <- NULL
+component <- NULL
+person_id <- NULL
+
 #' Python Utility Installs
 #' Ensures relevant python libraries are installed
+#' @export
 py_lib_install <- function(){
 
   reticulate::py_install("numpy")

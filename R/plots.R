@@ -44,16 +44,16 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 
   outputDF <- output %>%
     dplyr::filter(.data$Score != "") %>%
-    dplyr::select(.data$regName, .data$Score,
-                  .data$drugRec_Start, .data$drugRec_End,
-                  .data$adjustedS, .data$totAlign)
+    dplyr::select(regName, Score,
+                  drugRec_Start, drugRec_End,
+                  adjustedS, totAlign)
 
   regCount <- output[is.na(output$adjustedS),]
 
   regCount <- regCount %>%
     dplyr::rowwise() %>%
     dplyr::mutate(compNo = length(unique(gsub("[0-9]*\\.","",unlist(strsplit(.data$Regimen,";|~")))))) %>%
-    dplyr::select(.data$regName, .data$compNo)
+    dplyr::select(regName, compNo)
 
   regCount <- regCount[!duplicated(paste(regCount$regName, regCount$compNo)),]
 
@@ -247,24 +247,24 @@ plotOutput <- function(output,
   outputDF$regimen <- "Yes"
 
   plotOutput <- outputDF %>%
-    dplyr::select(.data$t_start,
-                  .data$t_end,
-                  .data$regName,
-                  .data$regimen,
-                  .data$adjustedS)
+    dplyr::select(t_start,
+                  t_end,
+                  regName,
+                  regimen,
+                  adjustedS)
 
   plotDrug <- drugDF %>%
-    dplyr::select(.data$t_start,
-                  .data$t_end,
-                  .data$component,
-                  .data$regimen)
+    dplyr::select(t_start,
+                  t_end,
+                  component,
+                  regimen)
 
   plotDrug$adjustedS <- "-1"
   colnames(plotOutput)[3] <- "component"
 
   plotDrug <- plotDrug %>%
     dplyr::mutate(component = strsplit(.data$component,"~")) %>%
-    tidyr::unnest(.data$component)
+    tidyr::unnest(component)
 
   plot <- rbind(plotDrug,plotOutput)
 
@@ -337,6 +337,83 @@ plotOutput <- function(output,
   } else {
     return(p1)
   }
+}
+
+#' Plots, or returns a plot, displaying a full alignment output utilising an already
+#' processed output
+#' @param processedAll An output dataframe created by processAlignments
+#' @param fontSize The desired font size of the text
+#' @return regPlot - A ggplot object
+#' @export
+plotProcesssed <- function(processedAll,
+                           fontSize = 2.5){
+
+  plot <- processedAll
+
+  ord <- unique(plot[order(plot$regimen,plot$t_start),]$component)
+
+  plot$component <- factor(plot$component, levels = ord)
+
+  breaks <- seq(-14, max(plot$t_end)+5, 1)
+  tickLabels <- as.character(breaks)
+  tickLabels[!(breaks %% 28 == 0)] <- ''
+
+  overlapLines <- as.data.frame(matrix(ncol = 5))
+  overlapT <- plot[plot$regimen == "Yes",]
+  j <- 1
+
+  if(dim(overlapT)[1] > 1){
+    for(i in c(1:(dim(overlapT)[1]-1))){
+      if(overlapT[i,]$component==overlapT[i+1,]$component){
+        overlapLines[j,] <- c(as.numeric(overlapT[i,]$t_end),
+                              as.numeric(overlapT[i+1,]$t_start),
+                              as.character(overlapT[i,]$component),
+                              "Line","0")
+        j <- j + 1
+      }
+    }
+  }
+
+  colnames(overlapLines) <- colnames(plot)[1:5]
+  overlapLines$t_start <- as.numeric(overlapLines$t_start)
+  overlapLines$t_end <- as.numeric(overlapLines$t_end)
+  overlapLines$component <- factor(overlapLines$component, levels = ord)
+
+  plot[plot$regimen=="Yes",]$t_start <- plot[plot$regimen=="Yes",]$t_start - 2
+  plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + 2
+
+  p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
+    ggchicklet::geom_rrect(data = plot[plot$regimen=="Yes",],
+                           ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
+                                        ymax = as.numeric(.data$component)+0.3,
+                                        xmin = .data$t_start,
+                                        xmax = .data$t_end, fill = .data$component)) +
+    ggplot2::geom_text(size = 3.5,
+                       data = plot[plot$regimen=="Yes",],
+                       ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
+                                    y = as.numeric(.data$component)+0.5,
+                                    label=paste("Score: ",round(as.numeric(.data$adjustedS),3)))) +
+    ggplot2::geom_point(data = plot[plot$regimen=="No",], size = 3,
+                        ggplot2::aes(x= .data$t_start,y= as.numeric(.data$component),
+                                     fill = .data$component), shape = 21) +
+    ggplot2::scale_y_continuous(labels = stringi::stri_trans_totitle(ord), breaks = seq(1,length(ord))) +
+    ggplot2::scale_x_continuous(breaks = seq(0,max(plot$t_end),28)) +
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   panel.grid.major = ggplot2::element_line(colour = "grey95"),
+                   legend.position = "none") +
+    ggplot2::xlab("") + ggplot2::ylab("") +
+    ggplot2::geom_segment(data = overlapLines, ggplot2::aes(y = as.numeric(.data$component),
+                                                            yend = as.numeric(.data$component),
+                                                            x = .data$t_start,
+                                                            xend = .data$t_end,
+                                                            colour = .data$component),
+                          linetype = 2, lwd = 1) +
+    ggplot2::scale_fill_viridis_d(drop=F) +
+    ggplot2::scale_color_viridis_d(drop=F) +
+    ggplot2::geom_hline(linetype = 3,
+                        yintercept = table(plot[!duplicated(plot$component),]$regimen == "No")[2]+0.5)
+
+  return(p1)
 }
 
 
