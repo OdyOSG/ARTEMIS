@@ -1,0 +1,17 @@
+---
+title: "Getting Started"
+author: "Laurence Lawrence-Archer"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install
+
+```{r, include = TRUE}
+library(oncoRegimens)
+
+```
+
