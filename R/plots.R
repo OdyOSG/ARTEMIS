@@ -227,12 +227,15 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @param regimenCombine Allowed number of days between two instances of the same regimen before
 #' @param returnDat A toggle to also return a processed data object
 #' those two instances are combined
+#' @param returnDrugs A toggle to indicate whether drugs should be returned by processing,
+#' in addition to regimens
 #' @return regPlot - A ggplot object
 #' @export
 plotOutput <- function(output,
                        fontSize = 2.5,
                        regimenCombine = 28,
-                       returnDat = F){
+                       returnDat = F,
+                       returnDrugs = F){
 
   eb <- ggplot2::element_blank()
 
@@ -332,10 +335,25 @@ plotOutput <- function(output,
                         yintercept = table(plot[!duplicated(plot$component),]$regimen == "No")[2]+0.5)
 
   if(returnDat == TRUE){
-    plotOutput$personID <- unique(output$personID)
-    return(plotOutput)
+
+    if(returnDrugs == TRUE){
+
+      returnData <- rbind(plotDrug,plotOutput)
+
+    } else {
+
+      returnData <- plotOutput
+
+    }
+
+    returnData$personID <- unique(output$personID)
+
+    return(returnData)
+
   } else {
+
     return(p1)
+
   }
 }
 

@@ -4,7 +4,13 @@
 \alias{plotOutput}
 \title{Plots, or returns a plot, displaying a full alignment output}
 \usage{
-plotOutput(output, fontSize = 2.5, regimenCombine = 28, returnDat = F)
+plotOutput(
+  output,
+  fontSize = 2.5,
+  regimenCombine = 28,
+  returnDat = F,
+  returnDrugs = F
+)
 }
 \arguments{
 \item{output}{An output dataframe created by align()}
@@ -15,6 +21,9 @@ plotOutput(output, fontSize = 2.5, regimenCombine = 28, returnDat = F)
 
 \item{returnDat}{A toggle to also return a processed data object
 those two instances are combined}
+
+\item{returnDrugs}{A toggle to indicate whether drugs should be returned by processing,
+in addition to regimens}
 }
 \value{
 regPlot - A ggplot object
