@@ -134,11 +134,10 @@ processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, output
 
   processedAll <- processedAll[-1,]
 
-  if(writeOut == TRUE){
-    outputFile <- here::here("output/")
-    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll)
-  }
-
   return(processedAll)
 
+  if(writeOut == TRUE){
+    outputFile <- here::here("output/")
+    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll, append = FALSE)
+  }
 }

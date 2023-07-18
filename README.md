@@ -1,10 +1,4 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<!-- badges: start -->
-
-[![codecov.io](https://codecov.io/gh/OdyOSG/CDMConnector/coverage.svg?branch=main)](https://app.codecov.io/gh/OdyOSG/CDMConnector?branch=main)
-[![Build
-Status](https://github.com/darwin-eu/CDMConnector/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/CDMConnector/actions?query=workflow%3AR-CMD-check)
-<!-- badges: end -->
 
 ## Overview
 
@@ -91,12 +85,12 @@ processed patient strings.
 The cdm connection is used to generate a dataframe containing the
 relevant patient details for constructing regimen strings.
 
-    con_df <- getCohortSet(cdm = cdm, json = json, name = name, validDrugs = validDrugs)
+    con_df <- getCohortSet(cdm = cdm, json = json, name = name)
 
 Regimen strings are then constructed, collated and filtered into a
 stringDF dataframe containing all patients of interest.
 
-    stringDF <- stringDF_from_cdm(con_df = con_df, writeOut = F)
+    stringDF <- stringDF_from_cdm(con_df = con_df, writeOut = F, validDrugs = validDrugs)
 
     stringDF <- stringDF %>% filter_stringDF(min = 20)
 

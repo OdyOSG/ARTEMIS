@@ -9,7 +9,7 @@
 #' @export
 stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", validDrugs) {
 
-  cli::cat_bullet("Loading valid drugs and filtering...",
+  cli::cat_bullet("Filtering dataframe to valid drugs only...",
                   bullet_col = "yellow", bullet = "info")
 
   con_df <- con_df[con_df$ancestor_concept_id %in% validDrugs$concept_id_2,]
@@ -37,15 +37,16 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
 
   con_df_out2$seq <- gsub(" ","",gsub(",","_",con_df_out2$seq))
 
+  return(con_df_out2)
+
   if(writeOut == TRUE){
-    outputFile <- here::here("data/")
-    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = con_df_out2)
+    outputFile <- here::here("output/")
+    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = con_df_out2, append = FALSE)
   }
 
   cli::cat_bullet("Complete!",
                   bullet_col = "green", bullet = "tick")
 
-  return(con_df_out2)
 
 }
 
@@ -57,6 +58,9 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
 #' @return A cdm dataframe object
 #' @export
 getCohortSet <- function(cdm, json, name){
+
+  cli::cat_bullet("Connecting to CDM...",
+                  bullet_col = "yellow", bullet = "info")
 
   #Generate Cohort Set from input data
   cdm <- CDMConnector::generateCohortSet(
@@ -73,7 +77,7 @@ getCohortSet <- function(cdm, json, name){
 
   subjects <- cdmCohort_df$subject_id
 
-  cli::cat_bullet("Generate and filter drug_exposure table for each subject...",
+  cli::cat_bullet("Generate drug_exposure dataframe for each subject...",
                   bullet_col = "yellow", bullet = "info")
 
   #Generate relevant ingredients list from subjects
@@ -89,6 +93,9 @@ getCohortSet <- function(cdm, json, name){
                   .data$concept_name)
 
   con_df <- as.data.frame(con)
+
+  cli::cat_bullet("Complete!",
+                  bullet_col = "green", bullet = "tick")
 
   return(con_df)
 

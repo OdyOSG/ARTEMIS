@@ -24,5 +24,6 @@ Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.3
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    vdiffr
 Config/testthat/edition: 3
