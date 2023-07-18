@@ -37,8 +37,6 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
 
   con_df_out2$seq <- gsub(" ","",gsub(",","_",con_df_out2$seq))
 
-  return(con_df_out2)
-
   if(writeOut == TRUE){
     outputFile <- here::here("output/")
     write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = con_df_out2, append = FALSE)
@@ -47,6 +45,7 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
   cli::cat_bullet("Complete!",
                   bullet_col = "green", bullet = "tick")
 
+  return(con_df_out2)
 
 }
 
