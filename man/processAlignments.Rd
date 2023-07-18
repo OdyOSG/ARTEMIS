@@ -8,7 +8,8 @@ processAlignments(
   rawOutput,
   regimenCombine,
   writeOut = TRUE,
-  outputName = "Output_Processed"
+  outputName = "Output_Processed",
+  returnDrugs = FALSE
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ name before they are collapsed/summarised into a single regimen}
 \item{writeOut}{A variable indicating whether to save the set of drug records}
 
 \item{outputName}{The name for a given written output}
+
+\item{returnDrugs}{A toggle to indicate whether drugs should be returned by processing,
+in addition to regimens}
 }
 \value{
 A dataframe containing the relevant patients and their drug exposure strings

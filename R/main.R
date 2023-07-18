@@ -105,9 +105,11 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
 #' name before they are collapsed/summarised into a single regimen
 #' @param writeOut A variable indicating whether to save the set of drug records
 #' @param outputName The name for a given written output
+#' @param returnDrugs A toggle to indicate whether drugs should be returned by processing,
+#' in addition to regimens
 #' @return A dataframe containing the relevant patients and their drug exposure strings
 #' @export
-processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, outputName = "Output_Processed") {
+processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, outputName = "Output_Processed", returnDrugs = FALSE) {
 
   IDs_All <- unique(rawOutput$personID)
 
@@ -124,7 +126,7 @@ processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, output
 
     newOutput <- rawOutput[rawOutput$personID == IDs_All[i],]
 
-    processed <- plotOutput(newOutput, returnDat = T)
+    processed <- plotOutput(newOutput, returnDat = T, returnDrugs = returnDrugs)
 
     progress(x = i, max = length(IDs_All))
 
