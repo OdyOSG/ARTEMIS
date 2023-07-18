@@ -33,7 +33,10 @@ and distribution of regimens found within a specific cohort, as well as
 their coverage and length, as well as providing summary graphics for
 patient treatment trajectories.
 
-[Treatment Trajectories](/img/Networks.png?)
+<figure>
+<img src="/img/Networks.png?" alt="Treatment Trajectories" />
+<figcaption aria-hidden="true">Treatment Trajectories</figcaption>
+</figure>
 
 ## Installation
 
@@ -124,3 +127,19 @@ submission to an episode era table.
 Data may then be re-uploaded via CDMConnector to the relevant schema.
 
     uploadEpisodeEra(processedAll)
+
+## DBI Drivers
+
+CDMConnector is tested using the following DBI driver backends:
+
+-   [RPostgres](https://rpostgres.r-dbi.org/reference/postgres) on
+    Postgres and Redshift
+-   [odbc](https://solutions.posit.co/connections/db/r-packages/odbc/)
+    on Microsoft SQL Server, Oracle, and Databricks/Spark
+-   [duckdb](https://duckdb.org/docs/api/r)
+
+## Getting help
+
+If you encounter a clear bug, please file an issue with a minimal
+[reproducible example](https://reprex.tidyverse.org/) at the [GitHub
+issues page](https://github.com/OdyOSG/oncoRegimens/issues).
