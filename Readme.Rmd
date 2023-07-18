@@ -1,0 +1,152 @@
+---
+title: "README"
+output: md_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- badges: start -->
+[![codecov.io](https://codecov.io/gh/OdyOSG/CDMConnector/coverage.svg?branch=main)](https://app.codecov.io/gh/OdyOSG/CDMConnector?branch=main)
+[![Build Status](https://github.com/darwin-eu/CDMConnector/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/CDMConnector/actions?query=workflow%3AR-CMD-check)
+<!-- badges: end -->
+
+## Overview
+
+ARTEMIS provides an interface for utilizing a modified Temporal Smith-Waterman (TSW) algorithm, derived from [10.1109/DSAA.2015.7344785](https://www.researchgate.net/publication/292331949_Temporal_Needleman-Wunsch), to summarize longitudinal EHR data into discrete regimen eras. Primarily intended to be used for cancer patients, ARTEMIS utilizes data derived from the [HemOnc](https://hemonc.org/wiki/Main_Page) oncology reference to form the basic regimen data used in testing.
+
+![ARTEMIS Workflow](/img/Workflow.png?)
+
+## Features
+
+ARTEMIS is primarily useful for stratifying patients based on their most likely prescribed regimens, for use in cohort construction via the Episode Era table of the [OMOP CDM](https://www.ohdsi.org/data-standardization/). 
+
+ARTEMIS may also be used for providing summary statistics on the number and distribution of regimens found within a specific cohort, as well as their coverage and length, as well as providing summary graphics for patient treatment trajectories.
+
+![Treatment Trajectories](/img/Networks.png?)
+
+## Installation
+
+ARTEMIS can presently be installed directly from GitHub:
+
+```r
+# install.packages("devtools")
+devtools::install_github("odyOSG/oncoRegimens")
+```
+
+## Usage
+
+### CDMConnector
+
+A cdm_reference object is created from any DBI connection, utilising the [CDMConnector](https://darwin-eu.github.io/CDMConnector/) package.
+
+```{r, eval=FALSE}
+dbiconn <- DBI::dbConnect(RPostgres::Redshift(),
+                          dbname = "dbName",
+                          host = "hostName",
+                          port = "9999",
+                          user = "user",
+                          password = "password")
+
+cdmSchema      <- "schema_containing_data"
+
+cdm <- CDMConnector::cdm_from_con(con = dbiconn,
+                                  cdm_schema = cdmSchema,
+                                  write_schema = "schema_with_write_access")
+
+```
+
+### Input
+
+An input JSON containing a cohort specification is input by the user. Information on OHDSI cohort creation and best practices can be found [here](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html).
+
+```{r, eval=FALSE}
+
+json <- CDMConnector::readCohortSet(path = here::here("exampleCohort/"))
+name <- "myExampleCohort"
+
+```
+
+Regimen data may be read in from the provided package, or may be submitted directly by the user. All of the provided regimens will be tested against all patients within a given cohort.
+
+```{r, eval=FALSE}
+
+regimens <- read.csv(here::here("data/regimens-HemOnc/Thoracic_Cancer/LungCancer_Filt.csv"))
+
+```
+
+A set of valid drugs may also be read in using the provided data, or may be curated and submitted by the user. Only valid drugs will appear in processed patient strings.
+
+```{r, eval=FALSE}
+
+validDrugs <- read.csv(here::here("data/drugMap_Valid.csv"))
+
+```
+
+### Pipeline
+
+The cdm connection is used to generate a dataframe containing the relevant patient details for constructing regimen strings.
+
+```{r, eval=FALSE}
+
+con_df <- getCohortSet(cdm = cdm, json = json, name = name, validDrugs = validDrugs)
+
+```
+
+Regimen strings are then constructed, collated and filtered into a stringDF dataframe containing all patients of interest.
+
+```{r, eval=FALSE}
+
+stringDF <- stringDF_from_cdm(con_df = con_df, writeOut = F)
+
+stringDF <- stringDF %>% filter_stringDF(min = 20)
+
+```
+
+The TSW algorithm is then run using user input settings and the provided regimen and patient data. Detailed information on user inputs, such as the gap penalty, g, can be found [here](www.github.com/odyOSG/oncoRegimens)
+
+```{r, eval=FALSE}
+
+output_all <- stringDF %>% generateRawAlignments(regimens = regimens,
+                                                 g = 0.4,
+                                                 Tfac = 0.5,
+                                                 verbose = 0,
+                                                 mem = -1,
+                                                 removeOverlap = 1,
+                                                 method = "PropDiff")
+
+```
+
+Raw output alignments are then post-processed and may be visualised. Post-processing steps include the handling and combination of overlapping regimen alignments, as well as formatting output for submission to an episode era table.
+
+```{r, eval=FALSE}
+
+processedAll <- output_all %>% processAlignments(regimenCombine = 28)
+
+personOfInterest <- processedAll[processedAll$personID == unique(processedAll$personID)[1337],]
+
+plotProcesssed(personOfInterest, fontSize = 2.5)
+
+```
+
+Data may then be re-uploaded via CDMConnector to the relevant schema.
+
+```{r, eval=FALSE}
+
+uploadEpisodeEra(processedAll)
+
+```
+
+
+## DBI Drivers
+
+CDMConnector is tested using the following DBI driver backends:
+
+- [RPostgres](https://rpostgres.r-dbi.org/reference/postgres) on Postgres and Redshift
+- [odbc](https://solutions.posit.co/connections/db/r-packages/odbc/) on Microsoft SQL Server, Oracle, and Databricks/Spark
+- [duckdb](https://duckdb.org/docs/api/r) 
+
+
+## Getting help
+
+If you encounter a clear bug, please file an issue with a minimal [reproducible example](https://reprex.tidyverse.org/) at the  [GitHub issues page](https://github.com/OdyOSG/oncoRegimens/issues).
+
