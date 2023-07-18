@@ -11,7 +11,7 @@ from the [HemOnc](https://hemonc.org/wiki/Main_Page) oncology reference
 to form the basic regimen data used in testing.
 
 <figure>
-<img src="/img/Workflow.png?" alt="ARTEMIS Workflow" />
+<img src="/img/Workflow_Detailed.png?" alt="ARTEMIS Workflow" />
 <figcaption aria-hidden="true">ARTEMIS Workflow</figcaption>
 </figure>
 
