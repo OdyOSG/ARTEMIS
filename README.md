@@ -1,4 +1,4 @@
-!<img src="/img/logo_Artemis.png" alt="logo" title="" width="150"/>
+<img align="center" src="/img/logo_Artemis.png?" alt="logo" title="" width="150"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
