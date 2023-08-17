@@ -1,4 +1,4 @@
-![](/img/logo_Artemis.png?)
+<img src="/img/logo_Artemis.png" alt="logo" title="" width="150"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
