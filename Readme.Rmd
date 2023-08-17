@@ -3,6 +3,8 @@ title: "README"
 output: md_document
 ---
 
+![](/img/logo_Artemis.png?)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ## Overview
@@ -13,7 +15,7 @@ ARTEMIS provides an interface for utilizing a modified Temporal Smith-Waterman (
 
 ## Features
 
-ARTEMIS is primarily useful for stratifying patients based on their most likely prescribed regimens, for use in cohort construction via the Episode Era table of the [OMOP CDM](https://www.ohdsi.org/data-standardization/). 
+ARTEMIS is primarily useful for stratifying patients based on their most likely prescribed regimens, for use in cohort construction via the Episode Era table of the [OMOP CDM](https://www.ohdsi.org/data-standardization/).
 
 ARTEMIS may also be used for providing summary statistics on the number and distribution of regimens found within a specific cohort, as well as their coverage and length, as well as providing summary graphics for patient treatment trajectories.
 
@@ -23,7 +25,7 @@ ARTEMIS may also be used for providing summary statistics on the number and dist
 
 ARTEMIS can presently be installed directly from GitHub:
 
-```r
+``` r
 # install.packages("devtools")
 devtools::install_github("odyOSG/oncoRegimens")
 ```
@@ -131,17 +133,14 @@ uploadEpisodeEra(processedAll)
 
 ```
 
-
 ## DBI Drivers
 
 CDMConnector is tested using the following DBI driver backends:
 
-- [RPostgres](https://rpostgres.r-dbi.org/reference/postgres) on Postgres and Redshift
-- [odbc](https://solutions.posit.co/connections/db/r-packages/odbc/) on Microsoft SQL Server, Oracle, and Databricks/Spark
-- [duckdb](https://duckdb.org/docs/api/r) 
-
+-   [RPostgres](https://rpostgres.r-dbi.org/reference/postgres) on Postgres and Redshift
+-   [odbc](https://solutions.posit.co/connections/db/r-packages/odbc/) on Microsoft SQL Server, Oracle, and Databricks/Spark
+-   [duckdb](https://duckdb.org/docs/api/r)
 
 ## Getting help
 
-If you encounter a clear bug, please file an issue with a minimal [reproducible example](https://reprex.tidyverse.org/) at the  [GitHub issues page](https://github.com/OdyOSG/oncoRegimens/issues).
-
+If you encounter a clear bug, please file an issue with a minimal [reproducible example](https://reprex.tidyverse.org/) at the [GitHub issues page](https://github.com/OdyOSG/oncoRegimens/issues).

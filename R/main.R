@@ -130,6 +130,8 @@ processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, output
 
     progress(x = i, max = length(IDs_All))
 
+    processed$personID <- as.character(processed$personID)
+
     processedAll <- rbind(processedAll,processed)
 
   }
@@ -138,7 +140,9 @@ processAlignments <- function(rawOutput, regimenCombine, writeOut = TRUE, output
 
   if(writeOut == TRUE){
     outputFile <- here::here("output/")
-    write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll, append = FALSE)
+    suppressWarnings(
+      write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll, append = FALSE)
+    )
   }
 
   return(processedAll)
