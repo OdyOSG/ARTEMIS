@@ -12,7 +12,7 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
   cli::cat_bullet("Filtering dataframe to valid drugs only...",
                   bullet_col = "yellow", bullet = "info")
 
-  con_df <- con_df[con_df$ancestor_concept_id %in% validDrugs$concept_id_2,]
+  con_df <- con_df[con_df$ancestor_concept_id %in% validDrugs$valid_concept_id,]
 
   cli::cat_bullet("Generating lag times and constructing drug record strings...",
                   bullet_col = "yellow", bullet = "info")
@@ -116,4 +116,29 @@ filter_stringDF <- function(stringDF,min) {
 
   return(stringDF)
 
+}
+
+#' Load the default valid drugs dataframe
+#' @export
+loadDrugs <- function() {
+  data("validDrugs", package = "oncoRegimens")
+}
+
+
+#' Load regimens for a given condition
+#' Presently, the only condition fully mapped is lungCancer
+#' @export
+loadRegimens <- function(condition) {
+  if(condition == "lungCancer"){
+  data("LungCancer", package = "oncoRegimens")
+  } else {
+    message("Invalid condition. Please try running validConditions()")
+  }
+}
+
+#' Display a list of valid conditions
+#' @export
+validConditions <- function(){
+  message("Conditions currently implemented:")
+  message("lungCancer")
 }

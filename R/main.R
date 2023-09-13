@@ -57,7 +57,7 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
                            s = NA,
                            verbose = verbose,
                            mem = mem,
-                           removeOverlap = 1,
+                           removeOverlap = removeOverlap,
                            method = method)
 
       output_temp$totAlign <- unlist(output_temp$totAlign)
