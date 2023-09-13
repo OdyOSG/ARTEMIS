@@ -1,0 +1,4 @@
+"regCodeExt","metaCondition","condition","conditionCode","context","contextCode","regName","variant","regCode","component","day","cycleTaken","cycleLength","noCycles","branchInfo","Radio.Therapy.","continuous","noCycles_Original","regString","shortString"
+"100.0.0.1","Vignette","Vignette_Test","100","Vignette_Regimen","0","Acetaminophen Monotherapy","1","1","Acetaminophen","7","","7","","","","TRUE","Cont.","1.Acetaminophen;7.Acetaminophen;","1.acetaminophen;7.acetaminophen;"
+"100.0.0.1","Vignette","Vignette_Test","100","Vignette_Regimen","0","Ibuprofen Monotherapy","1","1","Ibuprofen","7","","7","","","","TRUE","Cont.","1.Ibuprofen;7.Ibuprofen;","1.ibuprofen;7.ibuprofen;"
+"100.0.0.1","Vignette","Vignette_Test","100","Vignette_Regimen","0","Acetaminophen & Ibuprofen","1","1","Acetaminophen","7","","7","","","","TRUE","Cont.","1.Acetaminophen;0.Ibuprofen;7.Acetaminophen;0.Ibuprofen;","1.acetaminophen;0.ibuprofen;7.acetaminophen;0.ibuprofen;"

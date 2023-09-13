@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting Started</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started</h1>
+
+
+
+<style type="text/css">
+body .main-container {
+max-width: 1280px !important;
+width: 1280px !important;
+}
+body {
+max-width: 1280px !important;
+}
+</style>
+<div id="connecting-artemis-to-the-omop-cdm" class="section level2">
+<h2>Connecting ARTEMIS to the OMOP CDM</h2>
+<p>ARTEMIS interacts directly with the Observational Medical Outcomes
+Partnership (OMOP) Common Data Model (CDM), a convenient and widely used
+format for storing observational health data derived from electronic
+health records. For users of ARTEMIS with access to data already stored
+in an OMOP CDM compliant datasource, drug records can be easily and
+automatically mapped to the drug record strings required by ARTEMIS.</p>
+<p>A toy dataset is included in the ARTEMIS package, and will be used
+throughout this short vignette.</p>
+<p>We’ll use a <a href="https://duckdb.org/">duckdb</a> static file
+database for this purpose.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbConnect</span>(duckdb<span class="sc">::</span><span class="fu">duckdb</span>(), here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data/vignette/Artemis_Vignette_5.3_0.8.duckdb&quot;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>cdm <span class="ot">&lt;-</span> CDMConnector<span class="sc">::</span><span class="fu">cdm_from_con</span>(<span class="at">con =</span> con,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                                  <span class="at">cdm_schema =</span> <span class="st">&quot;main&quot;</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                                  <span class="at">write_schema =</span> <span class="st">&quot;main&quot;</span>)</span></code></pre></div>
+</div>
+<div id="selecting-patients-a-cohort" class="section level2">
+<h2>Selecting patients (A cohort)</h2>
+<p>Before running ARTEMIS, a cohort json object is required. Cohorts are
+a fundamental building block for observational data analysis and each
+cohort is simply constructed by selecting a set of persons or patients
+who satisfy a set of inclusion criteria, such as a specific condition or
+a specific drug exposure. Users of ARTERMIS are expected to utilise a
+cohort of cancer patients, but any cohort format is accepted. More
+information on cohorts can be found within <a href="https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html">The Book of
+OHDSI</a>.</p>
+<p>Again, a toy cohort example is included for the purposes of this
+vignette, selecting all patients within our database. We use the package
+CDMConnector to both read our cohort description file (In json format)
+into R and to construct a cdm object armed with this cohort set.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>validPatients <span class="ot">&lt;-</span> CDMConnector<span class="sc">::</span><span class="fu">readCohortSet</span>(<span class="at">path =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;exampleCohort/vignette/&quot;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>cohortName <span class="ot">&lt;-</span> <span class="st">&quot;vignette&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>cdm <span class="ot">&lt;-</span> CDMConnector<span class="sc">::</span><span class="fu">generate_cohort_set</span>(cdm, </span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>                                         <span class="at">cohort_set =</span> validPatients, </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                                         <span class="at">name =</span> cohortName,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                                         <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="loading-regimen-and-drug-data" class="section level2">
+<h2>Loading Regimen and Drug data</h2>
+<p>To successfully run ARTEMIS, a user must provide both a list of valid
+drugs and a set of regimens which they would like to search for among
+patient records. The valid drug list must include all drugs found within
+any regimens within the set, and should also include any relevant drugs
+that are not found in regimens but are still clinically relevant.</p>
+<p>In this vignette example, we will explore three pain suppression
+regimens - two paracetamol and ibuprofen monotherapies and a combination
+therapy of both drugs. As such, we include paracetamol and ibuprofen
+within our valid drugs. We also include aspirin, as patients who take
+aspirin in combination with either of these two drugs, or alone, are
+likely to be on a different pain suppression regimen which we must
+account for. We choose not to include unrelated drugs, such as warfarin,
+as these are likely only to interfere with regimen discovery and are not
+included in a typical pain suppression regimen.</p>
+<p>The choice of which drugs are considered valid can have large effects
+on the final score of all regimens.</p>
+<p>In the case of cancer patients, a large set of valid drugs has been
+collected from the HemOnc reference resource, which can be loaded with
+the loadDrugs() function and a set of regimens derived from the same
+source may be loaded via loadRegimens() In this vignette, we will use 2
+custom .csv files to load our data.</p>
+<p>The minimum valid format for a valid drugs dataframe:</p>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>valid_concept_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>acetaminophen</td>
+<td>1125315</td>
+</tr>
+<tr class="even">
+<td>ibuprofen</td>
+<td>1177480</td>
+</tr>
+<tr class="odd">
+<td>aspirin</td>
+<td>1112807</td>
+</tr>
+</tbody>
+</table>
+<p>The minimum valid format for a regimen dataframe:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>regName</th>
+<th>shortString</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Acetaminophen Monotherapy</td>
+<td>1.acetaminophen;7.acetaminophen;</td>
+</tr>
+<tr class="even">
+<td>Ibuprofen Monotherapy</td>
+<td>1.ibuprofen;7.ibuprofen;</td>
+</tr>
+<tr class="odd">
+<td>Acetaminophen &amp; Ibuprofen</td>
+<td>1.acetaminophen;0.ibuprofen;7.acetaminophen;0.ibuprofen;</td>
+</tr>
+</tbody>
+</table>
+<p>By creating such files and importing them as .csv’s, custom regimens
+and sets of drugs may be easily supplied by the user with which to
+utilise the ARTEMIS implementation of the TSW algorithm.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>validDrugs <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data/vignette/example_drugMap_Valid.csv&quot;</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>regimens <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data/vignette/example_regimens.csv&quot;</span>))</span></code></pre></div>
+</div>
+<div id="creating-a-string-dataframe" class="section level2">
+<h2>Creating a string dataframe</h2>
+<p>The temporal smith-waterman (TSW) algorithm requires that input drug
+records take the form of individual strings, with both drug and temporal
+information stored within the string. The function stringDF_from_cdm()
+allows us to generate such strings from a given EHR. The format of each
+patient’s total drug record thus takes the form:</p>
+<p>[Days since last exposure].[Drug exposure];[Days since last
+exposure][Drug exposure];…;</p>
+<p>This dataframe may then be filtered to include only patients with a
+number of drug exposures above a certain cut-off value. First, we must
+pull our CohortSet into R via CDMConnector.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>con_df <span class="ot">&lt;-</span> <span class="fu">getCohortSet</span>(<span class="at">cdm =</span> cdm, <span class="at">json =</span> validPatients, <span class="at">name =</span> cohortName)</span></code></pre></div>
+<pre><code>## ℹ Connecting to CDM...
+## ℹ Generate drug_exposure dataframe for each subject...
+## ✔ Complete!</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>stringDF <span class="ot">&lt;-</span> <span class="fu">stringDF_from_cdm</span>(<span class="at">con_df =</span> con_df, <span class="at">writeOut =</span> F, <span class="at">validDrugs =</span> validDrugs)</span></code></pre></div>
+<pre><code>## ℹ Filtering dataframe to valid drugs only...
+## ℹ Generating lag times and constructing drug record strings...
+## ✔ Complete!</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>stringDF <span class="ot">&lt;-</span> stringDF <span class="sc">%&gt;%</span> <span class="fu">filter_stringDF</span>(<span class="at">min =</span> <span class="dv">20</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>stringDF</span></code></pre></div>
+<pre><code>## # A tibble: 10 × 3
+##    person_id seq                                                           Count
+##        &lt;dbl&gt; &lt;chr&gt;                                                         &lt;dbl&gt;
+##  1         3 0.Acetaminophen;7.Acetaminophen;7.Acetaminophen;7.Acetaminop…    25
+##  2        32 0.Acetaminophen;8.Acetaminophen;8.Acetaminophen;8.Acetaminop…    24
+##  3        35 0.Acetaminophen;4.Acetaminophen;4.Acetaminophen;4.Acetaminop…    33
+##  4        61 0.Ibuprofen;7.Ibuprofen;7.Ibuprofen;7.Ibuprofen;7.Ibuprofen;…    29
+##  5        80 0.Ibuprofen;8.Ibuprofen;8.Ibuprofen;8.Ibuprofen;8.Ibuprofen;…    22
+##  6        99 0.Ibuprofen;4.Ibuprofen;4.Ibuprofen;4.Ibuprofen;4.Ibuprofen;…    31
+##  7       115 0.Acetaminophen;0.Ibuprofen;7.Acetaminophen;0.Ibuprofen;7.Ac…    65
+##  8       116 0.Acetaminophen;1.Ibuprofen;6.Acetaminophen;1.Ibuprofen;6.Ac…    47
+##  9       133 0.Acetaminophen;1.Aspirin;6.Acetaminophen;1.Aspirin;6.Acetam…    39
+## 10       135 0.Aspirin;1.Acetaminophen;6.Aspirin;1.Acetaminophen;6.Aspiri…    45</code></pre>
+</div>
+<div id="running-the-algorithm" class="section level2">
+<h2>Running the algorithm</h2>
+<p>Once a set of patients have been summarized into a strinDF data
+frame, and all relevant regimen data are loaded, alignment via the TSW
+algorithm can commence.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width=</span><span class="dv">800</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>output_all <span class="ot">&lt;-</span> stringDF <span class="sc">%&gt;%</span> <span class="fu">generateRawAlignments</span>(<span class="at">regimens =</span> regimens,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                                                 <span class="at">g =</span> <span class="fl">0.4</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                                                 <span class="at">Tfac =</span> <span class="fl">0.5</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>                                                 <span class="at">verbose =</span> <span class="dv">0</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>                                                 <span class="at">mem =</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>                                                 <span class="at">removeOverlap =</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>                                                 <span class="at">method =</span> <span class="st">&quot;PropDiff&quot;</span>)</span></code></pre></div>
+<pre><code>## ℹ Processing 10 patients and 3 regimens...
+## 
+[=====                                             ] 1 / 10
+[==========                                        ] 2 / 10
+[===============                                   ] 3 / 10
+[====================                              ] 4 / 10
+[=========================                         ] 5 / 10
+[==============================                    ] 6 / 10
+[===================================               ] 7 / 10
+[========================================          ] 8 / 10
+[=============================================     ] 9 / 10
+[==================================================] 10 / 10
+## ℹ Writing output...
+## ✔ Complete!</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>output_all[<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">107</span>,<span class="dv">108</span>,<span class="dv">109</span>,<span class="dv">269</span>,<span class="dv">268</span>,<span class="dv">267</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">11</span>,<span class="dv">12</span>)]</span></code></pre></div>
+<pre><code>##                       regName                                              DrugRecord Score drugRec_Start drugRec_End adjustedS personID
+## 4   Acetaminophen Monotherapy                         0.Acetaminophen;7.Acetaminophen   2.0             1           2         1        3
+## 5   Acetaminophen Monotherapy                         7.Acetaminophen;7.Acetaminophen   2.0             2           3         1        3
+## 6   Acetaminophen Monotherapy                         7.Acetaminophen;7.Acetaminophen   2.0             3           4         1        3
+## 107     Ibuprofen Monotherapy                                 0.Ibuprofen;7.Ibuprofen   2.0             1           2         1       61
+## 108     Ibuprofen Monotherapy                                 7.Ibuprofen;7.Ibuprofen   2.0             2           3         1       61
+## 109     Ibuprofen Monotherapy                                 7.Ibuprofen;7.Ibuprofen   2.0             3           4         1       61
+## 269 Acetaminophen &amp; Ibuprofen 0.Acetaminophen;0.Ibuprofen;7.Acetaminophen;0.Ibuprofen   4.0             1           4         1      115
+## 268 Acetaminophen &amp; Ibuprofen 7.Acetaminophen;0.Ibuprofen;7.Acetaminophen;0.Ibuprofen   4.0             3           6         1      115
+## 267 Acetaminophen &amp; Ibuprofen 7.Acetaminophen;0.Ibuprofen;7.Acetaminophen;0.Ibuprofen   4.0             5           8         1      115</code></pre>
+<p>Our output file contains the local score of any passing regimens at
+any point throughout each patient’s drug record. All results are
+calculated exhaustively, but only those with a total score (Raw score /
+Number of aligned pairs) greater than 0.6 are returned.</p>
+<p>An output file may contain a large number of low-scoring and
+overlapping regimens, especially when many similar sets of regimens are
+used as input. A post-processing step may be performed to reduce this
+unnecessary complexity by condensing and combining regimens into
+discrete, non-overlapping regimen eras.</p>
+<p>These processed alignments may then be visualized and compared to
+their source drug record in order to validate the results of an
+alignment visually.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>output_processed <span class="ot">&lt;-</span> <span class="fu">processAlignments</span>(<span class="at">rawOutput =</span> output_all, <span class="at">regimenCombine =</span> <span class="dv">28</span>, <span class="at">returnDrugs =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## ℹ Performing post-processing of 10 patients.
+##  Total alignments: 472
+## 
+[=====                                             ] 1 / 10
+[==========                                        ] 2 / 10
+[===============                                   ] 3 / 10
+[====================                              ] 4 / 10
+[=========================                         ] 5 / 10
+[==============================                    ] 6 / 10
+[===================================               ] 7 / 10
+[========================================          ] 8 / 10
+[=============================================     ] 9 / 10
+[==================================================] 10 / 10</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plotProcesssed</span>(output_processed[output_processed<span class="sc">$</span>personID<span class="sc">==</span><span class="st">&quot;3&quot;</span>,])</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">plotProcesssed</span>(output_processed[output_processed<span class="sc">$</span>personID<span class="sc">==</span><span class="st">&quot;135&quot;</span>,])</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">plotProcesssed</span>(output_processed[output_processed<span class="sc">$</span>personID<span class="sc">==</span><span class="st">&quot;115&quot;</span>,])</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
