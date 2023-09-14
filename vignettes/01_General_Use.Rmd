@@ -17,13 +17,14 @@ max-width: 1280px !important;
 }
 ```
 
-
 ```{r setup, include=FALSE}
 library(oncoRegimens)
 
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
+
+ARTEMIS provides the user with a tool that can generate sets of alignment scores, using a temporally modified local Needleman-Wunsch / Smith-Waterman algorithm, for comparing regimens and patient drug records derived from electronic health records.
 
 ## Connecting ARTEMIS to the OMOP CDM
 
@@ -104,6 +105,8 @@ regimens <- read.csv(here::here("data/vignette/example_regimens.csv"))
 The temporal smith-waterman (TSW) algorithm requires that input drug records take the form of individual strings, with both drug and temporal information stored within the string. The function stringDF_from_cdm() allows us to generate such strings from a given EHR. The format of each patient's total drug record thus takes the form:
 
 [Days since last exposure].[Drug exposure];[Days since last exposure][Drug exposure];...;
+
+Drug exposures which occur on the same day are listed as having 0 days since last exposure. The specific order of exposures that occur on the same day will not effect the TSW score, as these will be dynamically reordered during alignment.
 
 This dataframe may then be filtered to include only patients with a number of drug exposures above a certain cut-off value. First, we must pull our CohortSet into R via CDMConnector.
 
