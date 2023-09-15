@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{css, echo=FALSE}
+```{css, echo=FALSE}data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==
 body .main-container {
 max-width: 1280px !important;
 width: 1280px !important;
@@ -30,12 +30,10 @@ ARTEMIS provides the user with a tool that can generate sets of alignment scores
 
 ARTEMIS interacts directly with the Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM), a convenient and widely used format for storing observational health data derived from electronic health records. For users of ARTEMIS with access to data already stored in an OMOP CDM compliant datasource, drug records can be easily and automatically mapped to the drug record strings required by ARTEMIS.
 
-A toy dataset is included in the ARTEMIS package, and will be used throughout this short vignette.
-
-We'll use a [duckdb](https://duckdb.org/) static file database for this purpose.
+A toy dataset, created using [duckdb](https://duckdb.org/) is included in the ARTEMIS package, and will be used throughout this short vignette.
 
 
-```{r Setup Con}
+```{r Setup Con} 
 con <- DBI::dbConnect(duckdb::duckdb(), here::here("data/vignette/Artemis_Vignette_5.3_0.8.duckdb"))
 
 cdm <- CDMConnector::cdm_from_con(con = con,
@@ -96,6 +94,8 @@ The minimum valid format for a regimen dataframe:
 By creating such files and importing them as .csv's, custom regimens and sets of drugs may be easily supplied by the user with which to utilise the ARTEMIS implementation of the TSW algorithm.
 
 ```{r Load Data}
+#loadDrugs()
+#loadRegimens(condition="lungCancer")
 validDrugs <- read.csv(here::here("data/vignette/example_drugMap_Valid.csv"))
 regimens <- read.csv(here::here("data/vignette/example_regimens.csv"))
 ```
@@ -109,6 +109,8 @@ The temporal smith-waterman (TSW) algorithm requires that input drug records tak
 Drug exposures which occur on the same day are listed as having 0 days since last exposure. The specific order of exposures that occur on the same day will not effect the TSW score, as these will be dynamically reordered during alignment.
 
 This dataframe may then be filtered to include only patients with a number of drug exposures above a certain cut-off value. First, we must pull our CohortSet into R via CDMConnector.
+
+It is important to note that, depending on the size of the CDM a user is connecting to and the size of their target cohort, the function getCohortSet() may take several minutes.
 
 ```{r Create and Filter StringDF}
 con_df <- getCohortSet(cdm = cdm, json = validPatients, name = cohortName)
@@ -156,4 +158,6 @@ plotProcesssed(output_processed[output_processed$personID=="135",])
 plotProcesssed(output_processed[output_processed$personID=="115",])
 
 ```
+
+## Output files
 
