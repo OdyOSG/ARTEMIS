@@ -23,6 +23,7 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 
 	#Setup pattern for detecting sequence gaps, by number of "__"s (Aligned gaps)
 	pat_gap = "__"
+	pat_end_gap = "__$"
 
 	#Init return Dat
 	returnDat = [regName,str(s1).strip('[]'),str(s2).strip('[]'),"","","","","","",""]
@@ -59,11 +60,12 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 		s_a_len = len(re.findall(pat,s1_aligned))
 
 		s2_a_gaps = len(re.findall(pat_gap,s2_aligned))
+		s1_end_gaps = len(re.findall(pat_end_gap,s1_aligned))
 
 		s1_start = mem_index[0][1] - s_a_len
 		s1_end = mem_index[0][1]
 		s2_start = mem_index[0][0] - s_a_len + s2_a_gaps
-		s2_end = mem_index[0][0]
+		s2_end = mem_index[0][0] - s1_end_gaps
 
 		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_a_len,totAligned]), axis = 0)
 
@@ -73,11 +75,12 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 		s_f_len = len(re.findall(pat,s1_aligned))
 
 		s2_a_gaps = len(re.findall(pat_gap,s2_aligned))
+		s1_end_gaps = len(re.findall(pat_end_gap,s1_aligned))
 
 		s1_start = finalIndex[1] - s_f_len
 		s1_end = finalIndex[1]
 		s2_start = finalIndex[0] - s_f_len + s2_a_gaps
-		s2_end = finalIndex[0]
+		s2_end = finalIndex[0] - s1_end_gaps
 
 		returnDat = np.append(returnDat,([regName,s1_aligned,s2_aligned,finalScore,s1_start+1,s1_end,s2_start+1,s2_end,s_f_len,totAligned]), axis = 0)
 
@@ -93,16 +96,20 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 	if len(mem_score) > 1:
 		if verbose == 1 or verbose == 2:
 			print("Secondary alignments:")
-		
-		
+				
 		for i in range(1,len(mem_index)):
 			secondary = 1
 			s1_aligned_t, s2_aligned_t, totAligned_t = align_TSW(traceMat, s1, s2, s1_len, s2_len, mem_index[i])
 			s_a_t_len = len(re.findall(pat,s1_aligned_t))
+
+			s2_a_gaps = len(re.findall(pat_gap,s2_aligned_t))
+			s1_end_gaps = len(re.findall(pat_end_gap,s1_aligned_t))
+
 			s1_start = mem_index[i][1] - s_a_t_len
 			s1_end = mem_index[i][1]
-			s2_start = mem_index[i][0] - s_a_t_len
-			s2_end = mem_index[i][0]
+			s2_start = mem_index[i][0] - s_a_t_len + s2_a_gaps
+			s2_end = mem_index[i][0] - s1_end_gaps
+
 			returnDat = np.append(returnDat,[regName,s1_aligned_t,s2_aligned_t,mem_score[i],s1_start+1,s1_end,s2_start+1,s2_end,s_a_t_len,totAligned_t], axis = 0)	
 			
 			#Printing various details of alignment for extra alignments as per mem specification
@@ -121,6 +128,8 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 	else:
 		returnDat = returnDat.reshape(2,10)
 		returnDat = pd.DataFrame(returnDat)
+
+	runTot = 0
 
 	#Removing overlapping alignments according to those alignments with the best score
 	if removeOverlap == 1:
@@ -143,9 +152,8 @@ def temporal_alignment(s1,regName,s2,g,T,s,verbose,mem=-1,removeOverlap=0,method
 		#			overlap = [*range(max(int(x[0]), int(y[0])), min(int(x[-1]), int(y[-1]))+1)]
 
 		#			print(overlap)
-
 		k = 1
-		runTot = 0
+		
 
 		#Super intensive way to check for overlaps, probably O(N^10000000)
 		#TODO: Improve performance

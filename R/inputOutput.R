@@ -58,7 +58,7 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
 #' @export
 getCohortSet <- function(cdm, json, name){
 
-  cli::cat_bullet("Connecting to CDM...",
+  cli::cat_bullet("Connecting to CDM and generating cohort set...",
                   bullet_col = "yellow", bullet = "info")
 
   #Generate Cohort Set from input data
@@ -142,3 +142,5 @@ validConditions <- function(){
   message("Conditions currently implemented:")
   message("lungCancer")
 }
+
+
