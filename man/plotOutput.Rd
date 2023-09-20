@@ -19,8 +19,7 @@ plotOutput(
 
 \item{regimenCombine}{Allowed number of days between two instances of the same regimen before}
 
-\item{returnDat}{A toggle to also return a processed data object
-those two instances are combined}
+\item{returnDat}{A toggle to also return a processed data object}
 
 \item{returnDrugs}{A toggle to indicate whether drugs should be returned by processing,
 in addition to regimens}

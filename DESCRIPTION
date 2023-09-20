@@ -16,14 +16,26 @@ Imports:
     ggchicklet,
     magrittr,
     stringi,
+    stats,
+    utils,
     stringr,
     here,
-    tidyr
+    tidyr,
+    networkD3,
+    webshot,
+    reshape2,
+    ggsci,
+    gridExtra,
+    methods
 License: Apache License (>= 2)
+VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr
+    vdiffr,
+    DBI,
+    duckdb,
+    knitr
 Config/testthat/edition: 3

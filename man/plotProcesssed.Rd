@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plotProcesssed}
 \alias{plotProcesssed}
-\title{Plots, or returns a plot, displaying a full alignment output utilising an already
+\title{Plot a full alignment output utilising an already
 processed output}
 \usage{
 plotProcesssed(processedAll, fontSize = 2.5)
@@ -16,6 +16,6 @@ plotProcesssed(processedAll, fontSize = 2.5)
 regPlot - A ggplot object
 }
 \description{
-Plots, or returns a plot, displaying a full alignment output utilising an already
+Plot a full alignment output utilising an already
 processed output
 }

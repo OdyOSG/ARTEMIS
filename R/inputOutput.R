@@ -124,8 +124,8 @@ loadDrugs <- function() {
   data("validDrugs", package = "oncoRegimens")
 }
 
-
 #' Load regimens for a given condition
+#' @param condition A string indicating which regimen set to load
 #' Presently, the only condition fully mapped is lungCancer
 #' @export
 loadRegimens <- function(condition) {
@@ -143,4 +143,9 @@ validConditions <- function(){
   message("lungCancer")
 }
 
+#' Load the default regimen group dataframe
+#' @export
+loadGroups <- function() {
+  data("regimenGroups", package = "oncoRegimens")
+}
 
