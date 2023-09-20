@@ -7,9 +7,9 @@
 processAlignments(
   rawOutput,
   regimenCombine,
+  regimens = "none",
   writeOut = TRUE,
-  outputName = "Output_Processed",
-  returnDrugs = FALSE
+  outputName = "Output_Processed"
 )
 }
 \arguments{
@@ -18,15 +18,14 @@ processAlignments(
 \item{regimenCombine}{The numeric value of days allowed between regimens of the same
 name before they are collapsed/summarised into a single regimen}
 
+\item{regimens}{The set of input regimens used to generate alignments, from which cycle lengths may be derived}
+
 \item{writeOut}{A variable indicating whether to save the set of drug records}
 
 \item{outputName}{The name for a given written output}
-
-\item{returnDrugs}{A toggle to indicate whether drugs should be returned by processing,
-in addition to regimens}
 }
 \value{
-A dataframe containing the relevant patients and their drug exposure strings
+A dataframe processed alignments
 }
 \description{
 Perform post-processing on a data frame of raw alignment results

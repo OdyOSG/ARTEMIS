@@ -171,7 +171,7 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     outputDF <- outputDF %>% dplyr::arrange(.data$t_start)
   }
 
-  # Regimen Combine - step 1 - overall combine
+  # Regimen Combine - overall combine
 
   outputDF$Score <- as.numeric(outputDF$Score)
   outputDF$index <- c(1:length(outputDF$drugRec_Start))
@@ -228,7 +228,6 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
 #' @param fontSize The desired font size of the text
 #' @param regimenCombine Allowed number of days between two instances of the same regimen before
 #' @param returnDat A toggle to also return a processed data object
-#' those two instances are combined
 #' @param returnDrugs A toggle to indicate whether drugs should be returned by processing,
 #' in addition to regimens
 #' @return regPlot - A ggplot object
@@ -359,7 +358,7 @@ plotOutput <- function(output,
   }
 }
 
-#' Plots, or returns a plot, displaying a full alignment output utilising an already
+#' Plot a full alignment output utilising an already
 #' processed output
 #' @param processedAll An output dataframe created by processAlignments
 #' @param fontSize The desired font size of the text
@@ -436,4 +435,369 @@ plotProcesssed <- function(processedAll,
   return(p1)
 }
 
+#' Plots a plot displaying the observed score distribution for a given regimen, or two given regimens
+#' processed output
+#' @param processedAll An output dataframe created by processAlignments
+#' @param regimen1 A regimen of interest
+#' @param regimen2 An optional regimen of interest for comparison
+#' @return regPlot - A ggplot object
+#' @export
+plotScoreDistribution <- function(regimen1,regimen2=NA,processedAll){
 
+  scoreDistibution_All <- processedAll[,c("component","adjustedS")]
+  colnames(scoreDistibution_All) <- c("regName","adjustedS")
+
+  if(is.na(regimen2)){
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+                              )
+    )
+
+    ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
+      ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen1)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Adjusted Score") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+
+  } else {
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+                              )
+    )
+
+    p1 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
+      ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen1)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Adjusted Score") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen2),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
+                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+                              )
+    )
+
+    p2 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
+      ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen2)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Adjusted Score") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+
+    gridExtra::grid.arrange(p1,p2,ncol=1)
+
+
+  }
+
+}
+
+
+#' Plots a plot displaying the observed regimen length distribution for a given regimen, or two given regimens
+#' processed output
+#' @param processedAll An output dataframe created by processAlignments
+#' @param regimen1 A regimen of interest
+#' @param regimen2 An optional regimen of interest for comparison
+#' @return regPlot - A ggplot object
+#' @export
+plotRegimenLengthDistribution <- function(regimen1,regimen2=NA,processedAll){
+
+  scoreDistibution_All <- processedAll[,c("component","regLength")]
+  colnames(scoreDistibution_All) <- c("regName","regLength")
+
+  if(is.na(regimen2)){
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$regLength),
+                                        mean(score_plot$regLength)+sd(score_plot$regLength),
+                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+                              )
+    )
+
+    ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
+      ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen1)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Regimen Length") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$regLength),2),"\n","Interquartile Range: ",signif(IQR(score_plot$regLength),3),sep=""))
+
+  } else {
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$regLength),
+                                        mean(score_plot$regLength)+sd(score_plot$regLength),
+                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+                              )
+    )
+
+    p1 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
+      ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen1)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Regimen Length") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$regLength),2),"\n","Interquartile Range: ",signif(IQR(score_plot$regLength),3),sep=""))
+
+    score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen2),]
+    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
+                              linetype = c("Mean","+/- SD","+/- SD"),
+                              value = c(mean(score_plot$regLength),
+                                        mean(score_plot$regLength)+sd(score_plot$regLength),
+                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+                              )
+    )
+
+    p2 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
+      ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
+      ggplot2::geom_density(alpha=.4, fill="lightblue") +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::ggtitle(paste(regimen2)) +
+      ggplot2::xlab("Density") +
+      ggplot2::ylab("Adjusted Score") +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$regLength),2),"\n","Interquartile Range: ",signif(IQR(score_plot$regLength),3),sep=""))
+
+    gridExtra::grid.arrange(p1,p2,ncol=1)
+
+
+  }
+
+}
+
+#' Plots a plot displaying the frequency of the top N most frequent regimens
+#' @param processedAll An output dataframe created by processAlignments
+#' @param N The number of top rows to plot
+#' @export
+plotFrequency <- function(processedAll, N = 10){
+
+  freqPlot <- as.data.frame(table(processedAll$component)/sum(table(processedAll$component)))
+  freqPlot <- freqPlot[order(freqPlot$Freq, decreasing = T),]
+
+  if(dim(freqPlot)[1] < N){
+    N <- dim(freqPlot)[1]
+  }
+
+  freqPlot <- freqPlot[1:N,]
+  freqPlot$Var1 <- factor(freqPlot$Var1, levels = freqPlot[order(freqPlot$Freq, decreasing = F),]$Var1)
+
+  names <- freqPlot$Var1
+
+  cols <- ggsci::pal_jco()(10)
+  cols <- c(cols,ggsci::pal_jama()(7))
+
+  if(N < 18){
+    names(cols) <- names[sample(x = c(1:17))]
+  } else{
+    cols <- rep(cols,N)
+    names(cols) <- names[sample(x = c(1:N))]
+  }
+
+  ggplot2::ggplot(freqPlot, ggplot2::aes(y=.data$Var1,x=.data$Freq,fill=.data$Var1)) +
+    ggplot2::geom_bar(stat="identity") +
+    ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "none")
+}
+
+
+#' Plots a plot displaying the ERA frequency of the top N most frequent eras
+#' @param processedEras An output dataframe created by calculateEras
+#' @param N The number of top rows to plot
+#' @export
+plotErasFrequency <- function(processedEras, N = 10){
+  firstLine <- processedEras[processedEras$First_Line==1,]
+  firstLine_Tab <- as.data.frame(table(firstLine$component))
+
+  secondLine <- processedEras[processedEras$Second_Line==1,]
+  secondLine_Tab <- as.data.frame(table(secondLine$component))
+
+  firstLine_Tab <- firstLine_Tab[order(firstLine_Tab$Freq, decreasing = T),]
+  firstLine_Tab$Freq <- firstLine_Tab$Freq/sum(firstLine_Tab$Freq)
+
+  firstLine_Tab.p <- firstLine_Tab[1:N,]
+
+  firstLine_Tab.p$Var1 <- stringr::str_wrap(firstLine_Tab.p$Var1, width = 18)
+
+  firstLine_Tab.p$Var1 <- factor(firstLine_Tab.p$Var1,
+                                 levels = firstLine_Tab.p[order(firstLine_Tab.p$Freq, decreasing = F),]$Var1)
+
+  secondLine_Tab <- secondLine_Tab[order(secondLine_Tab$Freq, decreasing = T),]
+  secondLine_Tab$Freq <- secondLine_Tab$Freq/sum(secondLine_Tab$Freq)
+
+  secondLine_Tab.p <- secondLine_Tab[1:N,]
+
+  secondLine_Tab.p$Var1 <- stringr::str_wrap(secondLine_Tab.p$Var1, width = 18)
+
+  secondLine_Tab.p$Var1 <- factor(secondLine_Tab.p$Var1,
+                                  levels = secondLine_Tab.p[order(secondLine_Tab.p$Freq, decreasing = F),]$Var1)
+
+
+  names <- as.character(unique(c(firstLine_Tab.p$Var1,secondLine_Tab.p$Var1)))
+
+  cols <- ggsci::pal_jco()(10)
+  cols <- c(cols,ggsci::pal_jama()(7))
+
+  if(N < 18){
+    names(cols) <- names[sample(x = c(1:17))]
+  } else{
+    cols <- rep(cols,N)
+    names(cols) <- names[sample(x = c(1:N))]
+  }
+
+  fline <- ggplot2::ggplot(na.omit(firstLine_Tab.p), ggplot2::aes(x=.data$Var1,y=.data$Freq,fill=.data$Var1,col="black")) +
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   panel.grid.major = ggplot2::element_line(colour = "grey95"),
+                   legend.position = "none") +
+    ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::scale_color_manual(values = c("black" = "black")) +
+    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("First Regimen Era") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 14),
+      axis.text.y = ggplot2::element_text(size = 15))
+
+  sline <- ggplot2::ggplot(na.omit(secondLine_Tab.p), ggplot2::aes(x=.data$Var1,y=.data$Freq,fill=.data$Var1,col="black")) +
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   panel.grid.major = ggplot2::element_line(colour = "grey95"),
+                   legend.position = "none") +
+    ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::scale_color_manual(values = c("black" = "black")) +
+    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("Second Regimen Era") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 14),
+      axis.text.y = ggplot2::element_text(size = 15))
+
+  gridExtra::grid.arrange(fline,sline,ncol=2)
+}
+
+#' Plots a sankey diagram displaying the flow between first, second and third regimen eras
+#' @param processedEras An output dataframe created by calculateEras
+#' @param regGroups A dataframe indicating how to group regimens
+#' @export
+plotSankey <- function(processedEras, regGroups){
+
+  firstLine <- processedEras[processedEras$First_Line==1,]
+  firstLine_Tab <- as.data.frame(table(firstLine$component))
+
+  secondLine <- processedEras[processedEras$Second_Line==1,]
+  secondLine_Tab <- as.data.frame(table(secondLine$component))
+
+  thirdLine <- processedEras[processedEras$Other==1,]
+  thirdLine_Tab <- as.data.frame(table(thirdLine$component))
+
+  sankey_first <- firstLine[,c(6,3)]
+  sankey_sec <- secondLine[,c(6,3)]
+  sankey_third <- thirdLine[,c(6,3)]
+
+  colnames(sankey_first) <- c("personID","Var1")
+  colnames(sankey_sec) <- c("personID","Var1")
+  colnames(sankey_third) <- c("personID","Var1")
+
+  colnames(regGroups) <- c("Var1","regGroup")
+
+  sankey_first <- merge(sankey_first,regGroups,by="Var1")[,c(2,3)]
+  sankey_sec <- merge(sankey_sec,regGroups,by="Var1")[,c(2,3)]
+  sankey_third <- merge(sankey_third,regGroups,by="Var1")[,c(2,3)]
+
+  colnames(sankey_first) <- c("personID","First Line")
+  colnames(sankey_sec) <- c("personID","Second Line")
+  colnames(sankey_third) <- c("personID","Subsequent Lines")
+
+  sankey_all <- merge(merge(sankey_first,sankey_sec,all = T),sankey_third,all=T)
+  sankey_all <- sankey_all[!duplicated(sankey_all$personID),]
+
+  sankey_all[is.na(sankey_all$`Second Line`),]$`Second Line` <- ""
+  sankey_all[is.na(sankey_all$`Subsequent Lines`),]$`Subsequent Lines` <- ""
+
+  tt1 <- as.data.frame(table(reshape2::melt(sankey_all[,c(2,3)],
+                                  id.vars = c("First Line","Second Line"), na.rm = F)))
+
+  tt2 <- as.data.frame(table(reshape2::melt(sankey_all[,c(3,4)],
+                                  id.vars = c("Second Line","Subsequent Lines"), na.rm = F)))
+
+
+  tt1$First.Line <- as.character(tt1$First.Line)
+  tt1$Second.Line <- as.character(tt1$Second.Line)
+  tt2$Second.Line <- as.character(tt2$Second.Line)
+  tt2$Subsequent.Lines <- as.character(tt2$Subsequent.Lines)
+
+  tt1 <- tt1[!tt1$First.Line==tt1$Second.Line,]
+  tt2 <- tt2[!tt2$Second.Line==tt2$Subsequent.Lines,]
+
+  tt1$First.Line <- paste(tt1$First.Line,"(1st era)",sep=" ")
+  tt1$Second.Line <- paste(tt1$Second.Line,"(2nd era)",sep=" ")
+
+  tt2$Second.Line <- paste(tt2$Second.Line,"(2nd era)",sep=" ")
+  tt2$Subsequent.Lines <- paste(tt2$Subsequent.Lines,"(3rd era)",sep=" ")
+
+  colnames(tt1) <- c("source","target","value")
+  colnames(tt2) <- c("source","target","value")
+
+  links <- rbind(tt1,tt2)
+
+  links <- links[!links$target %in% c(" (2nd era)"," (3rd era)"),]
+  links <- links[!links$source %in% c(" (2nd era)"," (3rd era)"),]
+
+  nodes <- data.frame(
+    name=c(as.character(links$source),
+           as.character(links$target)) %>% unique()
+  )
+
+  links$IDsource <- match(links$source, nodes$name)-1
+  links$IDtarget <- match(links$target, nodes$name)-1
+
+  p <- networkD3::sankeyNetwork(Links = links, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name",
+                     sinksRight=FALSE, width = 2200, height = 1000,
+                     fontSize = 28, fontFamily = "calibri")
+
+  p
+
+  networkD3::saveNetwork(p, "sn.html")
+
+  webshot::webshot("sn.html","Network_Grouped.png", vwidth = 2200, vheight = 1000)
+
+
+  }

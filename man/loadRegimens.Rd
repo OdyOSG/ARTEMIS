@@ -2,12 +2,14 @@
 % Please edit documentation in R/inputOutput.R
 \name{loadRegimens}
 \alias{loadRegimens}
-\title{Load regimens for a given condition
-Presently, the only condition fully mapped is lungCancer}
+\title{Load regimens for a given condition}
 \usage{
 loadRegimens(condition)
 }
+\arguments{
+\item{condition}{A string indicating which regimen set to load
+Presently, the only condition fully mapped is lungCancer}
+}
 \description{
 Load regimens for a given condition
-Presently, the only condition fully mapped is lungCancer
 }
