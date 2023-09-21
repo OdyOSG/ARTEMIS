@@ -149,3 +149,9 @@ loadGroups <- function() {
   data("regimenGroups", package = "oncoRegimens")
 }
 
+#' Load the default regimen group dataframe
+#' @export
+loadCohort <- function() {
+  data("exampleCohort", package = "oncoRegimens")
+}
+
