@@ -64,7 +64,7 @@ An input JSON containing a cohort specification is input by the user. Informatio
 
 ```{r, eval=FALSE}
 
-#loadCohort()
+#json <- loadCohort()
 json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
 name <- "myExampleCohort"
 
@@ -74,7 +74,7 @@ Regimen data may be read in from the provided package, or may be submitted direc
 
 ```{r, eval=FALSE}
 
-#loadRegimens()
+#regimens <- loadRegimens()
 regimens <- read.csv(here::here("data/myRegimens.csv"))
 
 ```
@@ -83,7 +83,7 @@ A set of valid drugs may also be read in using the provided data, or may be cura
 
 ```{r, eval=FALSE}
 
-#loadDrugs()
+#validDrugs <- loadDrugs()
 validDrugs <- read.csv(here::here("data/myDrugs.csv"))
 
 ```
@@ -164,7 +164,7 @@ And resulting graphics, such as a sankey indicating the overall patterns of trea
 
 plotErasFrequency(output_eras)
 
-loadGroups()
+regimen_Groups <- loadGroups()
 plotSankey(output_eras, regimen_Groups)
 
 ```
