@@ -27,7 +27,7 @@
 #' @param outputName The name for a given written output
 #' @return A dataframe containing the relevant patients and their drug exposure strings
 #' @export
-generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, mem, removeOverlap, method, writeOut = TRUE, outputName = "Output") {
+generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, mem = -1, removeOverlap = -1, method, writeOut = TRUE, outputName = "Output") {
 
   output_all <- as.data.frame(matrix(nrow = 0,ncol=12))
   colnames(output_all) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End",

@@ -305,7 +305,7 @@ plotOutput <- function(output,
   plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + 2
 
   p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
-    ggchicklet::geom_rrect(data = plot[plot$regimen=="Yes",],
+    ggplot2::geom_rect(data = plot[plot$regimen=="Yes",],
                            ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
                                         ymax = as.numeric(.data$component)+0.3,
                                         xmin = .data$t_start,
@@ -402,7 +402,7 @@ plotProcesssed <- function(processedAll,
   plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + 2
 
   p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
-    ggchicklet::geom_rrect(data = plot[plot$regimen=="Yes",],
+    ggplot2::geom_rect(data = plot[plot$regimen=="Yes",],
                            ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
                                         ymax = as.numeric(.data$component)+0.3,
                                         xmin = .data$t_start,
