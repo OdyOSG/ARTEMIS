@@ -74,7 +74,7 @@ An input JSON containing a cohort specification is input by the user.
 Information on OHDSI cohort creation and best practices can be found
 [here](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html).
 
-    #loadCohort()
+    #json <- loadCohort()
     json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
     name <- "myExampleCohort"
 
@@ -82,14 +82,14 @@ Regimen data may be read in from the provided package, or may be
 submitted directly by the user. All of the provided regimens will be
 tested against all patients within a given cohort.
 
-    #loadRegimens()
+    #regimens <- loadRegimens()
     regimens <- read.csv(here::here("data/myRegimens.csv"))
 
 A set of valid drugs may also be read in using the provided data, or may
 be curated and submitted by the user. Only valid drugs will appear in
 processed patient strings.
 
-    #loadDrugs()
+    #validDrugs <- loadDrugs()
     validDrugs <- read.csv(here::here("data/myDrugs.csv"))
 
 ### Pipeline
@@ -153,10 +153,20 @@ regimens and regimen types.
 And resulting graphics, such as a sankey indicating the overall patterns
 of treatment trajectories can then be constructed.
 
+You may need to run webshot::install\_phantomjs() if your system does
+not already have it installed to utilise the Sankey package.
+
     plotErasFrequency(output_eras)
 
-    loadGroups()
+    #webshot::install_phantomjs()
+    regimen_Groups <- loadGroups()
     plotSankey(output_eras, regimen_Groups)
+
+Finally, a set of outputs may be produced and written into a local file
+using the writeOutputs() function. No patient IDs are written as
+outputs, with anonymised random IDs being used in their place.
+
+    writeOutputs(output_all, output_processed, output_eras, regStats)
 
 ## DBI Drivers
 

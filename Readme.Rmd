@@ -160,12 +160,23 @@ regStats[,-c(4,7)]
 
 And resulting graphics, such as a sankey indicating the overall patterns of treatment trajectories can then be constructed.
 
+You may need to run webshot::install_phantomjs() if your system does not already have it installed to utilise the Sankey package.
+
 ```{r, eval=FALSE}
 
 plotErasFrequency(output_eras)
 
+#webshot::install_phantomjs()
 regimen_Groups <- loadGroups()
 plotSankey(output_eras, regimen_Groups)
+
+```
+
+Finally, a set of outputs may be produced and written into a local file using the writeOutputs() function. No patient IDs are written as outputs, with anonymised random IDs being used in their place.
+
+```{r, eval=FALSE}
+
+writeOutputs(output_all, output_processed, output_eras, regStats)
 
 ```
 

@@ -159,3 +159,30 @@ loadCohort <- function() {
   return(oncoRegimens::json)
 }
 
+#' Filter a stringDF dataframe to contain only valid patients
+#' @param output_all A dataframe containing raw outputs
+#' @param output_processed A dataframe containing processed output regimens
+#' @param output_eras A dataframe containing processed regimen eras
+#' @param regStats A dataframe containing various summary statistics
+#' @export
+writeOutputs <- function(output_all, output_processed, output_eras, regStats){
+  uniqueIDs <- unique(output_all$personID)
+  random_ids <- sample(1:10000000, length(uniqueIDs), replace = F) %>% as.character()
+  id_dictionary <- cbind(uniqueIDs, random_ids) %>% `colnames<-`(c("personID", "anonymisedID")) %>% as.data.frame()
+
+  output_all_anon <- merge(output_all,id_dictionary)[,-1]
+  output_processed_anon <- merge(output_processed,id_dictionary)[,-1]
+  output_eras_anon <- merge(output_eras,id_dictionary)[,-1]
+
+  dir.create(file.path(here::here(), "output_stats"), showWarnings = FALSE)
+
+  write.csv(x = output_all_anon, file = "output_stats/OutputAll.csv")
+  write.csv(x = output_processed_anon, file = "output_stats/OutputProcessed.csv")
+  write.csv(x = output_eras_anon, file = "output_stats/OutputEras.csv")
+  write.csv(x = regStats, file = "output_stats/regstats.csv")
+
+  zip(zipfile = "outputs.zip", files = "output_stats/")
+
+  unlink('output_stats/', recursive=TRUE)
+
+}
