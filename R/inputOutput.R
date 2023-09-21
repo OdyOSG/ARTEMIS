@@ -122,7 +122,7 @@ filter_stringDF <- function(stringDF,min) {
 #' @export
 loadDrugs <- function() {
   data("validdrugs", package = "oncoRegimens")
-  return(oncoRegimens::validDrugs)
+  return(oncoRegimens::validdrugs)
 }
 
 #' Load regimens for a given condition
@@ -149,7 +149,7 @@ validConditions <- function(){
 #' @export
 loadGroups <- function() {
   data("regimengroups", package = "oncoRegimens")
-  return(oncoRegimens::regimenGroups)
+  return(oncoRegimens::regimengroups)
 }
 
 #' Load the default regimen group dataframe
