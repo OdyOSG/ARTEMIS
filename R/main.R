@@ -85,7 +85,7 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
     cli::cat_bullet("Writing output...",
                bullet_col = "yellow", bullet = "info")
 
-    outputFile <- here::here("output/")
+    outputFile <- here::here()
     write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = output_all)
   }
 
@@ -138,7 +138,7 @@ processAlignments <- function(rawOutput, regimenCombine, regimens = "none", writ
   processedAll <- processedAll[-1,]
 
   if(writeOut == TRUE){
-    outputFile <- here::here("output/")
+    outputFile <- here::here()
     suppressWarnings(
       write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = processedAll, append = FALSE)
     )

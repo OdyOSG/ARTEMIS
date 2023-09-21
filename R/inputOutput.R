@@ -38,7 +38,7 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
   con_df_out2$seq <- gsub(" ","",gsub(",","_",con_df_out2$seq))
 
   if(writeOut == TRUE){
-    outputFile <- here::here("output/")
+    outputFile <- here::here()
     write.csv(file = paste(outputFile,"/",outputName,".csv",sep=""), x = con_df_out2, append = FALSE)
   }
 
