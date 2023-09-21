@@ -2,10 +2,10 @@
 % Please edit documentation in R/inputOutput.R
 \name{loadCohort}
 \alias{loadCohort}
-\title{Load the default example cohort}
+\title{Load the default regimen group dataframe}
 \usage{
 loadCohort()
 }
 \description{
-Load the default example cohort
+Load the default regimen group dataframe
 }

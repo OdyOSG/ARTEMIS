@@ -27,7 +27,6 @@ Imports:
     gridExtra,
     methods
 License: Apache License (>= 2)
-VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.3

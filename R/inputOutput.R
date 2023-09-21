@@ -146,7 +146,7 @@ validConditions <- function(){
 #' Load the default regimen group dataframe
 #' @export
 loadGroups <- function() {
-  data("regimenGroups", package = "oncoRegimens")
+  data("regGroups", package = "oncoRegimens")
 }
 
 #' Load the default regimen group dataframe
