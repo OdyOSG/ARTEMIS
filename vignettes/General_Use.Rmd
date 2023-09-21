@@ -49,7 +49,7 @@ Again, a toy cohort example is included for the purposes of this vignette, selec
 
 ```{r Setup Cohorts}
 validPatients <- CDMConnector::readCohortSet("data/exampleCohort")
-cohortName <- "examplecohort"
+cohortName <- "examplecohort2"
 ```
 
 ## Loading Regimen and Drug data
