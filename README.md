@@ -41,6 +41,13 @@ ARTEMIS can presently be installed directly from GitHub:
     # install.packages("devtools")
     devtools::install_github("odyOSG/oncoRegimens")
 
+ARTEMIS relies on a python back-end via reticulate and depending on your
+reticulate settings, system and environment, you may need to run the
+following commands before loading the package:
+
+    #reticulate::py_install("numpy")
+    #reticulate::py_install("pandas")
+
 ## Usage
 
 ### CDMConnector
@@ -67,20 +74,23 @@ An input JSON containing a cohort specification is input by the user.
 Information on OHDSI cohort creation and best practices can be found
 [here](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html).
 
-    json <- CDMConnector::readCohortSet(path = here::here("exampleCohort/"))
+    #loadCohort()
+    json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
     name <- "myExampleCohort"
 
 Regimen data may be read in from the provided package, or may be
 submitted directly by the user. All of the provided regimens will be
 tested against all patients within a given cohort.
 
-    regimens <- read.csv(here::here("data/regimens-HemOnc/Thoracic_Cancer/LungCancer_Filt.csv"))
+    #loadRegimens()
+    regimens <- read.csv(here::here("data/myRegimens.csv"))
 
 A set of valid drugs may also be read in using the provided data, or may
 be curated and submitted by the user. Only valid drugs will appear in
 processed patient strings.
 
-    validDrugs <- read.csv(here::here("data/drugMap_Valid.csv"))
+    #loadDrugs()
+    validDrugs <- read.csv(here::here("data/myDrugs.csv"))
 
 ### Pipeline
 
@@ -116,13 +126,37 @@ submission to an episode era table.
 
     processedAll <- output_all %>% processAlignments(regimenCombine = 28)
 
-    personOfInterest <- processedAll[processedAll$personID == unique(processedAll$personID)[1337],]
+    personOfInterest <- output_all[output_all$personID == unique(output_all$personID)[1337],]
 
-    plotProcesssed(personOfInterest, fontSize = 2.5)
+    plotOutput(personOfInterest, fontSize = 2.5)
 
-Data may then be re-uploaded via CDMConnector to the relevant schema.
+Data may then be further explored via several graphics which indicate
+various information, such as regimen frequency or the score/length
+distributions of a given regimen.
 
-    uploadEpisodeEra(processedAll)
+    plotFrequency(output_processed)
+
+    plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+
+    plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+
+Treatment trajectories, or regimen eras, can then be calculated, adding
+further information about the relative sequencing order of different
+regimens and regimen types.
+
+    output_eras <- output_processed %>% calculateEras(discontinuationTime = 90)
+
+    regStats <- output_eras %>% generateRegimenStats()
+
+    regStats[,-c(4,7)]
+
+And resulting graphics, such as a sankey indicating the overall patterns
+of treatment trajectories can then be constructed.
+
+    plotErasFrequency(output_eras)
+
+    loadGroups()
+    plotSankey(output_eras, regimen_Groups)
 
 ## DBI Drivers
 
