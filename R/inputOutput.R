@@ -121,8 +121,8 @@ filter_stringDF <- function(stringDF,min) {
 #' Load the default valid drugs dataframe
 #' @export
 loadDrugs <- function() {
+  data("validdrugs", package = "oncoRegimens")
   return(oncoRegimens::validDrugs)
-  #data("validDrugs", package = "oncoRegimens")
 }
 
 #' Load regimens for a given condition
@@ -131,8 +131,8 @@ loadDrugs <- function() {
 #' @export
 loadRegimens <- function(condition) {
   if(condition == "lungCancer"){
+    data("regimens", package = "oncoRegimens")
     return(oncoRegimens::regimens)
-    #data("LungCancer", package = "oncoRegimens")
   } else {
     message("Invalid condition. Please try running validConditions()")
   }
@@ -148,14 +148,14 @@ validConditions <- function(){
 #' Load the default regimen group dataframe
 #' @export
 loadGroups <- function() {
+  data("regimengroups", package = "oncoRegimens")
   return(oncoRegimens::regimenGroups)
-  #data("regGroups", package = "oncoRegimens")
 }
 
 #' Load the default regimen group dataframe
 #' @export
 loadCohort <- function() {
+  data("json", package = "oncoRegimens")
   return(oncoRegimens::json)
-  #data("exampleCohort", package = "oncoRegimens")
 }
 
