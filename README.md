@@ -162,6 +162,8 @@ not already have it installed to utilise the Sankey package.
     regimen_Groups <- loadGroups()
     plotSankey(output_eras, regimen_Groups)
 
+### Output
+
 Finally, a set of outputs may be produced and written into a local file
 using the writeOutputs() function. No patient IDs are written as
 outputs, with anonymised random IDs being used in their place.
