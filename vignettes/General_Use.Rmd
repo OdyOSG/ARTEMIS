@@ -48,17 +48,8 @@ Before running ARTEMIS, a cohort json object is required. Cohorts are a fundamen
 Again, a toy cohort example is included for the purposes of this vignette, selecting all patients within our database. We use the package CDMConnector to both read our cohort description file (In json format) into R and to construct a cdm object armed with this cohort set.
 
 ```{r Setup Cohorts}
-
-look <- as.data.frame(cdm$condition_occurrence)
-
 validPatients <- CDMConnector::readCohortSet("data/exampleCohort")
-cohortName <- "vignette"
-
-cdm <- CDMConnector::generate_cohort_set(cdm, 
-                                         cohort_set = validPatients, 
-                                         name = cohortName,
-                                         overwrite = TRUE)
-
+cohortName <- "examplecohort"
 ```
 
 ## Loading Regimen and Drug data
@@ -128,6 +119,13 @@ stringDF
 
 Once a set of patients have been summarized into a strinDF data frame, and all relevant regimen data are loaded, alignment via the TSW algorithm can commence.
 
+The TSW algorithm requires several additional input parameters, which are described as follows:
+
+g - The gap penalty for a missing component, reccomended range 0.4-0.6
+Tfac - The maximum time penalty it is possible to impose on a regimen due to a difference in period, reccomended range 0.4-1
+method - The method used for calculating the score penalty given Tfac and the difference in time between the regimen and observed drug record. "PropDiff", proportional difference, is highly reccomended.
+
+
 ```{r Running the alignment}
 options(width=800)
 
@@ -135,8 +133,6 @@ output_all <- stringDF %>% generateRawAlignments(regimens = regimens,
                                                  g = 0.4,
                                                  Tfac = 0.5,
                                                  verbose = 0,
-                                                 mem = -1,
-                                                 removeOverlap = -1,
                                                  method = "PropDiff")
 
 output_all[c(4,5,6,98,99,100,481,482,483),c(1,3,4,7,8,11,12)]
@@ -147,7 +143,11 @@ Our output file contains the local score of any passing regimens at any point th
 
 An output file may contain a large number of low-scoring and overlapping regimens, especially when many similar sets of regimens are used as input. A post-processing step may be performed to reduce this unnecessary complexity by condensing and combining regimens into discrete, non-overlapping regimen eras.
 
-These processed alignments may then be visualized and compared to their source drug record in order to validate the results of an alignment visually.
+These processed alignments may then be visualized and compared to their source drug record in order to validate the results of an alignment visually. This forms the basis of the most "sanity checking" when looking at regimen alignment outputs.
+
+Discrete regimen alignments that occur within a specific number of days from the end of any previous regimen with the same name are automatically combined. This period is defined by the regimenCombine value, which defaults to 28 days - one typical cycle. Other potential values may be 56 days, 7 days or 0 days, which would cause the processed output to reflect only the raw alignment values.
+
+Regimen eras connected by a small line indicate that these regimen eras are potentially part of the same treatment, but that the period between them was larger than the value set by regimenCombine.
 
 ```{r Post-processing/Plotting, fig.width=10, fig.align="center", warning=FALSE}
 output_processed <- processAlignments(rawOutput = output_all, regimens = regimens, regimenCombine = 28)
@@ -162,13 +162,16 @@ plotOutput(output_all[output_all$personID=="160",])
 
 ## Output files and downstream stats
 
-Information regarding the overall output can be directly produced from this processed dataframe. Statistics such as the underlying frequency of each individual regimen in the processed data may be created and visualized, alongside the score and length distributions for a given regimen, or two given regimens.
+Information regarding the overall output can be directly produced from this processed dataframe. Statistics such as the underlying frequency of each individual regimen in the all patient data may be created and visualized, alongside the score and length distributions for a given regimen, or two given regimens.
 
 ```{r, fig.width=7, fig.align="center", warning=FALSE}
 
 plotFrequency(output_processed)
 
 ```
+The underlying score and length distributions of regimens can provide a general understanding of how long patients are likely to have spent on a partciular regimen era before discontinuation or swapping to a second or third era regimen. The score distribution provides a general understanding of how well each patient adhered to the regimen, specifically in terms of their alignment score, and may be used to identify poorly scoring regimens, i.e., those regimens which were more likely to be gapped or contain extra non-prescribed elements.
+
+The mean +/- sd is also calculated and plotted alongside this histogram, as well as a density plot. Both the median and IQR are also calculated and are set as a caption for each plot.
 
 ```{r, fig.width=7, fig.height=7,fig.align="center", warning=FALSE}
 
@@ -178,6 +181,10 @@ plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 =
 
 ```
 Further, by adding information about the sequencing of individual regimen eras, we can derive more detailed information regarding a patient's treatment trajectory.
+
+First era regimens are those which are observed first after entry into the cohort, though this does not preclude a patient's exposure to other anti-neoplastic agents which do not form part of any known regimen. Second era regimens are those regimens patients are prescribed after completing or suspending a first era regimen. All other regimens fall under the "tertiary" or "other" category.
+
+Regimens of the same name cannot count as both a first and second era regimen in a single patient unless a significant treatment discontinuation is observed between these eras. This discontinuation value may be set by the user, but has the default of 120 days. 90 days is also a commonly used treatment discontinuation period. In the following example, any regimens of the same name that occur within 90 days of another regimen's end date will not be counted towards these statistics, nor returned in the eras data object.
 
 ```{r, fig.width=10, fig.align="center", warning=FALSE}
 

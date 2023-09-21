@@ -13,7 +13,6 @@ Imports:
     lubridate,
     CDMConnector,
     cli,
-    ggchicklet,
     magrittr,
     stringi,
     stats,
