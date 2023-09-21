@@ -11,8 +11,8 @@ generateRawAlignments(
   Tfac,
   s = NA,
   verbose,
-  mem = -1,
-  removeOverlap = -1,
+  mem,
+  removeOverlap,
   method,
   writeOut = TRUE,
   outputName = "Output"

@@ -149,8 +149,3 @@ loadGroups <- function() {
   data("regimenGroups", package = "oncoRegimens")
 }
 
-#' Load the default example cohort
-#' @export
-loadCohort <- function() {
-  data("exampleCohort", package = "oncoRegimens")
-}
