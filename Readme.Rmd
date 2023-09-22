@@ -158,7 +158,7 @@ regStats[,-c(4,7)]
 
 ```
 
-And resulting graphics, such as a sankey indicating the overall patterns of treatment trajectories can then be constructed.
+And resulting graphics, such as a sankey indicating the overall patterns of treatment trajectories can then be constructed. plotSankey() produces both a saved .png as well as an interactable .html of the created network graph.
 
 You may need to run webshot::install_phantomjs() if your system does not already have it installed to utilise the Sankey package.
 
@@ -174,11 +174,13 @@ plotSankey(output_eras, regimen_Groups)
 
 ### Output
 
-Finally, a set of outputs may be produced and written into a local file using the writeOutputs() function. No patient IDs are written as outputs, with anonymised random IDs being used in their place.
+Finally, a set of outputs may be produced and written into a local file using the writeOutputs() function. No patient IDs are written as outputs, with anonymised random IDs being used in their place. Both writeOuputs() and plotSankey() produce outputs that are automatically saved to the local working directory.
+
+writeOutputs also produces data about the underlying cohorts used to construct the regimen outputs, and so also requires a call to the cdm directly.
 
 ```{r, eval=FALSE}
 
-writeOutputs(output_all, output_processed, output_eras, regStats)
+writeOutputs(output_all, output_processed, output_eras, regStats, cdm, con_df, stringDF)
 
 ```
 

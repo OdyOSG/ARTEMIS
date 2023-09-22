@@ -151,7 +151,9 @@ regimens and regimen types.
     regStats[,-c(4,7)]
 
 And resulting graphics, such as a sankey indicating the overall patterns
-of treatment trajectories can then be constructed.
+of treatment trajectories can then be constructed. plotSankey() produces
+both a saved .png as well as an interactable .html of the created
+network graph.
 
 You may need to run webshot::install\_phantomjs() if your system does
 not already have it installed to utilise the Sankey package.
@@ -166,7 +168,9 @@ not already have it installed to utilise the Sankey package.
 
 Finally, a set of outputs may be produced and written into a local file
 using the writeOutputs() function. No patient IDs are written as
-outputs, with anonymised random IDs being used in their place.
+outputs, with anonymised random IDs being used in their place. Both
+writeOuputs() and plotSankey() produce outputs that are automatically
+saved to the local working directory.
 
     writeOutputs(output_all, output_processed, output_eras, regStats)
 
