@@ -33,7 +33,6 @@ LazyDataCompression:xz
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr,
     DBI,
     duckdb,
     knitr
