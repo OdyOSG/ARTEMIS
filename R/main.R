@@ -255,6 +255,10 @@ calculateEras <- function(processedAll, discontinuationTime = 120){
 
     processedEras <- rbind(processedEras,tempDF)
 
+    #Handle overlapping regimens
+    processedEras$timeToNextRegimen[processedEras$timeToNextRegimen < 0] <- 0
+
+
   }
 
   return(processedEras)
