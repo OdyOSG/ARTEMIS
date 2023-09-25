@@ -689,7 +689,7 @@ plotErasFrequency <- function(processedEras, N = 10){
                    legend.position = "none") +
     ggplot2::scale_fill_manual(values = cols) +
     ggplot2::scale_color_manual(values = c("black" = "black")) +
-    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("First Regimen Era") +
+    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("First Regimen") +
     ggplot2::coord_flip() +
     ggplot2::theme(
       axis.text.x = ggplot2::element_text(size = 14),
@@ -702,7 +702,7 @@ plotErasFrequency <- function(processedEras, N = 10){
                    legend.position = "none") +
     ggplot2::scale_fill_manual(values = cols) +
     ggplot2::scale_color_manual(values = c("black" = "black")) +
-    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("Second Regimen Era") +
+    ggplot2::ylab("Frequency") + ggplot2::xlab("") + ggplot2::ggtitle("Second Regimen") +
     ggplot2::coord_flip() +
     ggplot2::theme(
       axis.text.x = ggplot2::element_text(size = 14),
@@ -715,7 +715,11 @@ plotErasFrequency <- function(processedEras, N = 10){
 #' @param processedEras An output dataframe created by calculateEras
 #' @param regGroups A dataframe indicating how to group regimens
 #' @export
-plotSankey <- function(processedEras, regGroups){
+plotSankey <- function(processedEras, regGroups, saveLocation = NA, fileName = "Network"){
+
+  if(is.na(saveLocation)){
+    saveLocation <- here::here()
+  }
 
   firstLine <- processedEras[processedEras$First_Line==1,]
   firstLine_Tab <- as.data.frame(table(firstLine$component))
@@ -765,19 +769,19 @@ plotSankey <- function(processedEras, regGroups){
   tt1 <- tt1[!tt1$First.Line==tt1$Second.Line,]
   tt2 <- tt2[!tt2$Second.Line==tt2$Subsequent.Lines,]
 
-  tt1$First.Line <- paste(tt1$First.Line,"(1st era)",sep=" ")
-  tt1$Second.Line <- paste(tt1$Second.Line,"(2nd era)",sep=" ")
+  tt1$First.Line <- paste(tt1$First.Line,"(1st)",sep=" ")
+  tt1$Second.Line <- paste(tt1$Second.Line,"(2nd)",sep=" ")
 
-  tt2$Second.Line <- paste(tt2$Second.Line,"(2nd era)",sep=" ")
-  tt2$Subsequent.Lines <- paste(tt2$Subsequent.Lines,"(3rd era)",sep=" ")
+  tt2$Second.Line <- paste(tt2$Second.Line,"(2nd)",sep=" ")
+  tt2$Subsequent.Lines <- paste(tt2$Subsequent.Lines,"(3rd)",sep=" ")
 
   colnames(tt1) <- c("source","target","value")
   colnames(tt2) <- c("source","target","value")
 
   links <- rbind(tt1,tt2)
 
-  links <- links[!links$target %in% c(" (2nd era)"," (3rd era)"),]
-  links <- links[!links$source %in% c(" (2nd era)"," (3rd era)"),]
+  links <- links[!links$target %in% c(" (2nd)"," (3rd)"),]
+  links <- links[!links$source %in% c(" (2nd)"," (3rd)"),]
 
   nodes <- data.frame(
     name=c(as.character(links$source),
@@ -793,11 +797,11 @@ plotSankey <- function(processedEras, regGroups){
                      sinksRight=FALSE, width = 2200, height = 1000,
                      fontSize = 28, fontFamily = "calibri")
 
-  p
+  networkFile <- paste(saveLocation,"/",fileName,".html",sep="")
 
-  networkD3::saveNetwork(p, "sn.html")
+  networkD3::saveNetwork(p, file = networkFile)
 
-  webshot::webshot("sn.html","Network_Grouped.png", vwidth = 2200, vheight = 1000)
+  webshot::webshot(url = networkFile, file = paste(saveLocation,"/",fileName,".png",sep=""), vwidth = 2200, vheight = 1000)
 
 
   }

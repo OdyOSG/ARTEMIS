@@ -8,6 +8,7 @@ writeOutputs(
   output_all,
   output_processed,
   output_eras,
+  regGroups,
   regStats,
   cdm,
   con_df,
@@ -20,6 +21,8 @@ writeOutputs(
 \item{output_processed}{A dataframe containing processed output regimens}
 
 \item{output_eras}{A dataframe containing processed regimen eras}
+
+\item{regGroups}{The desired regimen grouping variables for Sankey construction}
 
 \item{regStats}{A dataframe containing various summary statistics}
 

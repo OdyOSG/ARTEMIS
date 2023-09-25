@@ -4,7 +4,7 @@
 \alias{plotSankey}
 \title{Plots a sankey diagram displaying the flow between first, second and third regimen eras}
 \usage{
-plotSankey(processedEras, regGroups)
+plotSankey(processedEras, regGroups, saveLocation = NA, fileName = "Network")
 }
 \arguments{
 \item{processedEras}{An output dataframe created by calculateEras}

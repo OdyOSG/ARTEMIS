@@ -15,3 +15,4 @@ vignette_test.R
 Output.csv
 Output_Processed.csv
 vignettes/data/Artemis_Vignette_5.3_0.8.duckdb.wal
+*.zip
