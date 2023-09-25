@@ -1,4 +1,4 @@
-Package: oncoRegimens
+Package: ARTEMIS
 Type: Package
 Title: Chemotherapy regimen detection via temporal alignment algorithms
 Version: 1.0.0.1

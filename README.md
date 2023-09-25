@@ -39,7 +39,7 @@ patient treatment trajectories.
 ARTEMIS can presently be installed directly from GitHub:
 
     # install.packages("devtools")
-    devtools::install_github("odyOSG/oncoRegimens")
+    devtools::install_github("odyOSG/ARTEMIS")
 
 ARTEMIS relies on a python back-end via reticulate and depending on your
 reticulate settings, system and environment, you may need to run the
@@ -109,7 +109,7 @@ stringDF dataframe containing all patients of interest.
 The TSW algorithm is then run using user input settings and the provided
 regimen and patient data. Detailed information on user inputs, such as
 the gap penalty, g, can be found
-[here](www.github.com/odyOSG/oncoRegimens)
+[here](www.github.com/odyOSG/ARTEMIS)
 
     output_all <- stringDF %>% generateRawAlignments(regimens = regimens,
                                                      g = 0.4,
@@ -188,4 +188,4 @@ CDMConnector is tested using the following DBI driver backends:
 
 If you encounter a clear bug, please file an issue with a minimal
 [reproducible example](https://reprex.tidyverse.org/) at the [GitHub
-issues page](https://github.com/OdyOSG/oncoRegimens/issues).
+issues page](https://github.com/OdyOSG/ARTEMIS/issues).

@@ -122,7 +122,7 @@ filter_stringDF <- function(stringDF,min) {
 #' @export
 loadDrugs <- function() {
   #data("validdrugs", package = "oncoRegimens")
-  return(oncoRegimens::validdrugs)
+  return(ARTEMIS::validdrugs)
 }
 
 #' Load regimens for a given condition
@@ -132,7 +132,7 @@ loadDrugs <- function() {
 loadRegimens <- function(condition) {
   if(condition == "lungCancer"){
     #data("regimens", package = "oncoRegimens")
-    return(oncoRegimens::regimens)
+    return(ARTEMIS::regimens)
   } else {
     message("Invalid condition. Please try running validConditions()")
   }
@@ -149,14 +149,14 @@ validConditions <- function(){
 #' @export
 loadGroups <- function() {
   #data("regimengroups", package = "oncoRegimens")
-  return(oncoRegimens::regimengroups)
+  return(ARTEMIS::regimengroups)
 }
 
 #' Load the default regimen group dataframe
 #' @export
 loadCohort <- function() {
   #data("json", package = "oncoRegimens")
-  return(oncoRegimens::json)
+  return(ARTEMIS::json)
 }
 
 #' Filter a stringDF dataframe to contain only valid patients

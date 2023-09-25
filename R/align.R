@@ -33,10 +33,10 @@
 align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,method) {
 
   if(!exists("temporal_alignment", mode="function")) {
-    reticulate::source_python(system.file("python/init.py",package="oncoRegimens"),envir=globalenv())
-    reticulate::source_python(system.file("python/score.py",package="oncoRegimens"),envir=globalenv())
-    reticulate::source_python(system.file("python/align.py",package="oncoRegimens"),envir=globalenv())
-    reticulate::source_python(system.file("python/main.py",package="oncoRegimens"),envir=globalenv())
+    reticulate::source_python(system.file("python/init.py",package="ARTEMIS"),envir=globalenv())
+    reticulate::source_python(system.file("python/score.py",package="ARTEMIS"),envir=globalenv())
+    reticulate::source_python(system.file("python/align.py",package="ARTEMIS"),envir=globalenv())
+    reticulate::source_python(system.file("python/main.py",package="ARTEMIS"),envir=globalenv())
   }
 
   if(typeof(regimen[[1]]) == "list"){
