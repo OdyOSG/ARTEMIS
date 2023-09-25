@@ -11,3 +11,7 @@ Readme.Rmd
 img/
 output/
 vignette_test.R
+Output.csv
+Output_Processed.csv
+^doc$
+^Meta$

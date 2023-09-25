@@ -10,3 +10,8 @@ Con_Out_Test1.csv
 temporalAlign_test.R
 output/*
 vignette_test.R
+/doc/
+/Meta/
+Output.csv
+Output_Processed.csv
+vignettes/data/Artemis_Vignette_5.3_0.8.duckdb.wal

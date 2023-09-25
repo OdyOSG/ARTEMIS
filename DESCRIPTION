@@ -1,7 +1,7 @@
 Package: oncoRegimens
 Type: Package
 Title: Chemotherapy regimen detection via temporal alignment algorithms
-Version: 0.9.9
+Version: 1.0.0.1
 Author: Laurence Lawrence-Archer
 Maintainer: This package is maintained by Laurence Lawrence-Archer <ldyer2006@gmail.com>
 Description: A chemotherapy regimen detection algorithm is implemented alongside methods to generate patient-level data from an OMOP-CDM compliant database.
@@ -27,6 +27,7 @@ Imports:
     gridExtra,
     methods
 License: Apache License (>= 2)
+VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression:xz
@@ -35,7 +36,8 @@ Suggests:
     testthat (>= 3.0.0),
     DBI,
     duckdb,
-    knitr
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5.0)
