@@ -1,5 +1,6 @@
-<img align="center" src="/img/logo_Artemis.png?" alt="logo" title="" width="150"/>
-
+<p float="left">
+<img src="./img/logo_Artemis.png" style="vertical-align: center;" width="100"/><img src="./img/ods_logo.jpg" style="vertical-align: center;" width="100"/>
+</p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ## Overview
