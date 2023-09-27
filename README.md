@@ -1,3 +1,4 @@
+[![ODS](./img/ods_logo.jpg "Odysseus Data Services")](https://odysseusinc.com/)
 <img align="center" src="/img/logo_Artemis.png?" alt="logo" title="" width="150"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -108,8 +109,7 @@ stringDF dataframe containing all patients of interest.
 
 The TSW algorithm is then run using user input settings and the provided
 regimen and patient data. Detailed information on user inputs, such as
-the gap penalty, g, can be found
-[here](www.github.com/odyOSG/ARTEMIS)
+the gap penalty, g, can be found [here](www.github.com/odyOSG/ARTEMIS)
 
     output_all <- stringDF %>% generateRawAlignments(regimens = regimens,
                                                      g = 0.4,
@@ -172,7 +172,11 @@ outputs, with anonymised random IDs being used in their place. Both
 writeOuputs() and plotSankey() produce outputs that are automatically
 saved to the local working directory.
 
-    writeOutputs(output_all, output_processed, output_eras, regStats)
+writeOutputs also produces data about the underlying cohorts used to
+construct the regimen outputs, and so also requires a call to the cdm
+directly.
+
+    writeOutputs(output_all, output_processed, output_eras, regStats, cdm, con_df, stringDF)
 
 ## DBI Drivers
 
