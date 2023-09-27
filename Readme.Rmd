@@ -3,7 +3,6 @@ title: "README"
 output: md_document
 ---
 
-[![ODS](./img/ods_logo.jpg "Odysseus Data Services")](https://odysseusinc.com/)
 <img align="center" src="/img/logo_Artemis.png?" alt="logo" title="" width="150"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
