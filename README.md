@@ -126,7 +126,7 @@ Post-processing steps include the handling and combination of
 overlapping regimen alignments, as well as formatting output for
 submission to an episode era table.
 
-    processedAll <- output_all %>% processAlignments(regimenCombine = 28)
+    processedAll <- output_all %>% processAlignments(regimenCombine = 28, regimens = regimens)
 
     personOfInterest <- output_all[output_all$personID == unique(output_all$personID)[1337],]
 

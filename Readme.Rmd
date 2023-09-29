@@ -131,7 +131,7 @@ Raw output alignments are then post-processed and may be visualised. Post-proces
 
 ```{r, eval=FALSE}
 
-processedAll <- output_all %>% processAlignments(regimenCombine = 28)
+processedAll <- output_all %>% processAlignments(regimenCombine = 28, regimens = regimens)
 
 personOfInterest <- output_all[output_all$personID == unique(output_all$personID)[1337],]
 
