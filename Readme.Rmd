@@ -155,9 +155,9 @@ Treatment trajectories, or regimen eras, can then be calculated, adding further 
 
 ```{r, eval=FALSE}
 
-output_eras <- output_processed %>% calculateEras(discontinuationTime = 90)
+processedEras <- output_processed %>% calculateEras(discontinuationTime = 90)
 
-regStats <- output_eras %>% generateRegimenStats()
+regStats <- processedEras %>% generateRegimenStats()
 
 regStats[,-c(4,7)]
 
@@ -169,11 +169,11 @@ You may need to run webshot::install_phantomjs() if your system does not already
 
 ```{r, eval=FALSE}
 
-plotErasFrequency(output_eras)
+plotErasFrequency(processedEras)
 
 #webshot::install_phantomjs()
 regimen_Groups <- loadGroups()
-plotSankey(output_eras, regimen_Groups)
+plotSankey(processedEras, regimen_Groups)
 
 ```
 
@@ -185,7 +185,9 @@ writeOutputs also produces data about the underlying cohorts used to construct t
 
 ```{r, eval=FALSE}
 
-writeOutputs(output_all, output_processed, output_eras, regStats, cdm, con_df, stringDF)
+writeOutputs(output_all, output_processed = processedAll, output_eras = processedEras,
+            cdm = cdm, con_df = con_df, regGroups = regGroups,
+            regStats = regStats, stringDF = stringDF)
 
 ```
 

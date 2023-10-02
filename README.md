@@ -146,9 +146,9 @@ Treatment trajectories, or regimen eras, can then be calculated, adding
 further information about the relative sequencing order of different
 regimens and regimen types.
 
-    output_eras <- output_processed %>% calculateEras(discontinuationTime = 90)
+    processedEras <- output_processed %>% calculateEras(discontinuationTime = 90)
 
-    regStats <- output_eras %>% generateRegimenStats()
+    regStats <- processedEras %>% generateRegimenStats()
 
     regStats[,-c(4,7)]
 
@@ -160,11 +160,11 @@ network graph.
 You may need to run webshot::install\_phantomjs() if your system does
 not already have it installed to utilise the Sankey package.
 
-    plotErasFrequency(output_eras)
+    plotErasFrequency(processedEras)
 
     #webshot::install_phantomjs()
     regimen_Groups <- loadGroups()
-    plotSankey(output_eras, regimen_Groups)
+    plotSankey(processedEras, regimen_Groups)
 
 ### Output
 
@@ -178,7 +178,9 @@ writeOutputs also produces data about the underlying cohorts used to
 construct the regimen outputs, and so also requires a call to the cdm
 directly.
 
-    writeOutputs(output_all, output_processed, output_eras, regStats, cdm, con_df, stringDF)
+    writeOutputs(output_all, output_processed = processedAll, output_eras = processedEras,
+                cdm = cdm, con_df = con_df, regGroups = regGroups,
+                regStats = regStats, stringDF = stringDF)
 
 ## DBI Drivers
 
