@@ -185,7 +185,7 @@ writeOutputs also produces data about the underlying cohorts used to construct t
 
 ```{r, eval=FALSE}
 
-writeOutputs(output_all, output_processed = processedAll, output_eras = processedEras,
+writeOutputs(output_all = output_all, output_processed = processedAll, output_eras = processedEras,
             cdm = cdm, con_df = con_df, regGroups = regGroups,
             regStats = regStats, stringDF = stringDF)
 

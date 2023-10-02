@@ -206,7 +206,18 @@ writeOutputs <- function(output_all, output_processed, output_eras, regGroups, r
 
   plotSankey(processedEras, regGroups, saveLocation = "output_plots/", fileName = "Sankey_Network")
 
-  plotIDs <- sample(unique(output_all_anon$anonymisedID), size = 50, replace = F)
+
+
+  idTest <- unique(output_all_anon$anonymisedID)
+
+  if(length(idTest) > 50){
+    plotIDs <- sample(unique(output_all_anon$anonymisedID), size = 50, replace = F)
+  } else {
+    plotIDs <- idTest
+  }
+
+
+
   for(i in c(1:length(plotIDs))){
     temp_output <- output_all_anon[output_all_anon$anonymisedID==plotIDs[i],]
     temp_plot <- plotOutput(temp_output, fontSize = 1.5, regimenCombine = 28) + ggplot2::ggtitle(paste("Test Plot: ",plotIDs[i],sep=""))
