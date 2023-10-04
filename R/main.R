@@ -334,6 +334,7 @@ generateCohortStats <- function(cdm, con_df, stringDF){
   unTreated <- con_patientTable %>%
     dplyr::filter(.data$person_id %in% subjects_filtered) %>%
     dplyr::select(.data$person_id,.data$age,.data$gender)
+
   uQuants_m <- quantile(unTreated[unTreated$gender=="M",]$age)[c(2,3,4)]
   uQuants_f <- quantile(unTreated[unTreated$gender=="F",]$age)[c(2,3,4)]
   uQuants_t <- quantile(unTreated$age)[c(2,3,4)]
@@ -341,6 +342,7 @@ generateCohortStats <- function(cdm, con_df, stringDF){
   treated <- con_patientTable %>%
     dplyr::filter(.data$person_id %in% subjects_unfiltered) %>%
     dplyr::select(.data$person_id,.data$age,.data$gender)
+
   tQuants_m <- quantile(treated[treated$gender=="M",]$age)[c(2,3,4)]
   tQuants_f <- quantile(treated[treated$gender=="F",]$age)[c(2,3,4)]
   tQuants_t <- quantile(treated$age)[c(2,3,4)]
@@ -364,7 +366,8 @@ generateCohortStats <- function(cdm, con_df, stringDF){
 
   con <- cdm$drug_exposure %>%
     dplyr::filter(.data$person_id %in% subjects_filtered) %>%
-    dplyr::distinct(.data$person_id,.data$drug_concept_id, .keep_all = TRUE) %>%
+    dplyr::select(c("person_id","drug_concept_id")) %>%
+    dplyr::distinct() %>%
     dplyr::left_join(cdm$concept_ancestor,
                      by = c("drug_concept_id" = "descendant_concept_id")) %>%
     dplyr::left_join(cdm$concept,
