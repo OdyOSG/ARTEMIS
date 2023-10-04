@@ -179,7 +179,7 @@ construct the regimen outputs, and so also requires a call to the cdm
 directly.
 
     writeOutputs(output_all = output_all, output_processed = processedAll, output_eras = processedEras,
-                cdm = cdm, con_df = con_df, regGroups = regGroups,
+                cdm = cdm, con_df = con_df, regGroups = regimen_Groups,
                 regStats = regStats, stringDF = stringDF)
 
 ## DBI Drivers
