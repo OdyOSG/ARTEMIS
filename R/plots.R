@@ -310,11 +310,11 @@ plotOutput <- function(output,
                                         ymax = as.numeric(.data$component)+0.3,
                                         xmin = .data$t_start,
                                         xmax = .data$t_end, fill = .data$component)) +
-    ggplot2::geom_text(size = 3.5,
+    ggplot2::geom_text(size = 3,
                        data = plot[plot$regimen=="Yes",],
                        ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
                                     y = as.numeric(.data$component)+0.5,
-                                    label=paste("Score: ",round(as.numeric(.data$adjustedS),3)))) +
+                                    label=paste("S: ", round(100*as.numeric(.data$adjustedS),0)))) +
     ggplot2::geom_point(data = plot[plot$regimen=="No",], size = 3,
                         ggplot2::aes(x= .data$t_start,y= as.numeric(.data$component),
                                      fill = .data$component), shape = 21) +
@@ -407,11 +407,11 @@ plotProcesssed <- function(processedAll,
                                         ymax = as.numeric(.data$component)+0.3,
                                         xmin = .data$t_start,
                                         xmax = .data$t_end, fill = .data$component)) +
-    ggplot2::geom_text(size = 3.5,
+    ggplot2::geom_text(size = 3,
                        data = plot[plot$regimen=="Yes",],
                        ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
                                     y = as.numeric(.data$component)+0.5,
-                                    label=paste("Score: ",round(as.numeric(.data$adjustedS),3)))) +
+                                    label=paste("S: ", round(100*as.numeric(.data$adjustedS),0)))) +
     ggplot2::geom_point(data = plot[plot$regimen=="No",], size = 3,
                         ggplot2::aes(x= .data$t_start,y= as.numeric(.data$component),
                                      fill = .data$component), shape = 21) +
