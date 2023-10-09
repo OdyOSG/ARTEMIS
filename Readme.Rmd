@@ -71,7 +71,7 @@ An input JSON containing a cohort specification is input by the user. Informatio
 
 #json <- loadCohort()
 json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
-name <- "myExampleCohort"
+name <- "examplecohort"
 
 ```
 
@@ -143,11 +143,11 @@ Data may then be further explored via several graphics which indicate various in
 
 ```{r, eval=FALSE}
 
-plotFrequency(output_processed)
+plotFrequency(processedAll)
 
-plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
 
-plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
 
 ```
 
@@ -155,7 +155,7 @@ Treatment trajectories, or regimen eras, can then be calculated, adding further 
 
 ```{r, eval=FALSE}
 
-processedEras <- output_processed %>% calculateEras(discontinuationTime = 90)
+processedEras <- processedAll %>% calculateEras(discontinuationTime = 90)
 
 regStats <- processedEras %>% generateRegimenStats()
 

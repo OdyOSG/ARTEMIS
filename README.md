@@ -79,7 +79,7 @@ Information on OHDSI cohort creation and best practices can be found
 
     #json <- loadCohort()
     json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
-    name <- "myExampleCohort"
+    name <- "examplecohort"
 
 Regimen data may be read in from the provided package, or may be
 submitted directly by the user. All of the provided regimens will be
@@ -136,17 +136,17 @@ Data may then be further explored via several graphics which indicate
 various information, such as regimen frequency or the score/length
 distributions of a given regimen.
 
-    plotFrequency(output_processed)
+    plotFrequency(processedAll)
 
-    plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+    plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
 
-    plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
+    plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
 
 Treatment trajectories, or regimen eras, can then be calculated, adding
 further information about the relative sequencing order of different
 regimens and regimen types.
 
-    processedEras <- output_processed %>% calculateEras(discontinuationTime = 90)
+    processedEras <- processedAll %>% calculateEras(discontinuationTime = 90)
 
     regStats <- processedEras %>% generateRegimenStats()
 
