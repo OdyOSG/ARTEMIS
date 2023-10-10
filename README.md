@@ -44,19 +44,45 @@ ARTEMIS can presently be installed directly from GitHub:
     # install.packages("devtools")
     devtools::install_github("odyOSG/ARTEMIS")
 
-ARTEMIS relies on a python back-end via reticulate and depending on your
-reticulate settings, system and environment, you may need to run the
-following commands before loading the package:
+ARTEMIS relies on a python back-end via
+[reticulate](https://rstudio.github.io/reticulate/) and depending on
+your reticulate settings, system and environment, you may need to run
+the following commands before loading the package:
 
     #reticulate::py_install("numpy")
     #reticulate::py_install("pandas")
+
+If you do not presently have reticulate or python3.11 installed you may
+first need to run the following commands to ensure that reticulate can
+access a valid python install on your system:
+
+    install.packages("reticulate")
+    library(reticulate)
+
+This will prompt reticulate to install python, create a local virtualenv
+called “r-reticulate” and finally set that as the local virtual
+environment for use when running python via R.
 
 ## Usage
 
 ### CDMConnector
 
-A cdm\_reference object is created from any DBI connection, utilising
-the [CDMConnector](https://darwin-eu.github.io/CDMConnector/) package.
+ARTEMIS also relies on the package
+[CDMConnector](https://darwin-eu.github.io/CDMConnector/) to create a
+connection to your CDM from any valid DBI connection. The process of
+cohort creation requires that you have a valid data-containing schema,
+and a pre-existing schema where you have write access. This write schema
+will be used to store cohort tables during their generation, and may be
+safely deleted after running the package.
+
+The specific drivers required by dbConnect may change depending on your
+system. More detailed information can be found in the section “DBI
+Drivers” at the bottom of this readme.
+
+If the OHDSI package [CirceR](https://github.com/OHDSI/CirceR) is not
+already installed on your system, you may need to directly install this
+from the OHDSI/CirceR github page, as this is a non-CRAN dependency
+required by CDMConnector.
 
     dbiconn <- DBI::dbConnect(RPostgres::Redshift(),
                               dbname = "dbName",
@@ -77,23 +103,30 @@ An input JSON containing a cohort specification is input by the user.
 Information on OHDSI cohort creation and best practices can be found
 [here](https://ohdsi.github.io/TheBookOfOhdsi/Cohorts.html).
 
-    #json <- loadCohort()
-    json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
+    json <- loadCohort()
     name <- "examplecohort"
+
+    #Manual
+    #json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
+    #name <- "customcohort"
 
 Regimen data may be read in from the provided package, or may be
 submitted directly by the user. All of the provided regimens will be
 tested against all patients within a given cohort.
 
-    #regimens <- loadRegimens()
-    regimens <- read.csv(here::here("data/myRegimens.csv"))
+    regimens <- loadRegimens(condition = "lungCancer")
+
+    #Manual
+    #regimens <- read.csv(here::here("data/myRegimens.csv"))
 
 A set of valid drugs may also be read in using the provided data, or may
 be curated and submitted by the user. Only valid drugs will appear in
 processed patient strings.
 
-    #validDrugs <- loadDrugs()
-    validDrugs <- read.csv(here::here("data/myDrugs.csv"))
+    validDrugs <- loadDrugs()
+
+    #Manual
+    #validDrugs <- read.csv(here::here("data/myDrugs.csv"))
 
 ### Pipeline
 
@@ -162,7 +195,9 @@ not already have it installed to utilise the Sankey package.
 
     plotErasFrequency(processedEras)
 
+    #Potential dependency install:
     #webshot::install_phantomjs()
+
     regimen_Groups <- loadGroups()
     plotSankey(processedEras, regimen_Groups)
 
