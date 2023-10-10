@@ -65,15 +65,15 @@ environment for use when running python via R.
 
 ## Usage
 
-### CDMConnector
+### DatabaseConnector
 
 ARTEMIS also relies on the package
-[CDMConnector](https://darwin-eu.github.io/CDMConnector/) to create a
-connection to your CDM from any valid DBI connection. The process of
-cohort creation requires that you have a valid data-containing schema,
-and a pre-existing schema where you have write access. This write schema
-will be used to store cohort tables during their generation, and may be
-safely deleted after running the package.
+[DatabaseConnector](https://github.com/OHDSI/DatabaseConnector) to
+create a connection to your CDM. The process of cohort creation requires
+that you have a valid data-containing schema, and a pre-existing schema
+where you have write access. This write schema will be used to store
+cohort tables during their generation, and may be safely deleted after
+running the package.
 
 The specific drivers required by dbConnect may change depending on your
 system. More detailed information can be found in the section “DBI
@@ -82,20 +82,25 @@ Drivers” at the bottom of this readme.
 If the OHDSI package [CirceR](https://github.com/OHDSI/CirceR) is not
 already installed on your system, you may need to directly install this
 from the OHDSI/CirceR github page, as this is a non-CRAN dependency
-required by CDMConnector.
+required by CDMConnector. You may similarly need to install the
+[CohortGenerator](https://github.com/OHDSI/CohortGenerator) package.
 
-    dbiconn <- DBI::dbConnect(RPostgres::Redshift(),
-                              dbname = "dbName",
-                              host = "hostName",
-                              port = "9999",
-                              user = "user",
-                              password = "password")
+    #devtools::install_github("OHDSI/CohortGenerator")
+    #devtools::install_github("OHDSI/CirceR")
 
-    cdmSchema      <- "schema_containing_data"
+    connectionDetails <- DatabaseConnector::createConnectionDetails(dbms="redshift",
+                                                                    server="myServer/serverName",
+                                                                    user="user",
+                                                                    port = "1337",
+                                                                    password="passowrd",
+                                                                    pathToDriver = "path/to/JDBC_drivers/")
+
+    cdmSchema <- "schema_containing_data"
+    writeSchema <- "schema_with_write_access"
 
     cdm <- CDMConnector::cdm_from_con(con = dbiconn,
                                       cdm_schema = cdmSchema,
-                                      write_schema = "schema_with_write_access")
+                                      write_schema = writeSchema)
 
 ### Input
 
@@ -133,14 +138,12 @@ processed patient strings.
 The cdm connection is used to generate a dataframe containing the
 relevant patient details for constructing regimen strings.
 
-    con_df <- getCohortSet(cdm = cdm, json = json, name = name)
+    con_df <- getConDF(connectionDetails, json, name, cdmSchema, writeSchema)
 
 Regimen strings are then constructed, collated and filtered into a
 stringDF dataframe containing all patients of interest.
 
     stringDF <- stringDF_from_cdm(con_df = con_df, writeOut = F, validDrugs = validDrugs)
-
-    stringDF <- stringDF %>% filter_stringDF(min = 20)
 
 The TSW algorithm is then run using user input settings and the provided
 regimen and patient data. Detailed information on user inputs, such as
@@ -210,22 +213,12 @@ writeOuputs() and plotSankey() produce outputs that are automatically
 saved to the local working directory.
 
 writeOutputs also produces data about the underlying cohorts used to
-construct the regimen outputs, and so also requires a call to the cdm
-directly.
+construct the regimen outputs, and so also requires a call to the
+connection via DatabaseConnector directly.
 
     writeOutputs(output_all = output_all, output_processed = processedAll, output_eras = processedEras,
-                cdm = cdm, con_df = con_df, regGroups = regimen_Groups,
-                regStats = regStats, stringDF = stringDF)
-
-## DBI Drivers
-
-CDMConnector is tested using the following DBI driver backends:
-
--   [RPostgres](https://rpostgres.r-dbi.org/reference/postgres) on
-    Postgres and Redshift
--   [odbc](https://solutions.posit.co/connections/db/r-packages/odbc/)
-    on Microsoft SQL Server, Oracle, and Databricks/Spark
--   [duckdb](https://duckdb.org/docs/api/r)
+                 connectionDetails = connectionDetails, cdmSchema = cdmSchema, con_df = con_df,
+                 regGroups = regimen_Groups, regStats = regStats, stringDF = stringDF)
 
 ## Getting help
 

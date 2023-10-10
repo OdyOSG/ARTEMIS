@@ -10,6 +10,10 @@ plotSankey(processedEras, regGroups, saveLocation = NA, fileName = "Network")
 \item{processedEras}{An output dataframe created by calculateEras}
 
 \item{regGroups}{A dataframe indicating how to group regimens}
+
+\item{saveLocation}{A file directory location where files may be saved}
+
+\item{fileName}{A filename prefix for saved files}
 }
 \description{
 Plots a sankey diagram displaying the flow between first, second and third regimen eras

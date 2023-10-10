@@ -1,3 +1,62 @@
+#' Generate a con_df dataframe without using CDMConnector
+#' @param connectionDetails A set of DatabaseConnector connectiondetails
+#' @param json A loaded cohort from loadJSON()
+#' @param name A cohort-specific name for written tables
+#' @param cdmSchema A schema containing a valid OMOP CDM
+#' @param writeSchema A schema where the user has write access
+#' @return A con_df dataframe
+#' @export
+getConDF <- function(connectionDetails, json, name, cdmSchema, writeSchema){
+
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+
+  cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
+  cohortExpression <- CirceR::cohortExpressionFromJson(json$json[[1]])
+  cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = FALSE))
+  cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = 1,
+                                                       cohortName = name,
+                                                       sql = cohortSql,
+                                                       stringsAsFactors = FALSE))
+
+  cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = name)
+
+  CohortGenerator::createCohortTables(connection = connection,
+                                      cohortDatabaseSchema = writeSchema,
+                                      cohortTableNames = cohortTableNames, )
+
+  cohortsGenerated <- CohortGenerator::generateCohortSet(connection = connection,
+                                                         cdmDatabaseSchema = cdmSchema,
+                                                         cohortDatabaseSchema = writeSchema,
+                                                         cohortTableNames = cohortTableNames,
+                                                         cohortDefinitionSet = cohortsToCreate)
+
+  subject_ids <- DatabaseConnector::dbGetQuery(conn = connection,
+                                               statement = paste("SELECT subject_id FROM ",writeSchema,".",name,sep=""))
+
+  drug_exposure <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "drug_exposure"))
+  concept_ancestor <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "concept_ancestor"))
+  concept <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "concept"))
+  subject_ids <- subject_ids$subject_id
+
+  con <- drug_exposure %>%
+    dplyr::filter(.data$person_id %in% subject_ids) %>%
+    dplyr::left_join(concept_ancestor,
+                     by = c("drug_concept_id" = "descendant_concept_id")) %>%
+    dplyr::left_join(concept,
+                     by = c("ancestor_concept_id" = "concept_id")) %>%
+    dplyr::filter(tolower(.data$concept_class_id) == "ingredient") %>%
+    dplyr::select(.data$person_id, .data$drug_exposure_start_date,
+                  .data$drug_concept_id, .data$ancestor_concept_id,
+                  .data$concept_name) %>% dplyr::collect()
+
+  con_df <- as.data.frame(con)
+
+  con_df
+
+  return(con_df)
+
+}
+
 #' Generate a set of patient drug record strings from a valid CDM connection and
 #' a valid cohort JSON.
 #' @param con_df A con_df dataframe returned by getCohortSet()
@@ -46,57 +105,6 @@ stringDF_from_cdm <- function(con_df, writeOut=TRUE, outputName = "Output", vali
                   bullet_col = "green", bullet = "tick")
 
   return(con_df_out2)
-
-}
-
-#' Generate a conDF dataframe from a valid CDM connection and
-#' a valid cohort JSON.
-#' @param cdm A valid CDM connection object
-#' @param json A valid Cohort specification JSON
-#' @param name A name for the given cohort
-#' @return A cdm dataframe object
-#' @export
-getCohortSet <- function(cdm, json, name){
-
-  cli::cat_bullet("Connecting to CDM and generating cohort set...",
-                  bullet_col = "yellow", bullet = "info")
-
-  #Generate Cohort Set from input data
-  cdm <- CDMConnector::generateCohortSet(
-    cdm = cdm,
-    cohortSet = json,
-    name = name,
-    computeAttrition = FALSE,
-    overwrite = TRUE
-  )
-
-  #Pull cohort DF and subject IDs
-
-  cdmCohort_df <- as.data.frame(cdm[[name]])
-
-  subjects <- cdmCohort_df$subject_id
-
-  cli::cat_bullet("Generate drug_exposure dataframe for each subject...",
-                  bullet_col = "yellow", bullet = "info")
-
-  #Generate relevant ingredients list from subjects
-  con <- cdm$drug_exposure %>%
-    dplyr::filter(.data$person_id %in% subjects) %>%
-    dplyr::left_join(cdm$concept_ancestor,
-                     by = c("drug_concept_id" = "descendant_concept_id")) %>%
-    dplyr::left_join(cdm$concept,
-                     by = c("ancestor_concept_id" = "concept_id")) %>%
-    dplyr::filter(tolower(.data$concept_class_id) == "ingredient") %>%
-    dplyr::select(.data$person_id, .data$drug_exposure_start_date,
-                  .data$drug_concept_id, .data$ancestor_concept_id,
-                  .data$concept_name)
-
-  con_df <- as.data.frame(con)
-
-  cli::cat_bullet("Complete!",
-                  bullet_col = "green", bullet = "tick")
-
-  return(con_df)
 
 }
 
@@ -162,22 +170,23 @@ loadCohort <- function() {
 #' Filter a stringDF dataframe to contain only valid patients
 #' @param output_all A dataframe containing raw outputs
 #' @param output_processed A dataframe containing processed output regimens
-#' @param output_eras A dataframe containing processed regimen eras
+#' @param processedEras A dataframe containing processed regimen eras
 #' @param regGroups The desired regimen grouping variables for Sankey construction
 #' @param regStats A dataframe containing various summary statistics
-#' @param cdm The CDM object used to generate the input data to ARTEMIS
+#' @param connectionDetails A set of DatabaseConnector connectiondetails
+#' @param cdmSchema A schema containing a valid OMOP CDM
 #' @param con_df The con dataframe object generated by getCohortSet
 #' @param stringDF A stringDF object containing all valid patients (i.e., those who have exposure
 #' to at least one valid drug)
 #' @export
-writeOutputs <- function(output_all, output_processed, output_eras, regGroups, regStats, cdm, con_df, stringDF){
+writeOutputs <- function(output_all, output_processed, processedEras, regGroups, regStats, connectionDetails, cdmSchema, con_df, stringDF){
   uniqueIDs <- unique(output_all$personID)
   random_ids <- sample(1:10000000, length(uniqueIDs), replace = F) %>% as.character()
   id_dictionary <- cbind(uniqueIDs, random_ids) %>% `colnames<-`(c("personID", "anonymisedID")) %>% as.data.frame()
 
   output_all_anon <- merge(output_all,id_dictionary)[,-1]
   output_processed_anon <- merge(output_processed,id_dictionary)[,-1]
-  output_eras_anon <- merge(output_eras,id_dictionary)[,-1]
+  output_eras_anon <- merge(processedEras,id_dictionary)[,-1]
 
   dir.create(file.path(here::here(), "output_data"), showWarnings = FALSE)
   dir.create(file.path(here::here(), "output_stats"), showWarnings = FALSE)
@@ -186,7 +195,7 @@ writeOutputs <- function(output_all, output_processed, output_eras, regGroups, r
   cli::cat_bullet("Generating cohort level stats...",
                   bullet_col = "yellow", bullet = "info")
 
-  cohortStats <- generateCohortStats(cdm, con_df, stringDF)
+  cohortStats <- generateCohortStats(connectionDetails = connectionDetails, cdmSchema = cdmSchema, con_df = con_df, stringDF = stringDF)
 
   cli::cat_bullet("Saving anonymised patient-level data...",
                   bullet_col = "yellow", bullet = "info")
@@ -215,8 +224,6 @@ writeOutputs <- function(output_all, output_processed, output_eras, regGroups, r
   } else {
     plotIDs <- idTest
   }
-
-
 
   for(i in c(1:length(plotIDs))){
     temp_output <- output_all_anon[output_all_anon$anonymisedID==plotIDs[i],]

@@ -714,6 +714,8 @@ plotErasFrequency <- function(processedEras, N = 10){
 #' Plots a sankey diagram displaying the flow between first, second and third regimen eras
 #' @param processedEras An output dataframe created by calculateEras
 #' @param regGroups A dataframe indicating how to group regimens
+#' @param saveLocation A file directory location where files may be saved
+#' @param fileName A filename prefix for saved files
 #' @export
 plotSankey <- function(processedEras, regGroups, saveLocation = NA, fileName = "Network"){
 
