@@ -414,9 +414,9 @@ generateCohortStats <- function(connectionDetails, cdmSchema, con_df, stringDF){
 
   output <- rbind(output_df,atc_output)
 
-  output$F_Untreated <- as.character(format(round(100*as.numeric(output$F_Untreated),2),nsmall=2))
-  output$M_Untreated <- as.character(format(round(100*as.numeric(output$M_Untreated),2),nsmall=2))
-  output$Total_Untreated <- as.character(format(round(100*as.numeric(output$Total_Untreated),2),nsmall=2))
+  output[c(5:18),]$F_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$F_Untreated),2),nsmall=2))
+  output[c(5:18),]$M_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$M_Untreated),2),nsmall=2))
+  output[c(5:18),]$Total_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$Total_Untreated),2),nsmall=2))
 
   return(output)
 
