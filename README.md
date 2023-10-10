@@ -5,6 +5,9 @@
 </p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+For the CDMConnector version of this package, please change branches to
+[“Main”](https://github.com/OdyOSG/ARTEMIS/tree/main/).
+
 ## Overview
 
 ARTEMIS provides an interface for utilizing a modified Temporal
@@ -185,8 +188,6 @@ regimens and regimen types.
     processedEras <- processedAll %>% calculateEras(discontinuationTime = 90)
 
     regStats <- processedEras %>% generateRegimenStats()
-
-    regStats[,-c(4,7)]
 
 And resulting graphics, such as a sankey indicating the overall patterns
 of treatment trajectories can then be constructed. plotSankey() produces
