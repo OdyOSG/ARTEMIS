@@ -35,7 +35,7 @@ ARTEMIS can presently be installed directly from GitHub:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("odyOSG/ARTEMIS")
+devtools::install_github("odyOSG/ARTEMIS@DatabaseConnector")
 ```
 
 ARTEMIS relies on a python back-end via [reticulate](https://rstudio.github.io/reticulate/) and depending on your reticulate settings, system and environment, you may need to run the following commands before loading the package:
