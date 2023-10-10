@@ -5,6 +5,10 @@
 </p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+For the version of this package which uses DatabaseConnector, please
+change branches to
+[“DatabaseConnector”](https://github.com/OdyOSG/ARTEMIS/tree/DatabaseConnector).
+
 ## Overview
 
 ARTEMIS provides an interface for utilizing a modified Temporal
