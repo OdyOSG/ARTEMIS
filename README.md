@@ -101,10 +101,6 @@ required by CDMConnector. You may similarly need to install the
     cdmSchema <- "schema_containing_data"
     writeSchema <- "schema_with_write_access"
 
-    cdm <- CDMConnector::cdm_from_con(con = dbiconn,
-                                      cdm_schema = cdmSchema,
-                                      write_schema = writeSchema)
-
 ### Input
 
 An input JSON containing a cohort specification is input by the user.

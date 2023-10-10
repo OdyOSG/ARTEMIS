@@ -79,10 +79,6 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms="redshift",
 cdmSchema <- "schema_containing_data"
 writeSchema <- "schema_with_write_access"
 
-cdm <- CDMConnector::cdm_from_con(con = dbiconn,
-                                  cdm_schema = cdmSchema,
-                                  write_schema = writeSchema)
-
 ```
 
 ### Input
