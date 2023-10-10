@@ -69,9 +69,12 @@ An input JSON containing a cohort specification is input by the user. Informatio
 
 ```{r, eval=FALSE}
 
-#json <- loadCohort()
-json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
+json <- loadCohort()
 name <- "examplecohort"
+
+#Manual
+#json <- CDMConnector::readCohortSet(path = here::here("myCohort/"))
+#name <- "customcohort"
 
 ```
 
@@ -79,8 +82,10 @@ Regimen data may be read in from the provided package, or may be submitted direc
 
 ```{r, eval=FALSE}
 
-#regimens <- loadRegimens()
-regimens <- read.csv(here::here("data/myRegimens.csv"))
+regimens <- loadRegimens(condition = "lungCancer")
+
+#Manual
+#regimens <- read.csv(here::here("data/myRegimens.csv"))
 
 ```
 
@@ -88,8 +93,10 @@ A set of valid drugs may also be read in using the provided data, or may be cura
 
 ```{r, eval=FALSE}
 
-#validDrugs <- loadDrugs()
-validDrugs <- read.csv(here::here("data/myDrugs.csv"))
+validDrugs <- loadDrugs()
+
+#Manual
+#validDrugs <- read.csv(here::here("data/myDrugs.csv"))
 
 ```
 
@@ -171,7 +178,9 @@ You may need to run webshot::install_phantomjs() if your system does not already
 
 plotErasFrequency(processedEras)
 
+#Potential dependency install:
 #webshot::install_phantomjs()
+
 regimen_Groups <- loadGroups()
 plotSankey(processedEras, regimen_Groups)
 
