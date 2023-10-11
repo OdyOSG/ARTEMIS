@@ -216,8 +216,6 @@ writeOutputs <- function(output_all, output_processed, output_eras, regGroups, r
     plotIDs <- idTest
   }
 
-
-
   for(i in c(1:length(plotIDs))){
     temp_output <- output_all_anon[output_all_anon$anonymisedID==plotIDs[i],]
     temp_plot <- plotOutput(temp_output, fontSize = 1.5, regimenCombine = 28) + ggplot2::ggtitle(paste("Test Plot: ",plotIDs[i],sep=""))
