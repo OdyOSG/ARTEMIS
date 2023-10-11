@@ -144,8 +144,6 @@ stringDF dataframe containing all patients of interest.
 
     stringDF <- stringDF_from_cdm(con_df = con_df, writeOut = F, validDrugs = validDrugs)
 
-    stringDF <- stringDF %>% filter_stringDF(min = 20)
-
 The TSW algorithm is then run using user input settings and the provided
 regimen and patient data. Detailed information on user inputs, such as
 the gap penalty, g, can be found [here](www.github.com/odyOSG/ARTEMIS)
