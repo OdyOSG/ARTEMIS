@@ -33,27 +33,31 @@ getConDF <- function(connectionDetails, json, name, cdmSchema, writeSchema){
   subject_ids <- DatabaseConnector::dbGetQuery(conn = connection,
                                                statement = paste("SELECT subject_id FROM ",writeSchema,".",name,sep=""))
 
-  drug_exposure <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "drug_exposure"))
-  concept_ancestor <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "concept_ancestor"))
-  concept <- dplyr::tbl(connection, DatabaseConnector::inDatabaseSchema(cdmSchema, "concept"))
-  subject_ids <- subject_ids$subject_id
+  sql_template <- "
+WITH filtered_drug_exposure AS (
+  SELECT drug_exposure.person_id,
+         drug_exposure.drug_exposure_start_date,
+         drug_exposure.drug_concept_id,
+         concept_ancestor.ancestor_concept_id,
+         concept.concept_name
+  FROM @cdmSchema.drug_exposure
+  LEFT JOIN @cdmSchema.concept_ancestor ON drug_exposure.drug_concept_id = concept_ancestor.descendant_concept_id
+  LEFT JOIN @cdmSchema.concept ON concept_ancestor.ancestor_concept_id = concept.concept_id
+  WHERE drug_exposure.person_id IN @subject_ids
+    AND LOWER(concept.concept_class_id) = 'ingredient'
+)
 
-  con <- drug_exposure %>%
-    dplyr::filter(.data$person_id %in% subject_ids) %>%
-    dplyr::left_join(concept_ancestor,
-                     by = c("drug_concept_id" = "descendant_concept_id")) %>%
-    dplyr::left_join(concept,
-                     by = c("ancestor_concept_id" = "concept_id")) %>%
-    dplyr::filter(tolower(.data$concept_class_id) == "ingredient") %>%
-    dplyr::select(.data$person_id, .data$drug_exposure_start_date,
-                  .data$drug_concept_id, .data$ancestor_concept_id,
-                  .data$concept_name) %>% dplyr::collect()
+SELECT * FROM filtered_drug_exposure;
+"
 
-  con_df <- as.data.frame(con)
+rendered_sql <- SqlRender::render(sql_template, subject_ids = gsub("c","",paste(subject_ids)), cdmSchema = cdmSchema)
 
-  con_df
+con_df <- DatabaseConnector::dbGetQuery(conn = connection,
+                                        statement = rendered_sql)
 
-  return(con_df)
+con_df <- as.data.frame(con_df)
+
+return(con_df)
 
 }
 
