@@ -193,7 +193,6 @@ writeOutputs <- function(output_all, output_processed, processedEras, regGroups,
   output_processed_anon <- merge(output_processed,id_dictionary)[,-1]
   output_eras_anon <- merge(processedEras,id_dictionary)[,-1]
 
-
   dir.create(file.path(here::here(), "output_data"), showWarnings = FALSE)
   dir.create(file.path(here::here(), "output_stats"), showWarnings = FALSE)
   dir.create(file.path(here::here(), "output_plots"), showWarnings = FALSE)
