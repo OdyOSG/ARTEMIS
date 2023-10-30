@@ -449,67 +449,70 @@ plotScoreDistribution <- function(regimen1,regimen2=NA,processedAll){
 
   if(is.na(regimen2)){
 
+    quantile(c(1,2,3))[[2]]
+    quantile(c(1,2,3))[[4]]
+
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$adjustedS),
+                                        quantile(score_plot$adjustedS)[[2]],
+                                        quantile(score_plot$adjustedS)[[4]]
                               )
     )
 
     ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
       ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen1)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Adjusted Score") +
       ggplot2::theme_minimal() +
-      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+      ggplot2::labs(caption = paste("Mean: ",signif(mean(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
 
   } else {
 
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$adjustedS),
+                                        quantile(score_plot$adjustedS)[[2]],
+                                        quantile(score_plot$adjustedS)[[4]]
                               )
     )
 
     p1 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
       ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen1)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Adjusted Score") +
       ggplot2::theme_minimal() +
-      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+      ggplot2::labs(caption = paste("Mean: ",signif(mean(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
 
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen2),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)+sd(score_plot$adjustedS),
-                                        mean(score_plot$adjustedS)-sd(score_plot$adjustedS)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$adjustedS),
+                                        quantile(score_plot$adjustedS)[[2]],
+                                        quantile(score_plot$adjustedS)[[4]]
                               )
     )
 
     p2 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=adjustedS)) +
       ggplot2::geom_histogram(binwidth = 0.01, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen2)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Adjusted Score") +
       ggplot2::theme_minimal() +
-      ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
+      ggplot2::labs(caption = paste("Mean: ",signif(mean(score_plot$adjustedS),2),"\n","Interquartile Range: ",signif(IQR(score_plot$adjustedS),3),sep=""))
 
     gridExtra::grid.arrange(p1,p2,ncol=1)
 
@@ -528,25 +531,28 @@ plotScoreDistribution <- function(regimen1,regimen2=NA,processedAll){
 #' @export
 plotRegimenLengthDistribution <- function(regimen1,regimen2=NA,processedAll){
 
+  processedAll$regLength <- 1+(processedAll$t_end - processedAll$t_start)
+
   scoreDistibution_All <- processedAll[,c("component","regLength")]
   colnames(scoreDistibution_All) <- c("regName","regLength")
 
   if(is.na(regimen2)){
 
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$regLength),
-                                        mean(score_plot$regLength)+sd(score_plot$regLength),
-                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$regLength),
+                                        quantile(score_plot$regLength)[[2]],
+                                        quantile(score_plot$regLength)[[4]]
                               )
     )
+
 
     ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
       ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen1)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Regimen Length") +
@@ -556,19 +562,19 @@ plotRegimenLengthDistribution <- function(regimen1,regimen2=NA,processedAll){
   } else {
 
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen1),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$regLength),
-                                        mean(score_plot$regLength)+sd(score_plot$regLength),
-                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$regLength),
+                                        quantile(score_plot$regLength)[[2]],
+                                        quantile(score_plot$regLength)[[4]]
                               )
     )
 
     p1 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
       ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen1)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Regimen Length") +
@@ -576,19 +582,19 @@ plotRegimenLengthDistribution <- function(regimen1,regimen2=NA,processedAll){
       ggplot2::labs(caption = paste("Median: ",signif(median(score_plot$regLength),2),"\n","Interquartile Range: ",signif(IQR(score_plot$regLength),3),sep=""))
 
     score_plot <- scoreDistibution_All[stringr::str_to_lower(scoreDistibution_All$regName) == stringr::str_to_lower(regimen2),]
-    score_stats <- data.frame(statistic = c("mean","sd_upper","sd_lower"),
-                              linetype = c("Mean","+/- SD","+/- SD"),
-                              value = c(mean(score_plot$regLength),
-                                        mean(score_plot$regLength)+sd(score_plot$regLength),
-                                        mean(score_plot$regLength)-sd(score_plot$regLength)
+    score_stats <- data.frame(statistic = c("median","percentile","percentile"),
+                              linetype = c("median","percentile","percentile"),
+                              value = c(median(score_plot$regLength),
+                                        quantile(score_plot$regLength)[[2]],
+                                        quantile(score_plot$regLength)[[4]]
                               )
     )
 
     p2 <- ggplot2::ggplot(score_plot, ggplot2::aes(x=.data$regLength)) +
       ggplot2::geom_histogram(binwidth = 5, color="darkblue",fill="grey80") +
       ggplot2::geom_density(alpha=.4, fill="lightblue") +
-      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="lightblue3") +
-      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("Mean", "+/- SD"), values = c("solid","dashed")) +
+      ggplot2::geom_vline(data=score_stats, ggplot2::aes(xintercept=.data$value,linetype=.data$linetype), size=1, col="firebrick1") +
+      ggplot2::scale_linetype_manual(name = "Stat.", breaks=c("median", "percentile"), values = c("solid","dashed")) +
       ggplot2::ggtitle(paste(regimen2)) +
       ggplot2::xlab("Density") +
       ggplot2::ylab("Adjusted Score") +

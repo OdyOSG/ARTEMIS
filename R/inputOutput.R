@@ -185,12 +185,14 @@ loadCohort <- function() {
 #' @export
 writeOutputs <- function(output_all, output_processed, processedEras, regGroups, regStats, connectionDetails, cdmSchema, con_df, stringDF){
   uniqueIDs <- unique(output_all$personID)
+
   random_ids <- sample(1:10000000, length(uniqueIDs), replace = F) %>% as.character()
   id_dictionary <- cbind(uniqueIDs, random_ids) %>% `colnames<-`(c("personID", "anonymisedID")) %>% as.data.frame()
 
   output_all_anon <- merge(output_all,id_dictionary)[,-1]
   output_processed_anon <- merge(output_processed,id_dictionary)[,-1]
   output_eras_anon <- merge(processedEras,id_dictionary)[,-1]
+
 
   dir.create(file.path(here::here(), "output_data"), showWarnings = FALSE)
   dir.create(file.path(here::here(), "output_stats"), showWarnings = FALSE)
@@ -218,8 +220,6 @@ writeOutputs <- function(output_all, output_processed, processedEras, regGroups,
                   bullet_col = "yellow", bullet = "info")
 
   plotSankey(processedEras, regGroups, saveLocation = "output_plots/", fileName = "Sankey_Network")
-
-
 
   idTest <- unique(output_all_anon$anonymisedID)
 

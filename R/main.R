@@ -326,128 +326,116 @@ generateCohortStats <- function(connectionDetails, cdmSchema, con_df, stringDF){
   subjects_filtered <- unique(con_df_filtered$person_id)
   subjects_unfiltered <- subjects[!subjects %in% subjects_filtered]
 
-  sql_template <- "
-WITH filtered_person AS (
-  SELECT person_id,
-         year_of_birth,
-         gender_concept_id
+  sql_template <- "SELECT person_id, year_of_birth, gender_concept_id
   FROM @cdmSchema.person
-  WHERE person.person_id IN @subject_ids
-)
-
-SELECT * FROM filtered_person;
-"
+  WHERE person_id IN @subject_ids;"
 
   rendered_sql <- SqlRender::render(sql_template,
-                                  subject_ids = paste("(",paste(subjects,collapse = ","),")"),
-                                  cdmSchema = cdmSchema)
+                                    subject_ids = paste("(",paste(subjects,collapse = ","),")"),
+                                    cdmSchema = cdmSchema)
 
-  con_patientTable <- DatabaseConnector::dbGetQuery(conn = connection,
-                                                  statement = rendered_sql)
+  con <- DatabaseConnector::dbGetQuery(conn = connection,
+                                       statement = rendered_sql)
+
+  con_patientTable <- as.data.frame(con)
 
   con_patientTable$gender <- ifelse(con_patientTable$gender_concept_id=="8532","F","M")
   con_patientTable$age <- 2022 - as.numeric(as.character(con_patientTable$year_of_birth))
 
-  unTreated <- con_patientTable %>%
-    dplyr::filter(.data$person_id %in% subjects_filtered) %>%
-    dplyr::select(.data$person_id,.data$age,.data$gender)
+  unTreated <- con_patientTable[con_patientTable$person_id %in% subjects_filtered,]
+  unTreated <- unTreated[,c("person_id","age","gender")]
 
-uQuants_m <- quantile(unTreated[unTreated$gender=="M",]$age)[c(2,3,4)]
-uQuants_f <- quantile(unTreated[unTreated$gender=="F",]$age)[c(2,3,4)]
-uQuants_t <- quantile(unTreated$age)[c(2,3,4)]
+  uQuants_m <- quantile(unTreated[unTreated$gender=="M",]$age)[c(2,3,4)]
+  uQuants_f <- quantile(unTreated[unTreated$gender=="F",]$age)[c(2,3,4)]
+  uQuants_t <- quantile(unTreated$age)[c(2,3,4)]
 
-treated <- con_patientTable %>%
-  dplyr::filter(.data$person_id %in% subjects_unfiltered) %>%
-  dplyr::select(.data$person_id,.data$age,.data$gender)
+  treated <- con_patientTable[con_patientTable$person_id %in% subjects_unfiltered,]
+  treated <- treated[,c("person_id","age","gender")]
 
-tQuants_m <- quantile(treated[treated$gender=="M",]$age)[c(2,3,4)]
-tQuants_f <- quantile(treated[treated$gender=="F",]$age)[c(2,3,4)]
-tQuants_t <- quantile(treated$age)[c(2,3,4)]
+  tQuants_m <- quantile(treated[treated$gender=="M",]$age)[c(2,3,4)]
+  tQuants_f <- quantile(treated[treated$gender=="F",]$age)[c(2,3,4)]
+  tQuants_t <- quantile(treated$age)[c(2,3,4)]
 
-quantiles <- as.data.frame(rbind(uQuants_t,rbind(tQuants_t,rbind(tQuants_m,rbind(tQuants_f,rbind(uQuants_m,uQuants_f))))))
-quantiles$Category <- c("Untreated","Treated","Treated","Treated","Untreated","Untreated")
-quantiles$Gender <- c("Total","Total","M","F","M","F")
+  quantiles <- as.data.frame(rbind(uQuants_t,rbind(tQuants_t,rbind(tQuants_m,rbind(tQuants_f,rbind(uQuants_m,uQuants_f))))))
+  quantiles$Category <- c("Untreated","Treated","Treated","Treated","Untreated","Untreated")
+  quantiles$Gender <- c("Total","Total","M","F","M","F")
 
-colnames(quantiles) <- c("25th Percentile (AGE)","Median (AGE)","75th Percentile (AGE)","Category","Gender")
+  colnames(quantiles) <- c("25th Percentile (AGE)","Median (AGE)","75th Percentile (AGE)","Category","Gender")
 
-quantiles <- reshape2::melt(quantiles)
-quantiles$variable <- as.character(quantiles$variable)
-quantiles <- rbind(quantiles, c("Untreated","Total","No. of Patients",dim(unTreated)[1]))
-quantiles <- rbind(quantiles, c("Treated","Total","No. of Patients",dim(treated)[1]))
-quantiles <- rbind(quantiles, c("Treated","M","No. of Patients",dim(treated[treated$gender=="M",])[1]))
-quantiles <- rbind(quantiles, c("Treated","F","No. of Patients",dim(treated[treated$gender=="F",])[1]))
-quantiles <- rbind(quantiles, c("Untreated","M","No. of Patients",dim(unTreated[unTreated$gender=="M",])[1]))
-quantiles <- rbind(quantiles, c("Untreated","F","No. of Patients",dim(unTreated[unTreated$gender=="F",])[1]))
+  quantiles <- reshape2::melt(quantiles)
+  quantiles$variable <- as.character(quantiles$variable)
+  quantiles <- rbind(quantiles, c("Untreated","Total","No. of Patients",dim(unTreated)[1]))
+  quantiles <- rbind(quantiles, c("Treated","Total","No. of Patients",dim(treated)[1]))
+  quantiles <- rbind(quantiles, c("Treated","M","No. of Patients",dim(treated[treated$gender=="M",])[1]))
+  quantiles <- rbind(quantiles, c("Treated","F","No. of Patients",dim(treated[treated$gender=="F",])[1]))
+  quantiles <- rbind(quantiles, c("Untreated","M","No. of Patients",dim(unTreated[unTreated$gender=="M",])[1]))
+  quantiles <- rbind(quantiles, c("Untreated","F","No. of Patients",dim(unTreated[unTreated$gender=="F",])[1]))
 
-output_df <- reshape2::acast(quantiles,variable~Gender+Category, value.var = "value")
+  output_df <- reshape2::acast(quantiles,variable~Gender+Category, value.var = "value")
 
-sql_template <- "
-WITH filtered_drug_exposure AS (
-  SELECT de.person_id,
-         de.drug_concept_id
-  FROM @cdmSchema.drug_exposure AS de
-  WHERE de.person_id IN @subject_ids
-),
+  sql_template <- "
+  WITH filtered_drug_exposure AS (
+    SELECT de.person_id,
+           de.drug_concept_id
+    FROM @cdmSchema.drug_exposure AS de
+    WHERE de.person_id IN @subject_ids
+  ),
 
-distinct_drug_concepts AS (
-  SELECT DISTINCT person_id, drug_concept_id
-  FROM filtered_drug_exposure
-),
+  distinct_drug_concepts AS (
+    SELECT DISTINCT person_id, drug_concept_id
+    FROM filtered_drug_exposure
+  ),
 
-filtered_drug_concepts AS (
-  SELECT *
-  FROM distinct_drug_concepts AS dc
-  LEFT JOIN @cdmSchema.concept_ancestor AS ca ON dc.drug_concept_id = ca.descendant_concept_id
-  LEFT JOIN @cdmSchema.concept AS c ON ca.ancestor_concept_id = c.concept_id
-  WHERE LOWER(c.concept_class_id) = 'atc 1st'
-)
+  filtered_drug_concepts AS (
+    SELECT *
+    FROM distinct_drug_concepts AS dc
+    LEFT JOIN @cdmSchema.concept_ancestor AS ca ON dc.drug_concept_id = ca.descendant_concept_id
+    LEFT JOIN @cdmSchema.concept AS c ON ca.ancestor_concept_id = c.concept_id
+    WHERE LOWER(c.concept_class_id) = 'atc 1st'
+  )
 
-SELECT * FROM filtered_drug_concepts;
-"
+  SELECT * FROM filtered_drug_concepts;"
 
-rendered_sql <- SqlRender::render(sql_template,
-                                  subject_ids = paste("(",paste(subjects_filtered,collapse = ","),")"),
-                                  cdmSchema = cdmSchema)
+  rendered_sql <- SqlRender::render(sql_template,
+                                   subject_ids = paste("(",paste(subjects_filtered,collapse = ","),")"),
+                                   cdmSchema = cdmSchema)
 
-con <- DatabaseConnector::dbGetQuery(conn = connection,
-                                        statement = rendered_sql)
+  con <- DatabaseConnector::dbGetQuery(conn = connection,
+                                     statement = rendered_sql)
 
-con_df_temp <- as.data.frame(con)
+  con_df_temp <- as.data.frame(con)
 
-con_df_m <- con_df_temp %>%
-  dplyr::filter(.data$person_id %in% unTreated[unTreated$gender=="M",]$person_id)
+  con_df_m <- con_df_temp[con_df_temp$person_id %in% unTreated[unTreated$gender=="M",]$person_id,]
+  con_df_f <- con_df_temp[con_df_temp$person_id %in% unTreated[unTreated$gender=="F",]$person_id,]
 
-con_df_f <- con_df_temp %>%
-  dplyr::filter(.data$person_id %in% unTreated[unTreated$gender=="F",]$person_id)
+  m_df <- as.data.frame(table(con_df_m$concept_name)/sum(table(con_df_m$concept_name)))
+  f_df <- as.data.frame(table(con_df_f$concept_name)/sum(table(con_df_f$concept_name)))
+  t_df <- as.data.frame(table(con_df_temp$concept_name)/sum(table(con_df_temp$concept_name)))
 
-m_df <- as.data.frame(table(con_df_m$concept_name)/sum(table(con_df_m$concept_name)))
-f_df <- as.data.frame(table(con_df_f$concept_name)/sum(table(con_df_f$concept_name)))
-t_df <- as.data.frame(table(con_df_temp$concept_name)/sum(table(con_df_temp$concept_name)))
+  m_df$Category <- "Untreated"
+  m_df$Gender <- "M"
+  f_df$Category <- "Untreated"
+  f_df$Gender <- "F"
+  t_df$Category <- "Untreated"
+  t_df$Gender <- "Total"
 
-m_df$Category <- "Untreated"
-m_df$Gender <- "M"
-f_df$Category <- "Untreated"
-f_df$Gender <- "F"
-t_df$Category <- "Untreated"
-t_df$Gender <- "Total"
+  colnames(m_df)[c(1,2)] <- c("variable","value")
+  colnames(f_df)[c(1,2)] <- c("variable","value")
+  colnames(t_df)[c(1,2)] <- c("variable","value")
 
-colnames(m_df)[c(1,2)] <- c("variable","value")
-colnames(f_df)[c(1,2)] <- c("variable","value")
-colnames(t_df)[c(1,2)] <- c("variable","value")
+  atc_output <- as.data.frame(reshape2::acast(rbind(t_df,rbind(m_df,f_df)), variable~Gender+Category, value.var = "value"))
+  atc_output$M_Treated <- ""
+  atc_output$F_Treated <- ""
+  atc_output$Total_Treated <- ""
+  atc_output <- atc_output[,c(5,1,4,2,6,3)]
 
-atc_output <- as.data.frame(reshape2::acast(rbind(t_df,rbind(m_df,f_df)), variable~Gender+Category, value.var = "value"))
-atc_output$M_Treated <- ""
-atc_output$F_Treated <- ""
-atc_output$Total_Treated <- ""
-atc_output <- atc_output[,c(5,1,4,2,6,3)]
+  output <- rbind(output_df,atc_output)
 
-output <- rbind(output_df,atc_output)
+  output[c(5:18),]$F_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$F_Untreated),2),nsmall=2))
+  output[c(5:18),]$M_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$M_Untreated),2),nsmall=2))
+  output[c(5:18),]$Total_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$Total_Untreated),2),nsmall=2))
 
-output[c(5:18),]$F_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$F_Untreated),2),nsmall=2))
-output[c(5:18),]$M_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$M_Untreated),2),nsmall=2))
-output[c(5:18),]$Total_Untreated <- as.character(format(round(100*as.numeric(output[c(5:18),]$Total_Untreated),2),nsmall=2))
-
-return(output)
+  return(output)
 
 }
 

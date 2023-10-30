@@ -161,7 +161,7 @@ Post-processing steps include the handling and combination of
 overlapping regimen alignments, as well as formatting output for
 submission to an episode era table.
 
-    processedAll <- output_all %>% processAlignments(regimenCombine = 28, regimens = regimens)
+    output_processed <- output_all %>% processAlignments(regimenCombine = 28, regimens = regimens)
 
     personOfInterest <- output_all[output_all$personID == unique(output_all$personID)[1337],]
 
@@ -171,19 +171,19 @@ Data may then be further explored via several graphics which indicate
 various information, such as regimen frequency or the score/length
 distributions of a given regimen.
 
-    plotFrequency(processedAll)
+    plotFrequency(output_processed)
 
-    plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
+    plotScoreDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
 
-    plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = processedAll)
+    plotRegimenLengthDistribution(regimen1 = "Acetaminophen Monotherapy", regimen2 = "Ibuprofen Monotherapy", processedAll = output_processed)
 
 Treatment trajectories, or regimen eras, can then be calculated, adding
 further information about the relative sequencing order of different
 regimens and regimen types.
 
-    processedEras <- processedAll %>% calculateEras(discontinuationTime = 90)
+    output_eras <- output_processed %>% calculateEras(discontinuationTime = 90)
 
-    regStats <- processedEras %>% generateRegimenStats()
+    regStats <- output_eras %>% generateRegimenStats()
 
 And resulting graphics, such as a sankey indicating the overall patterns
 of treatment trajectories can then be constructed. plotSankey() produces
@@ -193,13 +193,13 @@ network graph.
 You may need to run webshot::install\_phantomjs() if your system does
 not already have it installed to utilise the Sankey package.
 
-    plotErasFrequency(processedEras)
+    plotErasFrequency(output_eras)
 
     #Potential dependency install:
     #webshot::install_phantomjs()
 
     regimen_Groups <- loadGroups()
-    plotSankey(processedEras, regimen_Groups)
+    plotSankey(output_eras, regimen_Groups)
 
 ### Output
 
@@ -213,7 +213,7 @@ writeOutputs also produces data about the underlying cohorts used to
 construct the regimen outputs, and so also requires a call to the
 connection via DatabaseConnector directly.
 
-    writeOutputs(output_all = output_all, output_processed = processedAll, output_eras = processedEras,
+    writeOutputs(output_all = output_all, output_processed = output_processed, output_eras = output_eras,
                  connectionDetails = connectionDetails, cdmSchema = cdmSchema, con_df = con_df,
                  regGroups = regimen_Groups, regStats = regStats, stringDF = stringDF)
 
