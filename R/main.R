@@ -10,12 +10,6 @@
 #'            Verbose = 0 : Print nothing
 #'            Verbose = 1 : Print seqs and scores
 #'            Verbose = 2 : Report seqs, scores, H and traceMat
-#' @param mem A number defining how many sequences to hold in memory during local alignment.
-#'            Mem = -1 : Script will define memory length according to floor(len(regimen)/len(drugRec))
-#'            Mem = 0 : Script will return exactly 1 alignment
-#'            Mem = 1 : Script will return 1 alignment and all alignments with the same score
-#'            Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment
-#' @param removeOverlap A variable indicating whether to remove overlaps (1) or leave them in the output data (0)
 #' @param method A character string indicating which loss function method to utilise. Please pick one of
 #'            PropDiff        - Proportional difference of Tx and Ty
 #'            AbsDiff         - Absolute difference of Tx and Ty
@@ -25,12 +19,15 @@
 #'
 #' @param writeOut A variable indicating whether to save the set of drug records
 #' @param outputName The name for a given written output
+#' @param scoreFilter A score filter below which alignments will not be returned. It is recommended to consider
+#' the run time implications if this is set to be below ~0.601. A filter of 0 will result in extremely long
+#' processing times.
 #' @return A dataframe containing the relevant patients and their drug exposure strings
 #' @export
-generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, mem = -1, removeOverlap = -1, method, writeOut = TRUE, outputName = "Output") {
+generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose=0, method, writeOut = TRUE, outputName = "Output", scoreFilter = 0.601) {
 
-  output_all <- as.data.frame(matrix(nrow = 0,ncol=12))
-  colnames(output_all) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End",
+  output_all <- as.data.frame(matrix(nrow = 0,ncol=13))
+  colnames(output_all) <- c("regCode","regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End",
                             "drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign","adjustedS","personID")
 
   cli::cat_bullet(paste("Processing ",dim(stringDF)[1]," patients and ",dim(regimens)[1]," regimens...",sep=""),
@@ -40,8 +37,8 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
 
     drugRecord <- encode(stringDF[j,]$seq)
 
-    output <- as.data.frame(matrix(nrow = 0,ncol=12))
-    colnames(output) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End",
+    output <- as.data.frame(matrix(nrow = 0,ncol=13))
+    colnames(output) <- c("regCode","regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End",
                           "drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign","adjustedS","personID")
 
     for(i in c(1:dim(regimens)[1])) {
@@ -50,19 +47,22 @@ generateRawAlignments <- function(stringDF, regimens, g, Tfac, s=NA, verbose, me
 
       regName <- regimens[i,]$regName
 
+      regCode <- regimens[i,]$regCodeExt
+
       output_temp <- align(regimen = regimen,
                            regName = regName,
                            drugRec = drugRecord,
                            g = g, Tfac = Tfac,
                            s = NA,
                            verbose = verbose,
-                           mem = mem,
-                           removeOverlap = removeOverlap,
                            method = method)
 
       output_temp$totAlign <- unlist(output_temp$totAlign)
 
-      output_temp <- output_temp[(output_temp$totAlign > 1 | output_temp$totAlign == "") & (output_temp$adjustedS > 0.601 | is.na(output_temp$adjustedS)),]
+      output_temp <- output_temp[(output_temp$totAlign > 1 | output_temp$totAlign == "") & (output_temp$adjustedS > scoreFilter | is.na(output_temp$adjustedS)),]
+
+      output_temp$regCode <- regCode
+      output_temp <- output_temp[,c(12,1:11)]
 
       if(dim(output_temp)[1] > 1){
 

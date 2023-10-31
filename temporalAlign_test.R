@@ -21,7 +21,6 @@ g <- 0.4
 Tfac <- 0.25
 verbose = 0
 mem = as.integer(-1)
-removeOverlap = 1
 
 regimen1 <- encode("0.carboplatin;14.cisplatin;4.Doxorubicin")
 regimen2 <- encode("0.Carboplatin;1.Cisplatin;0.Carboplatin")
@@ -31,7 +30,7 @@ regimens <- list(regimen1,regimen2)
 
 regNames <- list("Test0","Test1")
 
-output_test0 <- align(regimen1,"Test",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test0 <- align(regimen1,"Test",drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
 
 plotOutput(output_test0, regimenCombine = 7)
 
@@ -45,7 +44,6 @@ g <- 0.4
 Tfac <- 0.25
 verbose = 0
 mem = -1
-removeOverlap = 1
 
 regimen <- encode("0.Q;1.C;1.A")
 
@@ -56,7 +54,7 @@ regName <- "ChemoRegimenA"
 regimen
 drugRecord
 
-output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test1 <- align(regimen,regName,drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
 
 plotOutput(output_test1, fontSize = 2, regimenCombine = 1)
 
@@ -68,7 +66,6 @@ g <- 0.4
 Tfac <- 0.25
 verbose = 0
 mem = -1
-removeOverlap = 1
 regimenCombine = 1
 
 s1 <- "0.Q;2.C;1.A;1.A"
@@ -89,7 +86,7 @@ drugRecord <- encode(s4)
 regNames <- list("regA","regB","regC")
 regimens <- list(regimen1,regimen2,regimen3)
 
-output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test2 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
 
 plotOutput(output_test2, regimenCombine = 28)
 
@@ -102,7 +99,6 @@ g <- 0.4
 Tfac <- 0.25
 verbose = 0
 mem = -1
-removeOverlap = 1
 regimenCombine = 14
 
 #Continuous A
@@ -116,7 +112,7 @@ drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 regNames <- list("ContinuousA","Interrupt")
 regimens <- list(regimen1,regimen2)
 
-output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test3 <- align(regimens,regNames,drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
 
 plotOutput(output_test3)
 
@@ -127,8 +123,8 @@ regimen1 <- encode("8.A;8.A")
 regimen2 <- encode("0.A;8.A")
 drugRecord <- encode("0.A;8.A;8.A;9.A;8.B;1.C;1.A;8.A;8.A")
 
-output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
-output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,removeOverlap,"PropDiff")
+output_test41 <- align(regimen1,"Reg1",drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
+output_test42 <- align(regimen2,"Reg2",drugRecord,g,Tfac,NA,verbose,mem,"PropDiff")
 
 ###### Test 5 ######
 # Intentional overlap test #
@@ -143,7 +139,7 @@ regimens <- list(regimen1,regimen2)
 
 output_test5 <- align(regimens, regName = regNames, drugRec = drugRecord,
                       g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
-                      removeOverlap = 1, method = "PropDiff")
+                      method = "PropDiff")
 
 plotOutput(output_test5)
 
@@ -162,7 +158,7 @@ regimens <- list(regimen1,regimen2)
 
 output_test6 <- align(regimens, regName = regNames, drugRec = drugRecord,
                       g = 0.4, Tfac = 0.25, verbose = 1, mem = -1,
-                      removeOverlap = 1, method = "PropDiff")
+                      method = "PropDiff")
 
 
 ##### Test 7 #####
@@ -180,7 +176,7 @@ s1
 drugRec
 s2
 
-output_test7 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.5, Tfac = 0.5, verbose = 1, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test7 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.5, Tfac = 0.5, verbose = 1, mem = -1, s = NA, method = "PropDiff")
 
 plotOutput(output_test7)
 
@@ -204,7 +200,7 @@ s2 <- encode(drugRec)
 s1
 s2
 
-output_test8 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test8 <- align(regimen = s1,regName = "Test7",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 plotOutput(output_test8)
 
@@ -230,7 +226,7 @@ s3 <- encode(drugRec)
 regNames <- list("longReg","shortReg")
 regimens <- list(s1,s2)
 
-output_test9 <- align(regimens, regNames, drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test9 <- align(regimens, regNames, drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 plotOutput(output_test9)
 
@@ -248,9 +244,9 @@ drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
 s2 <- encode(drugRec1)
 s3 <- encode(drugRec2)
 
-output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
-output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 p1 <- plotOutput(output_test10_luck)
 p2 <- plotOutput(output_test10_unluck)
@@ -271,9 +267,9 @@ drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
 s2 <- encode(drugRec1)
 s3 <- encode(drugRec2)
 
-output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
-output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 p1 <- plotOutput(output_test10_luck)
 p2 <- plotOutput(output_test10_unluck)
@@ -295,9 +291,9 @@ drugRec2 <- "21.Bevacizumab;0.Cyclophosphamide;0.Paclitaxel"
 s2 <- encode(drugRec1)
 s3 <- encode(drugRec2)
 
-output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_luck <- align(s1, "Reg",drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
-output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test10_unluck <- align(s1, "Reg", drugRec = s3, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 p1 <- plotOutput(output_test10_luck)
 p2 <- plotOutput(output_test10_unluck)
@@ -314,7 +310,7 @@ drugRecord <- "7.Trastuzumab;21.Carboplatin;0.Paclitaxel;0.Trastuzumab"
 s1 <- encode(reg1)
 s2 <- encode(drugRecord)
 
-output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 0.5, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 #output_test11 <- output_test11[(output_test11$totAlign > 1 | output_test11$totAlign == "") & (output_test11$adjustedS > 0.6 | is.na(output_test11$adjustedS)),]
 
@@ -333,7 +329,7 @@ drugRecord <- "0.C;7.D;15.C;7.A;0.B;0.C;7.A;7.D;7.E;7.E"
 s1 <- encode(reg1)
 s2 <- encode(drugRecord)
 
-output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 1, verbose = 2, mem = -1, removeOverlap = 1, s = NA, method = "PropDiff")
+output_test11 <- align(s1, "Reg", drugRec = s2, g = 0.4, Tfac = 1, verbose = 2, mem = -1, s = NA, method = "PropDiff")
 
 
 #Test 12 - Presentation test

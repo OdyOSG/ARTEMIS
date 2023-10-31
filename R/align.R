@@ -13,13 +13,6 @@
 #'            Verbose = 0 : Print nothing
 #'            Verbose = 1 : Print seqs and scores
 #'            Verbose = 2 : Report seqs, scores, H and traceMat
-#'
-#' @param mem A number defining how many sequences to hold in memory during local alignment.
-#'            Mem = -1 : Script will define memory length according to floor(len(regimen)/len(drugRec))
-#'            Mem = 0 : Script will return exactly 1 alignment
-#'            Mem = 1 : Script will return 1 alignment and all alignments with the same score
-#'            Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment
-#' @param removeOverlap A variable indicating whether to remove overlaps (1) or leave them in the output data (0)
 #' @param method A character string indicating which loss function method to utilise. Please pick one of
 #'            PropDiff        - Proportional difference of Tx and Ty
 #'            AbsDiff         - Absolute difference of Tx and Ty
@@ -30,7 +23,7 @@
 #' @return dat A dataframe containing information on the resulting alignments
 #' output <- align(regimen,drugRec)
 #' @export
-align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,method) {
+align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose=0,method) {
 
   if(!exists("temporal_alignment", mode="function")) {
     reticulate::source_python(system.file("python/init.py",package="ARTEMIS"),envir=globalenv())
@@ -54,7 +47,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
 
     for(i in c(1:length(regimen))) {
 
-      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
+      temp_dat <- temporal_alignment(regimen[[i]],regName[[i]],drugRec,g,Tfac,as.data.frame(s), verbose, method)
       temp_dat <- as.data.frame(temp_dat)
 
       colnames(temp_dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")
@@ -78,7 +71,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
       s <- defaultSmatrix(regimen,drugRec)
     }
 
-    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, mem, removeOverlap, method)
+    dat <- temporal_alignment(regimen,regName,drugRec,g,Tfac,as.data.frame(s), verbose, method)
     dat <- as.data.frame(dat)
 
     colnames(dat) <- c("regName","Regimen","DrugRecord","Score","regimen_Start","regimen_End","drugRec_Start","drugRec_End","Aligned_Seq_len","totAlign")

@@ -155,7 +155,8 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 		i += 1
 
 
-def find_best_score(H,s2_len,s1_len,mem,verbose):
+def find_best_score(H,s2_len,s1_len,verbose):
+
 	mem_index = []
 	mem_score = []
 
@@ -173,27 +174,14 @@ def find_best_score(H,s2_len,s1_len,mem,verbose):
 	mem_array = np.asarray(list(zip(mem_score,mem_index)), dtype=object)
 	mem_array = mem_array[mem_array[:, 0].argsort()]
 
-	#Select from mem according to the requested number of alignments
-	#Mem = -1 : As many non-overlapping alignments as possible
-	if mem == -1:
-		mem = max(1,math.ceil(s1_len/s2_len))
-		mem_min = mem_array[-mem][0]
-		mem_array = mem_array[ mem_min <= mem_array[:,0] ]#
-		mem_score, mem_index = mem_array[:, 0], mem_array[:, 1]
-		if(verbose == 2):
-			print("Calculated mem: ")
-			print(mem)
+	mem = max(1,s1_len - s2_len + 1)
+	mem_min = mem_array[-mem][0] * 0.9
+	mem_array = mem_array[ mem_min <= mem_array[:,0] ]
+	mem_score, mem_index = mem_array[:, 0], mem_array[:, 1]
 
-	#Mem = 0 : Exactly 1 alignment
-	elif mem == 0:
-		mem_index = []
-		mem_score = []
-
-	# Mem >= 1 : Return N alignments and all alignments with the same score as the Nth alignment 
-	else:
-		mem_min = mem_array[-mem][0]
-		mem_array = mem_array[ mem_min <= mem_array[:,0] ]
-		mem_score, mem_index = mem_array[:, 0], mem_array[:, 1]
+	if(verbose == 2):
+		print("Calculated mem: ")
+		print(mem)
 
 	mem_score = mem_score[::-1]
 	mem_index = mem_index[::-1]
