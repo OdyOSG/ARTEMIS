@@ -1,12 +1,13 @@
 Package: ARTEMIS
 Type: Package
 Title: Chemotherapy regimen detection via temporal alignment algorithms
-Version: 1.0.0.1
+Version: 1.0.1.0
 Author: Laurence Lawrence-Archer
 Maintainer: This package is maintained by Laurence Lawrence-Archer <ldyer2006@gmail.com>
 Description: A chemotherapy regimen detection algorithm is implemented alongside methods to generate patient-level data from an OMOP-CDM compliant database.
     Utilising a temporally sensitive Smith-Waterman local alignment algorithm, we aim to generate a set of aligned drug regimens for each patient's experienced drug profile, thus allowing a simplification and summarisation of otherwise unreadable drug occurrences.
 Imports:
+<<<<<<< Updated upstream
     reticulate (>= 1.27-9000),
     dplyr,
     ggplot2,
@@ -23,9 +24,31 @@ Imports:
     networkD3,
     webshot,
     reshape2,
+=======
+    CirceR,
+    cli,
+    CohortGenerator,
+    DatabaseConnector,
+    dplyr,
+    ggplot2,
+>>>>>>> Stashed changes
     ggsci,
     gridExtra,
-    methods
+    here,
+    lubridate,
+    magrittr,
+    methods,
+    networkD3,
+    reshape2,
+    reticulate (>= 1.27-9000),
+    scales,
+    SqlRender,
+    stats,
+    stringi,
+    stringr,
+    tidyr,
+    utils,
+    webshot
 License: Apache License (>= 2)
 VignetteBuilder: knitr
 Encoding: UTF-8
@@ -33,11 +56,11 @@ LazyData: true
 LazyDataCompression:xz
 RoxygenNote: 7.2.3
 Suggests: 
-    testthat (>= 3.0.0),
     DBI,
     duckdb,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5.0)

@@ -61,25 +61,26 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
   outputDF$drugRec_End <- as.numeric(outputDF$drugRec_End)
   outputDF$totAlign <- as.numeric(outputDF$totAlign)
 
-  outputDF <- outputDF %>%
-    dplyr::arrange(.data$drugRec_Start)
-
-  #outputDF$drugRec_Start <- outputDF$drugRec_Start + 1
-  #outputDF$drugRec_End <- outputDF$drugRec_End + 1
-
   if(min(outputDF$drugRec_Start) <= 0){
     outputDF[outputDF$drugRec_Start <= 0,]$drugRec_Start <- 1
   }
 
-  #if(max(outputDF$drugRec_End) > max(drugDF$index)){
-  #  outputDF[outputDF$drugRec_End > max(drugDF$index),]$drugRec_End <- max(drugDF$index)
-  #}
+  if(max(outputDF$drugRec_End) > max(drugDF$index)){
+    outputDF[outputDF$drugRec_End > max(drugDF$index),]$drugRec_End <- max(drugDF$index)
+  }
 
   outputDF$t_start <- drugDF[outputDF$drugRec_Start,]$t_start
   outputDF$t_end <- drugDF[outputDF$drugRec_End,]$t_start
 
   outputDF <- outputDF[order(outputDF$t_start, decreasing = F),]
+
+  outputDF <- merge(outputDF,regCount,by = "regName")
+
+  outputDF <- outputDF %>%
+    dplyr::arrange(.data$drugRec_Start)
+
   outputDF$index <- c(1:length(outputDF$drugRec_Start))
+
   toRemove <- c()
 
   #Overlap removal
@@ -91,13 +92,37 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
           if(!(i %in% toRemove) & !(j %in% toRemove)){
             sel <- outputDF[c(i,j),]
 
+            i_comps <- sel[sel$index==i,]$compNo
+            j_comps <- sel[sel$index==j,]$compNo
+
+            i_drugs <- sel[sel$index==i,]$drugRec_End-sel[sel$index==i,]$drugRec_Start
+            j_drugs <- sel[sel$index==j,]$drugRec_End-sel[sel$index==j,]$drugRec_Start
+
+            if(i_comps  > j_comps){
+              sel[sel$index==i,]$adjustedS <- min(1,sel[sel$index==i,]$adjustedS * 1.05)
+            }
+
+            if(i_drugs  > j_drugs){
+              sel[sel$index==i,]$adjustedS <- min(1,sel[sel$index==i,]$adjustedS * 1.075)
+            }
+
+            if(j_comps  > i_comps){
+              sel[sel$index==j,]$adjustedS <- min(1,sel[sel$index==j,]$adjustedS * 1.05)
+            }
+
+            if(j_drugs  > i_drugs){
+              sel[sel$index==j,]$adjustedS <- min(1,sel[sel$index==j,]$adjustedS * 1.075)
+            }
+
+
             i_score <- sel[sel$index==i,]$adjustedS
             j_score <- sel[sel$index==j,]$adjustedS
 
-            if(i_score == j_score){
-              toRemove <- toRemove
+            if(!(i_score == j_score)){
+              toRemove <- c(toRemove,sel[sel$adjustedS == min(i_score,j_score),]$index)
             } else {
-              toRemove <- c(toRemove,sel[sel$adjustedS == min(sel$adjustedS),]$index)
+              mostComps <- max(sel$compNo)
+              toRemove <- c(toRemove,c(i,j)[sel$compNo < mostComps])
             }
           }
         }
@@ -113,35 +138,6 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
       dplyr::arrange(.data$t_start)
   }
 
-  # SECOND overlap removal - removing low component high soring regimens
-
-  outputDF <- merge(outputDF,regCount,by = "regName")
-
-  toRemove <- c()
-
-  for(i in c(1:dim(outputDF)[1])){
-    for(j in c(i:dim(outputDF)[1])) {
-      if(i != j){
-        if(outputDF[i,]$t_start < outputDF[j,]$t_end & outputDF[i,]$t_end > outputDF[j,]$t_start){
-          mostComps <- max(outputDF[c(i,j),]$compNo)
-          toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$compNo < mostComps])
-
-          #if(outputDF[i,]$compNo == outputDF[j,]$compNo){
-          #  toRemove <- c(toRemove,c(i,j)[grep(" RT",outputDF[c(i,j),]$regName)])
-          #}
-        }
-      }
-    }
-  }
-
-  toRemove <- unique(toRemove)
-
-  if(length(toRemove) > 0){
-    outputDF <- outputDF[-toRemove,] %>% dplyr::arrange(.data$t_start)
-  } else {
-    outputDF <- outputDF %>% dplyr::arrange(.data$t_start)
-  }
-
   #Final overlap removal - sub-regimens
   toRemove <- c()
 
@@ -149,13 +145,20 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
     for(j in c(i:dim(outputDF)[1])) {
       if(i != j){
         if(outputDF[i,]$regName == outputDF[j,]$regName){
-          if(outputDF[i,]$totAlign == outputDF[j,]$totAlign){
-            if(outputDF[i,]$t_start < outputDF[j,]$t_end & outputDF[j,]$t_start < outputDF[i,]$t_end){
+          if(outputDF[j,]$t_start == outputDF[j,]$t_end | outputDF[i,]$t_start == outputDF[i,]$t_end) {
+            if(outputDF[i,]$t_start <= outputDF[j,]$t_end & outputDF[j,]$t_start <= outputDF[i,]$t_end){
 
               highScore <- max(outputDF[c(i,j),]$adjustedS)
 
               toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$adjustedS < highScore])
 
+            } else {
+              if(outputDF[i,]$t_start < outputDF[j,]$t_end & outputDF[j,]$t_start < outputDF[i,]$t_end){
+
+                highScore <- max(outputDF[c(i,j),]$adjustedS)
+
+                toRemove <- c(toRemove,c(i,j)[outputDF[c(i,j),]$adjustedS < highScore])
+              }
             }
           }
         }
@@ -185,6 +188,8 @@ combineAndRemoveOverlaps <- function(output, drugRec, drugDF, regimenCombine) {
                                         dplyr::lag(.data$regName),
                                       dplyr::lag(.data$t_end), 0))
     outputTemp[1,11] <- 0
+
+    regimenCombine <- max(regimenCombine, 2*as.numeric(gsub("\\..*","",regimens[regimens$regName == regimenCombi,]$shortString)))
 
     outputTemp <- outputTemp %>%
       dplyr::mutate(overlap = outputTemp$t_start <= outputTemp$prev_end+regimenCombine)
@@ -301,15 +306,23 @@ plotOutput <- function(output,
   overlapLines$t_end <- as.numeric(overlapLines$t_end)
   overlapLines$component <- factor(overlapLines$component, levels = ord)
 
-  plot[plot$regimen=="Yes",]$t_start <- plot[plot$regimen=="Yes",]$t_start - 2
-  plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + 2
+  if(max(plot$t_end) < 10){
+    addDays <- 0.25
+  } else if(max(plot$t_end) < 100){
+    addDays <- 1.25
+  } else {
+    addDays <- 3.5
+  }
+
+  plot[plot$regimen=="Yes",]$t_start <- plot[plot$regimen=="Yes",]$t_start - addDays
+  plot[plot$regimen=="Yes",]$t_end <- plot[plot$regimen=="Yes",]$t_end + addDays
 
   p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
     ggplot2::geom_rect(data = plot[plot$regimen=="Yes",],
-                           ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
-                                        ymax = as.numeric(.data$component)+0.3,
-                                        xmin = .data$t_start,
-                                        xmax = .data$t_end, fill = .data$component)) +
+                       ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
+                                    ymax = as.numeric(.data$component)+0.3,
+                                    xmin = .data$t_start,
+                                    xmax = .data$t_end, fill = .data$component)) +
     ggplot2::geom_text(size = 3,
                        data = plot[plot$regimen=="Yes",],
                        ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
@@ -319,7 +332,7 @@ plotOutput <- function(output,
                         ggplot2::aes(x= .data$t_start,y= as.numeric(.data$component),
                                      fill = .data$component), shape = 21) +
     ggplot2::scale_y_continuous(labels = stringi::stri_trans_totitle(ord), breaks = seq(1,length(ord))) +
-    ggplot2::scale_x_continuous(breaks = seq(0,max(plot$t_end),28)) +
+    ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(), expand = c(0.15,0)) +
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    panel.grid.major = ggplot2::element_line(colour = "grey95"),
                    legend.position = "none") +
@@ -403,10 +416,10 @@ plotProcesssed <- function(processedAll,
 
   p1 <- ggplot2::ggplot(plot, ggplot2::aes(x = .data$t_start)) +
     ggplot2::geom_rect(data = plot[plot$regimen=="Yes",],
-                           ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
-                                        ymax = as.numeric(.data$component)+0.3,
-                                        xmin = .data$t_start,
-                                        xmax = .data$t_end, fill = .data$component)) +
+                       ggplot2::aes(ymin = as.numeric(.data$component)-0.3,
+                                    ymax = as.numeric(.data$component)+0.3,
+                                    xmin = .data$t_start,
+                                    xmax = .data$t_end, fill = .data$component)) +
     ggplot2::geom_text(size = 3,
                        data = plot[plot$regimen=="Yes",],
                        ggplot2::aes(x = (.data$t_start+.data$t_end)/2,
@@ -755,10 +768,10 @@ plotSankey <- function(processedEras, regGroups, saveLocation = NA, fileName = "
   sankey_all[is.na(sankey_all$`Subsequent Lines`),]$`Subsequent Lines` <- ""
 
   tt1 <- as.data.frame(table(reshape2::melt(sankey_all[,c(2,3)],
-                                  id.vars = c("First Line","Second Line"), na.rm = F)))
+                                            id.vars = c("First Line","Second Line"), na.rm = F)))
 
   tt2 <- as.data.frame(table(reshape2::melt(sankey_all[,c(3,4)],
-                                  id.vars = c("Second Line","Subsequent Lines"), na.rm = F)))
+                                            id.vars = c("Second Line","Subsequent Lines"), na.rm = F)))
 
 
   tt1$First.Line <- as.character(tt1$First.Line)
@@ -792,10 +805,10 @@ plotSankey <- function(processedEras, regGroups, saveLocation = NA, fileName = "
   links$IDtarget <- match(links$target, nodes$name)-1
 
   p <- networkD3::sankeyNetwork(Links = links, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name",
-                     sinksRight=FALSE, width = 2200, height = 1000,
-                     fontSize = 28, fontFamily = "calibri")
+                                Source = "IDsource", Target = "IDtarget",
+                                Value = "value", NodeID = "name",
+                                sinksRight=FALSE, width = 2200, height = 1000,
+                                fontSize = 28, fontFamily = "calibri")
 
   networkFile <- paste(saveLocation,"/",fileName,".html",sep="")
 
@@ -804,4 +817,4 @@ plotSankey <- function(processedEras, regGroups, saveLocation = NA, fileName = "
   webshot::webshot(url = networkFile, file = paste(saveLocation,"/",fileName,".png",sep=""), vwidth = 2200, vheight = 1000)
 
 
-  }
+}

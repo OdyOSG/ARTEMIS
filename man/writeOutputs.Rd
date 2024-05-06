@@ -6,8 +6,13 @@
 \usage{
 writeOutputs(
   output_all,
+<<<<<<< Updated upstream
   output_processed,
   output_eras,
+=======
+  processedAll,
+  processedEras,
+>>>>>>> Stashed changes
   regGroups,
   regStats,
   cdm,
@@ -18,7 +23,7 @@ writeOutputs(
 \arguments{
 \item{output_all}{A dataframe containing raw outputs}
 
-\item{output_processed}{A dataframe containing processed output regimens}
+\item{processedAll}{A dataframe containing processed output regimens}
 
 \item{output_eras}{A dataframe containing processed regimen eras}
 

@@ -5,6 +5,7 @@
 </p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<<<<<<< Updated upstream
 For the version of this package which uses DatabaseConnector, please
 change branches to
 [“DatabaseConnector”](https://github.com/OdyOSG/ARTEMIS/tree/DatabaseConnector).
@@ -234,3 +235,9 @@ CDMConnector is tested using the following DBI driver backends:
 If you encounter a clear bug, please file an issue with a minimal
 [reproducible example](https://reprex.tidyverse.org/) at the [GitHub
 issues page](https://github.com/OdyOSG/ARTEMIS/issues).
+=======
+This repository is now stale, please refer to the newest repository
+located at:
+
+<https://github.com/OHDSI/ARTEMIS>
+>>>>>>> Stashed changes

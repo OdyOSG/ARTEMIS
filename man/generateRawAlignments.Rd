@@ -10,12 +10,11 @@ generateRawAlignments(
   g,
   Tfac,
   s = NA,
-  verbose,
-  mem = -1,
-  removeOverlap = -1,
+  verbose = 0,
   method,
   writeOut = TRUE,
-  outputName = "Output"
+  outputName = "Output",
+  scoreFilter = 0.601
 )
 }
 \arguments{
@@ -36,14 +35,6 @@ Verbose = 0 : Print nothing
 Verbose = 1 : Print seqs and scores
 Verbose = 2 : Report seqs, scores, H and traceMat}
 
-\item{mem}{A number defining how many sequences to hold in memory during local alignment.
-Mem = -1 : Script will define memory length according to floor(len(regimen)/len(drugRec))
-Mem = 0 : Script will return exactly 1 alignment
-Mem = 1 : Script will return 1 alignment and all alignments with the same score
-Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment}
-
-\item{removeOverlap}{A variable indicating whether to remove overlaps (1) or leave them in the output data (0)}
-
 \item{method}{A character string indicating which loss function method to utilise. Please pick one of
 PropDiff        - Proportional difference of Tx and Ty
 AbsDiff         - Absolute difference of Tx and Ty
@@ -54,6 +45,10 @@ LogCosh         - The natural logarithm of the Cosh of the absolute difference o
 \item{writeOut}{A variable indicating whether to save the set of drug records}
 
 \item{outputName}{The name for a given written output}
+
+\item{scoreFilter}{A score filter below which alignments will not be returned. It is recommended to consider
+the run time implications if this is set to be below ~0.601. A filter of 0 will result in extremely long
+processing times.}
 }
 \value{
 A dataframe containing the relevant patients and their drug exposure strings

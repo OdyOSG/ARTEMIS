@@ -6,18 +6,7 @@
 returning either a set of global alignments or a set of local alignments, either overlapping
 or otherwise}
 \usage{
-align(
-  regimen,
-  regName,
-  drugRec,
-  g,
-  Tfac,
-  s = NA,
-  verbose,
-  mem,
-  removeOverlap,
-  method
-)
+align(regimen, regName, drugRec, g, Tfac, s = NA, verbose = 0, method)
 }
 \arguments{
 \item{regimen}{A sequence to be aligned, usually a short sequence defining a chemotherapy regimen,
@@ -37,14 +26,6 @@ may contain multiple regimens if supplied as a list}
 Verbose = 0 : Print nothing
 Verbose = 1 : Print seqs and scores
 Verbose = 2 : Report seqs, scores, H and traceMat}
-
-\item{mem}{A number defining how many sequences to hold in memory during local alignment.
-Mem = -1 : Script will define memory length according to floor(len(regimen)/len(drugRec))
-Mem = 0 : Script will return exactly 1 alignment
-Mem = 1 : Script will return 1 alignment and all alignments with the same score
-Mem = X : Script will return X alignments and all alignments with equivalent score as the Xth alignment}
-
-\item{removeOverlap}{A variable indicating whether to remove overlaps (1) or leave them in the output data (0)}
 
 \item{method}{A character string indicating which loss function method to utilise. Please pick one of
 PropDiff        - Proportional difference of Tx and Ty

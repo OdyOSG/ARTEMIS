@@ -15,3 +15,9 @@ Output.csv
 Output_Processed.csv
 ^doc$
 ^Meta$
+output_data.zip
+output_plots.zip
+output_stats.zip
+errorReportSql.txt
+output_plots/
+userScript.R

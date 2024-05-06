@@ -64,7 +64,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
       temp_dat$Regimen <- gsub("^;","",temp_dat$Regimen)
       temp_dat$DrugRecord <- gsub("^;","",temp_dat$DrugRecord)
 
-      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(temp_dat$totAlign)
+      temp_dat$adjustedS <- as.numeric(temp_dat$Score)/as.numeric(temp_dat$Aligned_Seq_len)
 
       dat <- rbind(dat,temp_dat)
 
@@ -88,7 +88,7 @@ align <- function(regimen,regName,drugRec,g,Tfac,s=NA,verbose,mem,removeOverlap,
     dat$Regimen <- gsub("^;","",dat$Regimen)
     dat$DrugRecord <- gsub("^;","",dat$DrugRecord)
 
-    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$totAlign)
+    dat$adjustedS <- as.numeric(dat$Score)/as.numeric(dat$Aligned_Seq_len)
 
     dat <- dat[!dat$totAlign == 0,]
 

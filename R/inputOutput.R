@@ -1,3 +1,69 @@
+<<<<<<< Updated upstream
+=======
+#' Generate a con_df dataframe without using CDMConnector
+#' @param connectionDetails A set of DatabaseConnector connectiondetails
+#' @param json A loaded cohort from loadJSON()
+#' @param name A cohort-specific name for written tables
+#' @param cdmSchema A schema containing a valid OMOP CDM
+#' @param writeSchema A schema where the user has write access
+#' @return A con_df dataframe
+#' @export
+getConDF <- function(connectionDetails, json, name, cdmSchema, writeSchema){
+
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+
+  cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
+  cohortExpression <- CirceR::cohortExpressionFromJson(json$json[[1]])
+  cohortSql <- CirceR::buildCohortQuery(cohortExpression, options = CirceR::createGenerateOptions(generateStats = FALSE))
+  cohortsToCreate <- rbind(cohortsToCreate, data.frame(cohortId = 1,
+                                                       cohortName = name,
+                                                       sql = cohortSql,
+                                                       stringsAsFactors = FALSE))
+
+  cohortTableNames <- CohortGenerator::getCohortTableNames(cohortTable = name)
+
+  CohortGenerator::createCohortTables(connection = connection,
+                                      cohortDatabaseSchema = writeSchema,
+                                      cohortTableNames = cohortTableNames)
+
+  cohortsGenerated <- CohortGenerator::generateCohortSet(connection = connection,
+                                                         cdmDatabaseSchema = cdmSchema,
+                                                         cohortDatabaseSchema = writeSchema,
+                                                         cohortTableNames = cohortTableNames,
+                                                         cohortDefinitionSet = cohortsToCreate)
+
+  subject_ids <- DatabaseConnector::dbGetQuery(conn = connection,
+                                               statement = paste("SELECT subject_id FROM ",writeSchema,".",name,sep=""))
+
+  sql_template <- "
+WITH filtered_drug_exposure AS (
+  SELECT drug_exposure.person_id,
+         drug_exposure.drug_exposure_start_date,
+         drug_exposure.drug_concept_id,
+         concept_ancestor.ancestor_concept_id,
+         concept.concept_name
+  FROM @cdmSchema.drug_exposure
+  LEFT JOIN @cdmSchema.concept_ancestor ON drug_exposure.drug_concept_id = concept_ancestor.descendant_concept_id
+  LEFT JOIN @cdmSchema.concept ON concept_ancestor.ancestor_concept_id = concept.concept_id
+  WHERE drug_exposure.person_id IN @subject_ids
+    AND LOWER(concept.concept_class_id) = 'ingredient'
+)
+
+SELECT * FROM filtered_drug_exposure;
+"
+
+rendered_sql <- SqlRender::render(sql_template, subject_ids = gsub("c","",paste(subject_ids)), cdmSchema = cdmSchema)
+
+con_df <- DatabaseConnector::dbGetQuery(conn = connection,
+                                        statement = rendered_sql)
+
+con_df <- as.data.frame(con_df)
+
+return(con_df)
+
+}
+
+>>>>>>> Stashed changes
 #' Generate a set of patient drug record strings from a valid CDM connection and
 #' a valid cohort JSON.
 #' @param con_df A con_df dataframe returned by getCohortSet()
@@ -161,8 +227,13 @@ loadCohort <- function() {
 
 #' Filter a stringDF dataframe to contain only valid patients
 #' @param output_all A dataframe containing raw outputs
+<<<<<<< Updated upstream
 #' @param output_processed A dataframe containing processed output regimens
 #' @param output_eras A dataframe containing processed regimen eras
+=======
+#' @param processedAll A dataframe containing processed output regimens
+#' @param processedEras A dataframe containing processed regimen eras
+>>>>>>> Stashed changes
 #' @param regGroups The desired regimen grouping variables for Sankey construction
 #' @param regStats A dataframe containing various summary statistics
 #' @param cdm The CDM object used to generate the input data to ARTEMIS
@@ -170,14 +241,23 @@ loadCohort <- function() {
 #' @param stringDF A stringDF object containing all valid patients (i.e., those who have exposure
 #' to at least one valid drug)
 #' @export
+<<<<<<< Updated upstream
 writeOutputs <- function(output_all, output_processed, output_eras, regGroups, regStats, cdm, con_df, stringDF){
+=======
+writeOutputs <- function(output_all, processedAll, processedEras, regGroups, regStats, connectionDetails, cdmSchema, con_df, stringDF){
+>>>>>>> Stashed changes
   uniqueIDs <- unique(output_all$personID)
   random_ids <- sample(1:10000000, length(uniqueIDs), replace = F) %>% as.character()
   id_dictionary <- cbind(uniqueIDs, random_ids) %>% `colnames<-`(c("personID", "anonymisedID")) %>% as.data.frame()
 
   output_all_anon <- merge(output_all,id_dictionary)[,-1]
+<<<<<<< Updated upstream
   output_processed_anon <- merge(output_processed,id_dictionary)[,-1]
   output_eras_anon <- merge(output_eras,id_dictionary)[,-1]
+=======
+  output_processed_anon <- merge(processedAll,id_dictionary)[,-1]
+  output_eras_anon <- merge(processedEras,id_dictionary)[,-1]
+>>>>>>> Stashed changes
 
   dir.create(file.path(here::here(), "output_data"), showWarnings = FALSE)
   dir.create(file.path(here::here(), "output_stats"), showWarnings = FALSE)

@@ -112,7 +112,7 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 
 			#Calculate potential values of H ij via score, tp and Hi-1, Hj-1
 			Hup = H[i-1][j-1] + score_match - tp
-			Hmid = H[i-1][j] - g
+			Hmid = H[i-1][j] - (1.33*g)
 			Hbot = H[i][j-1] - g
 
 			#Select move
@@ -145,10 +145,9 @@ def TSW_scoreMat(s1,s1_len,s2,s2_len,g,T,H,TR,TC,traceMat,s,method):
 				TC[i][j] = TC[i][j-1] + float(s1[j-1][0])
 
 
-
 			if j == s1_len and i < s2_len:
 				if(float(s2[i][0]) < float(s1[0][0])):
-					H[i][j] = max(H[i][j]-lossFunction(T,float(s2[i][0]),float(s1[0][0]),method,i,j),0)
+					H[i][j] = max(H[i][j]-0.5*lossFunction(T,float(s2[i][0]),float(s1[0][0]),method,i,j),0)
 
 			j += 1
 

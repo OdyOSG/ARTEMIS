@@ -1,3 +1,5 @@
+from re import sub
+
 def align_TSW(traceMat, s1, s2, s1_len, s2_len, max_index):
 	s1_aligned = ""
 	s2_aligned = ""   
@@ -49,8 +51,8 @@ def align_TSW(traceMat, s1, s2, s1_len, s2_len, max_index):
 	s1_list = s1_aligned.split(";")
 	s2_list = s2_aligned.split(";")	
 
-	s1_list_rev = [re.sub(r"([aA-zZ|~]+)\.([0-9]+)",r"\2.\1",i) for i in s1_list]
-	s2_list_rev = [re.sub(r"([aA-zZ|~]+)\.([0-9]+)",r"\2.\1",i) for i in s2_list]
+	s1_list_rev = [sub(r"([aA-zZ|~]+)\.([0-9]+)",r"\2.\1",i) for i in s1_list]
+	s2_list_rev = [sub(r"([aA-zZ|~]+)\.([0-9]+)",r"\2.\1",i) for i in s2_list]
 
 	s1_aligned = ";".join(s1_list_rev[::-1])
 	s2_aligned = ";".join(s2_list_rev[::-1])
